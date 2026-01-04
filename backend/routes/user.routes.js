@@ -60,7 +60,7 @@ router.post('/register', validateRegistration, async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Your account is pending approval.',
+      message: 'Registration successful. You can now log in to your account.',
       data: {
         id: user._id,
         name: user.name,
@@ -100,13 +100,13 @@ router.post('/login', validateLogin, async (req, res) => {
       });
     }
 
-    // Check if user is approved
-    if (user.status !== 'approved') {
-      return res.status(403).json({
-        success: false,
-        message: 'Your account is pending approval. Please contact admin.'
-      });
-    }
+    // Check if user is approved - DISABLED: Allow immediate login after registration
+    // if (user.status !== 'approved') {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: 'Your account is pending approval. Please contact admin.'
+    //   });
+    // }
 
     // Verify password
     const isPasswordValid = await user.comparePassword(password);

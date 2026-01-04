@@ -53,6 +53,24 @@
       "updatedAt": "2025-12-22T15:17:21.662Z",
       "approvedBy": "main_admin_json",
       "approvedAt": "2025-12-22T14:49:36.546Z"
+    },
+    {
+      "_id": "farmer_1767544698510_j85bj5wa8",
+      "fullName": "surya",
+      "email": "surya@gmail.com",
+      "mobile": "9876543210",
+      "password": "$2b$10$UEg8odjwdb6jSjiEGBu2N.nPvjMleFAEBCdd7TCKItd3eCdD.dL3O",
+      "location": "hassan",
+      "cropType": "vegetables",
+      "language": "hindi",
+      "status": "approved",
+      "isActive": true,
+      "registeredAt": "2026-01-04T16:38:18.510Z",
+      "lastLogin": "2026-01-04T17:35:43.663Z",
+      "createdAt": "2026-01-04T16:38:18.510Z",
+      "updatedAt": "2026-01-04T17:35:43.664Z",
+      "approvedBy": "main_admin_json",
+      "approvedAt": "2026-01-04T16:39:03.243Z"
     }
   ]
 }

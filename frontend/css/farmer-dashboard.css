@@ -135,6 +135,7 @@ body {
     min-width: 180px;
     display: none;
     overflow: hidden;
+    z-index: 1000;
 }
 
 .user-dropdown.show {
@@ -789,4 +790,96 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #a0aec0;
+}
+/* Market Prices Table */
+.market-prices-table {
+    background: white;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.market-prices-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.market-prices-table thead th {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.market-prices-table thead th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.market-prices-table thead th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.market-prices-table tbody tr {
+    border-bottom: 1px solid #E8F5E9;
+    transition: background-color 0.2s ease;
+}
+
+.market-prices-table tbody tr:hover {
+    background-color: #F1F8E9;
+}
+
+.market-prices-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.market-prices-table tbody td {
+    padding: 12px 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+.market-prices-table tbody td:nth-child(2),
+.market-prices-table tbody td:nth-child(3),
+.market-prices-table tbody td:nth-child(4) {
+    font-weight: 600;
+    color: #4CAF50;
+}
+
+.market-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: 2px solid #E0E0E0;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white;
+    border-color: #4CAF50;
+}
+
+.tab-btn:hover {
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+.tab-btn.active:hover {
+    color: white;
 }

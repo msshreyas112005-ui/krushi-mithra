@@ -17,22 +17,31 @@
                 </div>
                 <nav class="nav-menu">
                     <ul>
-                        <li><a href="#dashboard" class="active">Dashboard</a></li>
-                        <li><a href="#farmers">Farmers</a></li>
-                        <li><a href="#market">Market Prices</a></li>
-                        <li><a href="#subsidies">Subsidies</a></li>
+                        <li><a href="#dashboard" class="nav-link active" data-section="dashboard" data-i18n="header.dashboard">Dashboard</a></li>
+                        <li><a href="#farmers" class="nav-link" data-section="farmers" data-i18n="admin.farmers">Farmers</a></li>
+                        <li><a href="#market" class="nav-link" data-section="market" data-i18n="admin.marketPrices">Market Prices</a></li>
+                        <li><a href="#subsidies" class="nav-link" data-section="subsidies" data-i18n="admin.subsidies">Subsidies</a></li>
                     </ul>
                 </nav>
                 <div class="user-section">
+                    <!-- Language Selector -->
+                    <div class="language-selector" style="margin-right: 1rem;">
+                        <select id="languageSelect" class="language-dropdown">
+                            <option value="en">English</option>
+                            <option value="kn">ಕನ್ನಡ</option>
+                            <option value="hi">हिंदी</option>
+                        </select>
+                    </div>
+                    
                     <div class="user-menu">
                         <button class="user-btn" id="userMenuBtn">
                             <span class="user-avatar">👨‍💼</span>
                             <span class="user-name" id="userName">Admin</span>
                         </button>
                         <div class="user-dropdown" id="userDropdown">
-                            <a href="#profile">Profile</a>
-                            <a href="#settings">Settings</a>
-                            <a href="#" id="logoutBtn">Logout</a>
+                            <a href="#profile" data-i18n="header.profile">Profile</a>
+                            <a href="#settings" data-i18n="header.settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-i18n="header.logout">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -45,34 +54,27 @@
         <div class="container">
             <!-- Stats Overview -->
             <section class="stats-section">
-                <h2 class="section-title">Dashboard Overview</h2>
+                <h2 class="section-title" data-i18n="admin.dashboardOverview">Dashboard Overview</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">👥</div>
                         <div class="stat-info">
                             <div class="stat-value" id="totalFarmers">0</div>
-                            <div class="stat-label">Total Farmers</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⏳</div>
-                        <div class="stat-info">
-                            <div class="stat-value" id="pendingApprovals">0</div>
-                            <div class="stat-label">Pending Approvals</div>
+                            <div class="stat-label" data-i18n="admin.totalFarmers">Total Farmers</div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">✅</div>
                         <div class="stat-info">
                             <div class="stat-value" id="approvedFarmers">0</div>
-                            <div class="stat-label">Approved</div>
+                            <div class="stat-label">Active Farmers</div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">📊</div>
                         <div class="stat-info">
                             <div class="stat-value" id="marketPrices">0</div>
-                            <div class="stat-label">Market Prices</div>
+                            <div class="stat-label" data-i18n="admin.marketPrices">Market Prices</div>
                         </div>
                     </div>
                 </div>
@@ -95,8 +97,24 @@
                     <h2 class="section-title">Market Price Management</h2>
                     <button class="btn-primary" id="updatePricesBtn">Update Prices</button>
                 </div>
-                <div class="market-stats" id="marketStats">
-                    <p>Loading market data...</p>
+                <div class="market-prices-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Commodity</th>
+                                <th>Min Price (₹/Quintal)</th>
+                                <th>Max Price (₹/Quintal)</th>
+                                <th>Modal Price (₹/Quintal)</th>
+                                <th>Market</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marketPricesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">Loading market prices...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -306,6 +324,7 @@
         </div>
     </main>
 
+    <script src="../js/language-manager.js"></script>
     <script src="../js/admin-dashboard.js"></script>
 </body>
 </html>

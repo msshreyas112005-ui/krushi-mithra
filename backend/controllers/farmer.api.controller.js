@@ -1,4 +1,5 @@
 const jsonStorage = require('../utils/jsonStorage');
+const karnatakaMarketService = require('../services/karnataka-market-price.service');
 
 /**
  * Get Farmer Profile
@@ -263,79 +264,18 @@ const getMarketPrices = async (req, res) => {
   try {
     const { category = 'all' } = req.query;
 
-    // Demo market prices
-    const prices = [
-      {
-        _id: '1',
-        commodity: 'Rice',
-        category: 'grains',
-        price: 2500,
-        unit: 'quintal',
-        market: 'Mysore APMC',
-        change: '+4%',
-        trend: 'up',
-        date: new Date()
-      },
-      {
-        _id: '2',
-        commodity: 'Wheat',
-        category: 'grains',
-        price: 2200,
-        unit: 'quintal',
-        market: 'Bangalore APMC',
-        change: '+2%',
-        trend: 'up',
-        date: new Date()
-      },
-      {
-        _id: '3',
-        commodity: 'Tomato',
-        category: 'vegetables',
-        price: 40,
-        unit: 'kg',
-        market: 'Mysore APMC',
-        change: '+5%',
-        trend: 'up',
-        date: new Date()
-      },
-      {
-        _id: '4',
-        commodity: 'Onion',
-        category: 'vegetables',
-        price: 35,
-        unit: 'kg',
-        market: 'Mysore APMC',
-        change: '-3%',
-        trend: 'down',
-        date: new Date()
-      },
-      {
-        _id: '5',
-        commodity: 'Potato',
-        category: 'vegetables',
-        price: 25,
-        unit: 'kg',
-        market: 'Bangalore APMC',
-        change: '+2%',
-        trend: 'up',
-        date: new Date()
-      },
-      {
-        _id: '6',
-        commodity: 'Banana',
-        category: 'fruits',
-        price: 50,
-        unit: 'dozen',
-        market: 'Mysore APMC',
-        change: '+3%',
-        trend: 'up',
-        date: new Date()
-      }
-    ];
+    // Get real Karnataka market prices
+    const marketPrices = karnatakaMarketService.getLatestPrices();
+    
+    // Filter by category if specified
+    let filteredPrices = marketPrices;
+    if (category !== 'all') {
+      filteredPrices = marketPrices.filter(p => p.category === category);
+    }
 
     res.json({
       success: true,
-      data: category === 'all' ? prices : prices.filter(p => p.category === category)
+      data: filteredPrices
     });
   } catch (error) {
     console.error('[FARMER API] Get market prices error:', error);
@@ -407,6 +347,78 @@ const getWeather = async (req, res) => {
     });
   }
 };
+/**
+ * Get Notifications
+ */
+const getNotifications = async (req, res) => {
+  try {
+    // Demo notifications for now (can be replaced with database later)
+    const notifications = [
+      {
+        _id: '1',
+        type: 'announcement',
+        priority: 'high',
+        icon: '💰',
+        title: 'New Government Subsidy Available',
+        message: 'PM-KISAN 14th installment of ₹2,000 is being credited to registered farmers',
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        read: false
+      },
+      {
+        _id: '2',
+        type: 'warning',
+        priority: 'urgent',
+        icon: '🌧️',
+        title: 'Heavy Rainfall Alert',
+        message: 'IMD predicts heavy rainfall for the next 48 hours. Please take necessary precautions',
+        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+        read: false
+      },
+      {
+        _id: '3',
+        type: 'market',
+        priority: 'medium',
+        icon: '📈',
+        title: 'Market Price Update',
+        message: 'Tomato prices increased by 15% in Bangalore APMC. Good time to sell!',
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+        read: false
+      },
+      {
+        _id: '4',
+        type: 'subsidy',
+        priority: 'medium',
+        icon: '✅',
+        title: 'Subsidy Application Approved',
+        message: 'Your PMFBY application has been approved. Amount will be credited soon',
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        read: true
+      },
+      {
+        _id: '5',
+        type: 'weather',
+        priority: 'low',
+        icon: '☀️',
+        title: 'Weather Advisory',
+        message: 'Clear skies expected for next 5 days. Ideal for harvesting',
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+        read: true
+      }
+    ];
+
+    res.json({
+      success: true,
+      notifications,
+      unreadCount: notifications.filter(n => !n.read).length
+    });
+  } catch (error) {
+    console.error('[FARMER API] Get notifications error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching notifications'
+    });
+  }
+};
 
 module.exports = {
   getProfile,
@@ -418,5 +430,6 @@ module.exports = {
   getMarketPrices,
   getPriceHistory,
   getTrendingPrices,
-  getWeather
+  getWeather,
+  getNotifications
 };

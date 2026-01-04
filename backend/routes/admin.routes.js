@@ -8,6 +8,12 @@ const Notification = require('../models/notification.model');
 const { verifyMainAdmin } = require('../middleware/admin.auth.middleware');
 const jsonStorage = require('../utils/jsonStorage');
 
+// Import PostgreSQL controller for dynamic stats
+const adminPgController = require('../controllers/admin.postgres.controller');
+
+// Import market price service
+const karnatakaMarketService = require('../services/karnataka-market-price.service');
+
 /**
  * @route   POST /api/admin/login
  * @desc    Main Admin Login - ONLY for MAIN_ADMIN
@@ -698,5 +704,54 @@ router.post('/notifications/broadcast', verifyMainAdmin, notificationController.
  * @access  Admin only
  */
 router.get('/notifications', verifyMainAdmin, notificationController.getAdminNotifications);
+
+// ==================== DYNAMIC STATISTICS ROUTES (PostgreSQL) ====================
+// New routes for real-time dashboard statistics
+
+/**
+ * @route   GET /api/admin/stats
+ * @desc    Get dashboard statistics (real-time from database)
+ * @access  Admin
+ */
+router.get('/stats', adminPgController.getDashboardStats);
+
+/**
+ * @route   GET /api/admin/market/stats
+ * @desc    Get market price statistics
+ * @access  Admin
+ */
+router.get('/market/stats', adminPgController.getMarketStats);
+
+/**
+ * @route   GET /api/admin/market/prices
+ * @desc    Get recent market prices
+ * @access  Admin
+ */
+router.get('/market/prices', adminPgController.getRecentMarketPrices);
+
+/**
+ * @route   POST /api/admin/market/update
+ * @desc    Manually trigger market price update
+ * @access  Admin
+ */
+router.post('/market/update', async (req, res) => {
+  try {
+    console.log('🔄 Manual market price update triggered by admin');
+    const result = await karnatakaMarketService.updateMarketPrices();
+    
+    res.json({
+      success: result.success,
+      message: result.success ? 'Market prices updated successfully' : 'Market price update failed',
+      data: result
+    });
+  } catch (error) {
+    console.error('❌ Market update error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating market prices',
+      error: error.message
+    });
+  }
+});
 
 module.exports = router;

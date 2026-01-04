@@ -215,6 +215,7 @@ body::before {
     transform: translateY(-10px);
     transition: all 0.3s;
     border: 2px solid #C8E6C9;
+    z-index: 1000;
 }
 
 .user-dropdown.active {
@@ -236,6 +237,8 @@ body::before {
 .user-dropdown a:last-child {
     border-bottom: none;
     color: #d32f2f;
+    font-weight: 700;
+    background: #ffebee;
 }
 
 .user-dropdown a:hover {
@@ -1024,4 +1027,58 @@ body::before {
 
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #388E3C 0%, #4CAF50 100%);
+}
+/* Market Prices Table */
+.market-prices-table {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+}
+
+.market-prices-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.market-prices-table thead th {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.market-prices-table thead th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.market-prices-table thead th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.market-prices-table tbody tr {
+    border-bottom: 1px solid #E8F5E9;
+    transition: background-color 0.2s ease;
+}
+
+.market-prices-table tbody tr:hover {
+    background-color: #F1F8E9;
+}
+
+.market-prices-table tbody td {
+    padding: 12px 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+.market-prices-table tbody td:nth-child(2),
+.market-prices-table tbody td:nth-child(3),
+.market-prices-table tbody td:nth-child(4) {
+    font-weight: 600;
+    color: #4CAF50;
 }

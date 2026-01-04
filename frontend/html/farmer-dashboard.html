@@ -29,9 +29,9 @@
                 <div class="user-section">
                     <div class="language-selector">
                         <select id="languageSelect" class="language-dropdown">
-                            <option value="english">🌐 English</option>
-                            <option value="kannada">🌐 ಕನ್ನಡ</option>
-                            <option value="hindi">🌐 हिन्दी</option>
+                            <option value="en">🌐 English</option>
+                            <option value="kn">🌐 ಕನ್ನಡ</option>
+                            <option value="hi">🌐 हिन्दी</option>
                         </select>
                     </div>
                     <div class="user-menu">
@@ -151,16 +151,33 @@
                 <section class="dashboard-card market-prices">
                     <div class="card-header">
                         <h3><span class="icon">💰</span> Market Prices</h3>
-                        <button class="view-all-btn" id="viewAllPrices">View All</button>
+                        <button class="view-all-btn" id="refreshPricesBtn">🔄 Refresh</button>
                     </div>
                     <div class="card-content">
                         <div class="market-tabs">
-                            <button class="tab-btn active" data-tab="vegetables">Vegetables</button>
+                            <button class="tab-btn active" data-tab="all">All</button>
+                            <button class="tab-btn" data-tab="vegetables">Vegetables</button>
                             <button class="tab-btn" data-tab="fruits">Fruits</button>
                             <button class="tab-btn" data-tab="grains">Grains</button>
                         </div>
-                        <div class="price-list" id="priceList">
-                            <!-- Will be populated by JavaScript -->
+                        <div class="market-prices-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Commodity</th>
+                                        <th>Min Price (₹/Q)</th>
+                                        <th>Max Price (₹/Q)</th>
+                                        <th>Modal Price (₹/Q)</th>
+                                        <th>Market</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="priceTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading market prices...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>

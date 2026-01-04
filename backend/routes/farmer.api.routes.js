@@ -11,7 +11,14 @@ const {
 } = require('../middleware/validation.middleware');
 const { requireFarmer } = require('../middleware/rbac.middleware');
 
-// All routes are protected with farmer JWT authentication
+// ==================== PUBLIC ROUTES (No auth required) ====================
+// Market prices - public so admin can also access
+router.get('/market-prices', farmerApiController.getMarketPrices);
+router.get('/market-prices/history', farmerApiController.getPriceHistory);
+router.get('/market-prices/trending', farmerApiController.getTrendingPrices);
+
+// ==================== PROTECTED ROUTES ====================
+// All routes below are protected with farmer JWT authentication
 router.use(verifyFarmerToken);
 router.use(requireFarmer);
 
@@ -28,11 +35,6 @@ router.post('/subsidies/apply', validateSubsidyApplication, farmerApiController.
 // ==================== NOTIFICATION ROUTES ====================
 router.get('/notifications', notificationController.getFarmerNotifications);
 router.put('/notifications/:id/read', validateObjectId('id'), notificationController.markAsRead);
-
-// ==================== MARKET PRICES ROUTES ====================
-router.get('/market-prices', farmerApiController.getMarketPrices);
-router.get('/market-prices/history', farmerApiController.getPriceHistory);
-router.get('/market-prices/trending', farmerApiController.getTrendingPrices);
 
 // ==================== WEATHER ROUTES ====================
 router.get('/weather', farmerApiController.getWeather);

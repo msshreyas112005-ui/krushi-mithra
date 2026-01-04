@@ -13,6 +13,13 @@ const notificationForm = document.getElementById('notificationForm');
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize language manager first
+    if (window.krushiLang && !window.krushiLang.isReady) {
+        window.krushiLang.initialize().then(() => {
+            console.log('✅ Language system ready in admin dashboard');
+        });
+    }
+    
     checkAuthentication();
     loadAdminData();
     loadDashboardStats();
@@ -48,21 +55,41 @@ async function loadDashboardStats() {
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
         
-        // In demo mode, show sample stats
-        const stats = {
-            totalFarmers: 156,
-            pendingApprovals: 12,
-            approvedFarmers: 132,
-            marketPrices: 42
-        };
+        // Fetch real-time stats from database
+        const response = await fetch(`${API_URL}/admin/stats`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
         
-        document.getElementById('totalFarmers').textContent = stats.totalFarmers;
-        document.getElementById('pendingApprovals').textContent = stats.pendingApprovals;
-        document.getElementById('approvedFarmers').textContent = stats.approvedFarmers;
-        document.getElementById('marketPrices').textContent = stats.marketPrices;
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (data.success && data.stats) {
+                // Update dashboard with real data
+                document.getElementById('totalFarmers').textContent = data.stats.totalFarmers || 0;
+                document.getElementById('approvedFarmers').textContent = data.stats.approvedFarmers || 0;
+                document.getElementById('marketPrices').textContent = data.stats.marketPrices || 0;
+                
+                console.log('✅ Dashboard stats loaded:', data.stats);
+                return;
+            }
+        }
+        
+        // Fallback: Show zeros if API fails
+        console.warn('⚠️ Stats API failed, showing zero counts');
+        document.getElementById('totalFarmers').textContent = '0';
+        document.getElementById('approvedFarmers').textContent = '0';
+        document.getElementById('marketPrices').textContent = '0';
         
     } catch (error) {
         console.error('Error loading stats:', error);
+        
+        // Show zeros on error
+        document.getElementById('totalFarmers').textContent = '0';
+        document.getElementById('approvedFarmers').textContent = '0';
+        document.getElementById('marketPrices').textContent = '0';
     }
 }
 
@@ -89,9 +116,6 @@ async function loadPendingFarmers() {
         
         if (data.success) {
             displayFarmers(data.farmers);
-            
-            // Update pending count in stats
-            document.getElementById('pendingApprovals').textContent = data.farmers.length;
         } else {
             farmersList.innerHTML = '<div class="error">Error loading farmers. Please try again.</div>';
         }
@@ -197,10 +221,8 @@ async function approveFarmer(farmerId) {
                 farmerCard.remove();
             }
             
-            // Update stats
-            const pendingCount = document.getElementById('pendingApprovals');
+            // Update approved count
             const approvedCount = document.getElementById('approvedFarmers');
-            pendingCount.textContent = Math.max(0, parseInt(pendingCount.textContent) - 1);
             approvedCount.textContent = parseInt(approvedCount.textContent) + 1;
             
             // Check if list is empty
@@ -243,10 +265,6 @@ async function rejectFarmer(farmerId) {
             farmerCard.remove();
         }
         
-        // Update stats
-        const pendingCount = document.getElementById('pendingApprovals');
-        pendingCount.textContent = parseInt(pendingCount.textContent) - 1;
-        
     } catch (error) {
         console.error('Error rejecting farmer:', error);
         alert('Error rejecting farmer. Please try again.');
@@ -255,39 +273,65 @@ async function rejectFarmer(farmerId) {
 
 // Load Market Stats
 async function loadMarketStats() {
-    const marketStats = document.getElementById('marketStats');
-    
-    marketStats.innerHTML = `
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">🥬</div>
-                <div class="stat-info">
-                    <div class="stat-value">20</div>
-                    <div class="stat-label">Vegetables</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🍎</div>
-                <div class="stat-info">
-                    <div class="stat-value">12</div>
-                    <div class="stat-label">Fruits</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🌾</div>
-                <div class="stat-info">
-                    <div class="stat-value">10</div>
-                    <div class="stat-label">Grains</div>
-                </div>
-            </div>
-        </div>
-        <p style="margin-top: 1rem; color: #666;">Last updated: ${new Date().toLocaleString()}</p>
-    `;
+    try {
+        const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+        
+        // Fetch market prices from farmer API
+        const response = await fetch(`${API_URL}/farmer/market-prices`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            
+            if (result.success && result.data && result.data.length > 0) {
+                const tableBody = document.getElementById('marketPricesTableBody');
+                
+                tableBody.innerHTML = result.data.map(price => `
+                    <tr>
+                        <td><strong>${price.commodity}</strong></td>
+                        <td>₹${price.minPrice}</td>
+                        <td>₹${price.maxPrice}</td>
+                        <td>₹${price.modalPrice}</td>
+                        <td>${price.market}</td>
+                        <td>${new Date(price.arrivalDate).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+                
+                console.log('✅ Market prices loaded:', result.data.length, 'items');
+                return;
+            }
+        }
+        
+        // Fallback message
+        const tableBody = document.getElementById('marketPricesTableBody');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px; color: #999;">
+                    No market prices available. Click "Refresh Market Data" to fetch latest prices.
+                </td>
+            </tr>
+        `;
+        
+    } catch (error) {
+        console.error('Error loading market prices:', error);
+        const tableBody = document.getElementById('marketPricesTableBody');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px; color: #e74c3c;">
+                    Error loading market prices. Please try again.
+                </td>
+            </tr>
+        `;
+    }
 }
 
 // Update Market Prices
 async function updateMarketPrices() {
-    if (!confirm('This will fetch and update all market prices. Continue?')) {
+    if (!confirm('This will fetch and update all Karnataka market prices. Continue?')) {
         return;
     }
     
@@ -295,15 +339,31 @@ async function updateMarketPrices() {
     updatePricesBtn.textContent = 'Updating...';
     
     try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
         
-        alert('✅ Market prices updated successfully!');
-        loadMarketStats();
+        const response = await fetch(`${API_URL}/admin/market/update`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`✅ Market prices updated successfully!\n\nFetched: ${data.data?.totalFetched || 0} prices\nSaved: ${data.data?.totalSaved || 0} prices`);
+            
+            // Reload stats
+            loadMarketStats();
+            loadDashboardStats();
+        } else {
+            alert('⚠️ Market price update completed with warnings.\nCheck console for details.');
+        }
         
     } catch (error) {
         console.error('Error updating prices:', error);
-        alert('Error updating market prices. Please try again.');
+        alert('❌ Error updating market prices. Please try again.');
     } finally {
         updatePricesBtn.disabled = false;
         updatePricesBtn.textContent = 'Update Prices';
@@ -398,15 +458,53 @@ function getDefaultIcon(type) {
 
 // Setup Event Listeners
 function setupEventListeners() {
+    // Navigation menu
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Remove active class from all links
+            navLinks.forEach(l => l.classList.remove('active'));
+            
+            // Add active class to clicked link
+            link.classList.add('active');
+            
+            // Get section to show
+            const section = link.getAttribute('data-section');
+            
+            // Hide all sections
+            document.querySelectorAll('.stats-section, .farmers-section, .market-section, .subsidy-section, .notification-section').forEach(s => {
+                s.style.display = 'none';
+            });
+            
+            // Show selected section
+            if (section === 'dashboard') {
+                document.querySelector('.stats-section').style.display = 'block';
+            } else if (section === 'farmers') {
+                document.querySelector('.farmers-section').style.display = 'block';
+            } else if (section === 'market') {
+                document.querySelector('.market-section').style.display = 'block';
+            } else if (section === 'subsidies') {
+                document.querySelector('.subsidy-section').style.display = 'block';
+            }
+            
+            console.log('📍 Navigated to:', section);
+        });
+    });
+    
     // User menu
-    userMenuBtn.addEventListener('click', () => {
-        userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+    userMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log('🔎 User menu clicked');
+        userDropdown.classList.toggle('active');
+        console.log('🔎 Dropdown active:', userDropdown.classList.contains('active'));
     });
     
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-            userDropdown.style.display = 'none';
+            userDropdown.classList.remove('active');
         }
     });
     
@@ -414,10 +512,16 @@ function setupEventListeners() {
     logoutBtn.addEventListener('click', (e) => {
         e.preventDefault();
         if (confirm('Are you sure you want to logout?')) {
+            // Clear all stored tokens and data
             localStorage.removeItem('adminToken');
+            localStorage.removeItem('token');
             localStorage.removeItem('adminData');
             sessionStorage.removeItem('adminToken');
             sessionStorage.removeItem('adminData');
+            
+            console.log('✅ Admin logged out');
+            
+            // Redirect to admin login
             window.location.href = 'admin-login.html';
         }
     });

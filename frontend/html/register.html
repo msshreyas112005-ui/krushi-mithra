@@ -65,13 +65,14 @@
                     <!-- Email -->
                     <div class="form-group">
                         <label for="email">
-                            <span class="label-text">📧 Email Address</span>
+                            <span class="label-text" data-i18n="register.email">📧 Email Address</span>
                             <span class="required">*</span>
                         </label>
                         <input 
                             type="email" 
                             id="email" 
                             name="email" 
+                            data-i18n-placeholder="register.emailPlaceholder"
                             placeholder="example@email.com"
                             required
                         >
@@ -81,13 +82,14 @@
                     <!-- Mobile Number -->
                     <div class="form-group">
                         <label for="mobile">
-                            <span class="label-text">📱 Mobile Number</span>
+                            <span class="label-text" data-i18n="register.mobile">📱 Mobile Number</span>
                             <span class="required">*</span>
                         </label>
                         <input 
                             type="tel" 
                             id="mobile" 
                             name="mobile" 
+                            data-i18n-placeholder="register.mobilePlaceholder"
                             placeholder="10-digit mobile number"
                             maxlength="10"
                             required
@@ -98,7 +100,7 @@
                     <!-- Password -->
                     <div class="form-group">
                         <label for="password">
-                            <span class="label-text">🔒 Password</span>
+                            <span class="label-text" data-i18n="register.password">🔒 Password</span>
                             <span class="required">*</span>
                         </label>
                         <div class="password-input-wrapper">
@@ -106,6 +108,7 @@
                                 type="password" 
                                 id="password" 
                                 name="password" 
+                                data-i18n-placeholder="register.passwordPlaceholder"
                                 placeholder="Create a strong password"
                                 required
                             >
@@ -114,19 +117,20 @@
                             </button>
                         </div>
                         <span class="error-message" id="passwordError"></span>
-                        <span class="helper-text">Minimum 8 characters, include uppercase, lowercase, number</span>
+                        <span class="helper-text" data-i18n="register.passwordHelper">Minimum 8 characters, include uppercase, lowercase, number</span>
                     </div>
 
                     <!-- Confirm Password -->
                     <div class="form-group">
                         <label for="confirmPassword">
-                            <span class="label-text">🔑 Confirm Password</span>
+                            <span class="label-text" data-i18n="register.confirmPassword">🔑 Confirm Password</span>
                             <span class="required">*</span>
                         </label>
                         <input 
                             type="password" 
                             id="confirmPassword" 
                             name="confirmPassword" 
+                            data-i18n-placeholder="register.confirmPasswordPlaceholder"
                             placeholder="Re-enter your password"
                             required
                         >
@@ -136,13 +140,14 @@
                     <!-- Location -->
                     <div class="form-group">
                         <label for="location">
-                            <span class="label-text">📍 Location</span>
+                            <span class="label-text" data-i18n="register.location">📍 Location</span>
                             <span class="required">*</span>
                         </label>
                         <input 
                             type="text" 
                             id="location" 
                             name="location" 
+                            data-i18n-placeholder="register.locationPlaceholder"
                             placeholder="Village/City, District, State"
                             required
                         >
@@ -152,11 +157,11 @@
                     <!-- Crop Type -->
                     <div class="form-group">
                         <label for="cropType">
-                            <span class="label-text">🌾 Primary Crop Type</span>
+                            <span class="label-text" data-i18n="register.cropType">🌾 Primary Crop Type</span>
                             <span class="required">*</span>
                         </label>
                         <select id="cropType" name="cropType" required>
-                            <option value="">Select your primary crop</option>
+                            <option value="" data-i18n="register.cropTypePlaceholder">Select your primary crop</option>
                             <option value="rice">Rice (ಅಕ್ಕಿ / चावल)</option>
                             <option value="wheat">Wheat (ಗೋಧಿ / गेहूं)</option>
                             <option value="maize">Maize (ಮೆಕ್ಕೆ ಜೋಳ / मक्का)</option>
@@ -174,11 +179,11 @@
                     <!-- Language Preference -->
                     <div class="form-group">
                         <label for="language">
-                            <span class="label-text">🌐 Language Preference</span>
+                            <span class="label-text" data-i18n="register.languagePreference">🌐 Language Preference</span>
                             <span class="required">*</span>
                         </label>
                         <select id="language" name="language" required>
-                            <option value="">Select your preferred language</option>
+                            <option value="" data-i18n="register.languagePreferencePlaceholder">Select your preferred language</option>
                             <option value="english">English</option>
                             <option value="kannada">ಕನ್ನಡ (Kannada)</option>
                             <option value="hindi">हिन्दी (Hindi)</option>
@@ -190,14 +195,14 @@
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="terms" name="terms" required>
-                            <span>I agree to the <a href="#terms">Terms and Conditions</a></span>
+                            <span data-i18n="register.terms">I agree to the <a href="#terms">Terms and Conditions</a></span>
                         </label>
                         <span class="error-message" id="termsError"></span>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="form-actions">
-                        <button type="submit" class="btn-submit" id="submitBtn">
+                        <button type="submit" class="btn-submit" id="submitBtn" data-i18n="register.submitBtn">
                             ✅ Register Now 🚀
                         </button>
                     </div>
@@ -207,7 +212,7 @@
 
                     <!-- Login Link -->
                     <div class="form-footer">
-                        <p>Already have an account? <a href="farmer-login.html">🔑 Login here</a></p>
+                        <p><span data-i18n="register.alreadyAccount">Already have an account?</span> <a href="farmer-login.html" data-i18n="register.loginLink">🔑 Login here</a></p>
                     </div>
                 </form>
             </div>

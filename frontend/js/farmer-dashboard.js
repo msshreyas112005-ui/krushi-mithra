@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadFarmerData();
     initializeDate();
     loadWeatherData();
-    loadMarketPrices('vegetables');
+    loadMarketPrices('all');
     loadGovernmentSchemes();
     loadNotifications();
     setupEventListeners();
@@ -272,7 +272,7 @@ function displayAgriculturalAdvice(adviceList) {
 }
 
 // Load Market Prices
-async function loadMarketPrices(category = 'vegetables') {
+async function loadMarketPrices(category = 'all') {
     try {
         const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
         
@@ -333,23 +333,33 @@ function useDemoMarketData(category) {
 
 // Update Market Prices UI
 function updateMarketPricesUI(prices) {
-    const priceList = document.getElementById('priceList');
+    const tableBody = document.getElementById('priceTableBody');
     
-    if (!priceList) {
-        console.error('Price list element not found');
+    if (!tableBody) {
+        console.error('Price table body element not found');
         return;
     }
     
-    priceList.innerHTML = prices.map(item => `
-        <div class="price-item">
-            <div class="crop-name">
-                <span class="crop-icon">🌾</span>
-                ${item.commodity || item.name}
-            </div>
-            <div class="crop-price">₹${item.price}</div>
-            <div class="price-unit">per ${item.unit}</div>
-            <div class="price-change ${item.trend || 'stable'}">${item.change || '0%'}</div>
-        </div>
+    if (!prices || prices.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px; color: #999;">
+                    No market prices available for this category.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tableBody.innerHTML = prices.map(item => `
+        <tr>
+            <td><strong>${item.commodity || item.name}</strong></td>
+            <td>₹${item.minPrice || item.min_price || 'N/A'}</td>
+            <td>₹${item.maxPrice || item.max_price || 'N/A'}</td>
+            <td>₹${item.modalPrice || item.modal_price || item.price || 'N/A'}</td>
+            <td>${item.market || 'Karnataka'}</td>
+            <td>${item.arrivalDate ? new Date(item.arrivalDate).toLocaleDateString() : new Date().toLocaleDateString()}</td>
+        </tr>
     `).join('');
 }
 
@@ -648,7 +658,9 @@ function setupEventListeners() {
     // User menu toggle
     userMenuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        console.log('🔎 User menu clicked');
         userDropdown.classList.toggle('show');
+        console.log('🔎 Dropdown show:', userDropdown.classList.contains('show'));
     });
     
     // Close dropdown when clicking outside
