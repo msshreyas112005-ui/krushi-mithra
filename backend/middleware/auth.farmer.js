@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const jsonStorage = require('../utils/jsonStorage');
+const { pool } = require('../db');
 
 /**
- * Verify Farmer JWT Token
+ * Verify Farmer JWT Token - Uses PostgreSQL only
  * Middleware to authenticate farmer requests
  */
 const verifyFarmerToken = async (req, res, next) => {
@@ -20,42 +20,29 @@ const verifyFarmerToken = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Check if farmer exists in JSON storage
-    if (process.env.USE_JSON_STORAGE === 'true') {
-      const farmer = await jsonStorage.findFarmerById(decoded.id);
-      
-      if (!farmer) {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid token. Farmer not found.'
-        });
-      }
+    // PostgreSQL mode - verify farmer exists in database
+    const farmerQuery = await pool.query(
+      'SELECT id, name, email, phone, location, is_approved FROM farmers WHERE id = $1',
+      [decoded.id]
+    );
 
-      // Check if farmer is approved
-      if (farmer.status !== 'approved') {
-        return res.status(403).json({
-          success: false,
-          message: 'Your account is awaiting admin approval.',
-          status: farmer.status
-        });
-      }
-
-      // Attach farmer info to request
-      req.user = {
-        id: farmer._id,
-        email: farmer.email,
-        fullName: farmer.fullName,
-        role: 'FARMER'
-      };
-      req.farmer = farmer;
-    } else {
-      // MongoDB mode - attach decoded info
-      req.user = {
-        id: decoded.id,
-        email: decoded.email,
-        role: 'FARMER'
-      };
+    if (farmerQuery.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token. Farmer not found in database.'
+      });
     }
+
+    const farmer = farmerQuery.rows[0];
+
+    // Attach farmer info to request
+    req.user = {
+      id: farmer.id,
+      email: farmer.email,
+      fullName: farmer.name,
+      role: 'FARMER'
+    };
+    req.farmer = farmer;
 
     next();
   } catch (error) {
@@ -77,7 +64,7 @@ const verifyFarmerToken = async (req, res, next) => {
 
     return res.status(500).json({
       success: false,
-      message: 'Token verification failed.'
+      message: 'Token verification failed. Database connection required.'
     });
   }
 };

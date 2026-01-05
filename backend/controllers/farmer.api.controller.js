@@ -1,87 +1,84 @@
-const jsonStorage = require('../utils/jsonStorage');
+const { pool } = require('../db');
 const karnatakaMarketService = require('../services/karnataka-market-price.service');
 
 /**
- * Get Farmer Profile
+ * Get Farmer Profile - Uses PostgreSQL only
  */
 const getProfile = async (req, res) => {
   try {
-    const farmer = req.farmer || await jsonStorage.findFarmerById(req.user.id);
+    const farmerQuery = await pool.query(
+      'SELECT id, name, email, phone, location, created_at FROM farmers WHERE id = $1',
+      [req.user.id]
+    );
     
-    if (!farmer) {
+    if (farmerQuery.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Farmer profile not found'
       });
     }
 
-    // Remove sensitive data
-    const { password, ...farmerData } = farmer;
-
     res.json({
       success: true,
-      data: farmerData
+      data: farmerQuery.rows[0]
     });
   } catch (error) {
     console.error('[FARMER API] Get profile error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching profile'
+      message: 'Error fetching profile. Database connection required.'
     });
   }
 };
 
 /**
- * Update Farmer Profile
+ * Update Farmer Profile - Uses PostgreSQL only
  */
 const updateProfile = async (req, res) => {
   try {
-    const { fullName, mobile, location, cropType, language } = req.body;
+    const { fullName, mobile, location } = req.body;
     
-    const updatedFarmer = await jsonStorage.updateFarmer(req.user.id, {
-      fullName,
-      mobile,
-      location,
-      cropType,
-      language,
-      updatedAt: new Date()
-    });
+    const updateQuery = await pool.query(
+      `UPDATE farmers 
+       SET name = COALESCE($1, name),
+           phone = COALESCE($2, phone),
+           location = COALESCE($3, location)
+       WHERE id = $4
+       RETURNING id, name, email, phone, location`,
+      [fullName, mobile, location, req.user.id]
+    );
 
-    if (!updatedFarmer) {
+    if (updateQuery.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Farmer not found'
       });
     }
 
-    const { password, ...farmerData } = updatedFarmer;
-
     res.json({
       success: true,
       message: 'Profile updated successfully',
-      data: farmerData
+      data: updateQuery.rows[0]
     });
   } catch (error) {
     console.error('[FARMER API] Update profile error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error updating profile'
+      message: 'Error updating profile. Database connection required.'
     });
   }
 };
 
 /**
- * Update Language Preference
+ * Update Language Preference - Uses PostgreSQL only (stub for now, add language column if needed)
  */
 const updateLanguage = async (req, res) => {
   try {
     const { language } = req.body;
     
-    const updatedFarmer = await jsonStorage.updateFarmer(req.user.id, {
-      language,
-      updatedAt: new Date()
-    });
-
+    // Note: Language column doesn't exist in current schema
+    // This is a stub that returns success for compatibility
+    
     res.json({
       success: true,
       message: 'Language updated successfully',

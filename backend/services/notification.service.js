@@ -372,6 +372,161 @@ class NotificationService {
             return [];
         }
     }
+
+    /**
+     * Send registration confirmation email to farmer
+     * @param {Object} farmerData - Farmer registration data
+     * @returns {Promise<Object>} Result with success status
+     */
+    async sendRegistrationEmail(farmerData) {
+        if (!this.transporter) {
+            console.warn('⚠️ Email transporter not configured. Skipping email send.');
+            return {
+                success: false,
+                message: 'Email service not configured'
+            };
+        }
+
+        try {
+            const { email, name } = farmerData;
+
+            const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .email-body {
+            padding: 40px 30px;
+        }
+        .welcome-text {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #2ecc71;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .button {
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>🌾 KRUSHI MITHRA 🚜</h1>
+            <p>Your Partner in Modern Farming</p>
+        </div>
+        <div class="email-body">
+            <h2>Welcome, ${name}! 🎉</h2>
+            <p class="welcome-text">Thank you for registering with KRUSHI MITHRA - your trusted agricultural companion.</p>
+            
+            <div class="info-box">
+                <h3>✅ Registration Successful!</h3>
+                <p>Your account has been successfully created. You can now:</p>
+                <ul>
+                    <li>Access real-time market prices</li>
+                    <li>Check weather forecasts for your area</li>
+                    <li>Browse available subsidies and schemes</li>
+                    <li>Receive important agricultural updates</li>
+                </ul>
+            </div>
+
+            <p><strong>What's Next?</strong></p>
+            <p>You can now login to your farmer dashboard using your registered email address.</p>
+
+            <center>
+                <a href="http://localhost:3000/frontend/html/farmer-login.html" class="button">Login to Dashboard</a>
+            </center>
+
+            <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
+                <strong>Need Help?</strong><br>
+                If you have any questions, feel free to contact our support team.
+            </p>
+        </div>
+        <div class="footer">
+            <p>© 2026 KRUSHI MITHRA. All rights reserved.</p>
+            <p>Empowering Farmers with Technology 🌱</p>
+        </div>
+    </div>
+</body>
+</html>
+            `;
+
+            const mailOptions = {
+                from: `"KRUSHI MITHRA" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: '🌾 Welcome to KRUSHI MITHRA - Registration Successful!',
+                html: htmlContent,
+                text: `Welcome to KRUSHI MITHRA, ${name}! Your registration was successful. You can now login to access market prices, weather forecasts, subsidies, and more.`
+            };
+
+            const info = await this.transporter.sendMail(mailOptions);
+
+            console.log(`✅ Registration email sent to ${email}`);
+
+            return {
+                success: true,
+                message: 'Registration email sent successfully',
+                messageId: info.messageId
+            };
+
+        } catch (error) {
+            console.error('❌ Error sending registration email:', error.message);
+            return {
+                success: false,
+                message: `Email send failed: ${error.message}`,
+                error: error.message
+            };
+        }
+    }
 }
 
 // Export singleton instance

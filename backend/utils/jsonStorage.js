@@ -94,7 +94,7 @@ async function createFarmer(farmerData) {
     location: farmerData.location,
     cropType: farmerData.cropType,
     language: farmerData.language || 'english',
-    status: 'pending',
+    status: 'approved', // Auto-approved, no admin approval needed
     isActive: true,
     registeredAt: new Date().toISOString(),
     lastLogin: null,

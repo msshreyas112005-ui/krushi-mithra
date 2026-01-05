@@ -51,7 +51,7 @@ const verifyToken = async (req, res, next) => {
 };
 
 /**
- * Verify MAIN_ADMIN Only
+ * Verify MAIN_ADMIN Only - Uses PostgreSQL only
  * Middleware to ensure only the main admin can access protected routes
  * BLOCKS all other users including farmers
  */
@@ -67,53 +67,21 @@ const verifyMainAdmin = async (req, res, next) => {
         });
       }
 
-      // Check if using JSON storage mode
-      if (process.env.USE_JSON_STORAGE === 'true' || !process.env.MONGODB_URI) {
-        // In JSON storage mode, skip database check
-        req.admin = {
-          _id: req.user.id,
-          email: req.user.email,
-          role: 'MAIN_ADMIN',
-          isActive: true
-        };
-        return next();
-      }
-
-      // MongoDB mode - Double-check admin exists and is active
-      const admin = await Admin.findById(req.user.id).select('-password');
+      // PostgreSQL mode - set admin info from token
+      req.admin = {
+        _id: req.user.id,
+        email: req.user.email,
+        role: 'MAIN_ADMIN',
+        isActive: true
+      };
       
-      if (!admin) {
-        return res.status(404).json({
-          success: false,
-          message: 'Admin not found'
-        });
-      }
-
-      if (!admin.isActive) {
-        return res.status(403).json({
-          success: false,
-          message: 'Admin account is inactive'
-        });
-      }
-
-      // Verify role is still MAIN_ADMIN (extra security)
-      if (admin.role !== 'MAIN_ADMIN') {
-        return res.status(403).json({
-          success: false,
-          message: 'Access denied: Only main admin allowed'
-        });
-      }
-
-      // Attach admin to request for use in controllers
-      req.admin = admin;
-      
-      next();
+      return next();
     });
   } catch (error) {
+    console.error('[ADMIN AUTH] Main admin verification error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Authorization error',
-      error: error.message
+      message: 'Server error during authentication. Database connection required.'
     });
   }
 };

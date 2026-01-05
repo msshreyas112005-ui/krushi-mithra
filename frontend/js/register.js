@@ -16,8 +16,7 @@ const formFields = {
     confirmPassword: document.getElementById('confirmPassword'),
     location: document.getElementById('location'),
     cropType: document.getElementById('cropType'),
-    language: document.getElementById('language'),
-    terms: document.getElementById('terms')
+    language: document.getElementById('language')
 };
 
 // Error Message Elements
@@ -29,8 +28,7 @@ const errorElements = {
     confirmPassword: document.getElementById('confirmPasswordError'),
     location: document.getElementById('locationError'),
     cropType: document.getElementById('cropTypeError'),
-    language: document.getElementById('languageError'),
-    terms: document.getElementById('termsError')
+    language: document.getElementById('languageError')
 };
 
 // Validation Rules
@@ -74,10 +72,6 @@ const validationRules = {
     language: {
         required: true,
         message: 'Please select your preferred language'
-    },
-    terms: {
-        required: true,
-        message: 'You must agree to the terms and conditions'
     }
 };
 

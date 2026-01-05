@@ -1,15 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const Farmer = require('../models/farmer.model');
-const Subsidy = require('../models/subsidy.model');
-const Notification = require('../models/notification.model');
+const bcrypt = require('bcryptjs');
+const { pool } = require('../db');
 const { verifyApprovedFarmer } = require('../middleware/admin.auth.middleware');
-const jsonStorage = require('../utils/jsonStorage');
 
 /**
  * @route   POST /api/farmers/register
- * @desc    Farmer registration - Status will be 'pending' until admin approves
+ * @desc    Farmer registration - Uses PostgreSQL (Neon) database only
  * @access  Public
  */
 router.post('/register', async (req, res) => {
@@ -26,100 +24,64 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Check if using JSON storage mode
-    if (process.env.USE_JSON_STORAGE === 'true' || !process.env.MONGODB_URI) {
-      console.log('[FARMER REGISTER] Using JSON storage mode');
+    // Check if farmer already exists in PostgreSQL
+    const existingFarmerQuery = await pool.query(
+      'SELECT id FROM farmers WHERE email = $1 OR phone = $2',
+      [email.toLowerCase(), mobile]
+    );
 
-      // Check if farmer already exists
-      const existingFarmer = jsonStorage.findFarmerByEmailOrMobile(email, mobile);
-
-      if (existingFarmer) {
-        console.log('[FARMER REGISTER] Farmer already exists');
-        return res.status(409).json({
-          success: false,
-          message: 'Farmer with this email or mobile number already exists'
-        });
-      }
-
-      // Create new farmer
-      const farmer = await jsonStorage.createFarmer({
-        fullName,
-        email,
-        mobile,
-        password,
-        location,
-        cropType,
-        language: language || 'english'
-      });
-
-      console.log('[FARMER REGISTER] ✅ Farmer registered:', farmer.email, 'Status: PENDING');
-
-      return res.status(201).json({
-        success: true,
-        message: 'Registration successful. Waiting for admin approval.',
-        farmer: {
-          id: farmer._id,
-          fullName: farmer.fullName,
-          email: farmer.email,
-          mobile: farmer.mobile,
-          location: farmer.location,
-          cropType: farmer.cropType,
-          status: 'PENDING',
-          registeredAt: farmer.registeredAt
-        }
-      });
-    }
-
-    // MongoDB mode - original logic
-    console.log('[FARMER REGISTER] Using MongoDB mode');
-
-    // Check if farmer already exists
-    const existingFarmer = await Farmer.findOne({
-      $or: [{ email: email.toLowerCase() }, { mobile }]
-    });
-
-    if (existingFarmer) {
+    if (existingFarmerQuery.rows.length > 0) {
+      console.log('[FARMER REGISTER] Farmer already exists');
       return res.status(409).json({
         success: false,
         message: 'Farmer with this email or mobile number already exists'
       });
     }
 
-    // Create new farmer with pending status
-    const farmer = new Farmer({
-      fullName,
-      email: email.toLowerCase(),
-      mobile,
-      password,
-      location,
-      cropType,
-      language: language || 'english',
-      status: 'pending' // Requires admin approval
-    });
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    await farmer.save();
+    // Insert new farmer into PostgreSQL
+    const insertQuery = await pool.query(
+      `INSERT INTO farmers (name, email, phone, location, password, is_approved, created_at)
+       VALUES ($1, $2, $3, $4, $5, true, NOW())
+       RETURNING id, name, email, phone, location, created_at`,
+      [fullName, email.toLowerCase(), mobile, location, hashedPassword]
+    );
 
-    console.log('✅ Farmer registered:', farmer.email, 'Status: PENDING');
+    const farmer = insertQuery.rows[0];
+    console.log('[FARMER REGISTER] ✅ Farmer registered:', farmer.email);
 
-    res.status(201).json({
-      success: true,
-      message: 'Registration successful. Waiting for admin approval.',
-      farmer: {
-        id: farmer._id,
-        fullName: farmer.fullName,
+    // Send welcome email notification
+    try {
+      const notificationService = require('../services/notification.service');
+      await notificationService.sendRegistrationEmail({
         email: farmer.email,
-        mobile: farmer.mobile,
+        name: farmer.name
+      });
+      console.log('[FARMER REGISTER] 📧 Welcome email sent to:', farmer.email);
+    } catch (emailError) {
+      console.error('[FARMER REGISTER] ⚠️ Email send failed:', emailError.message);
+      // Continue even if email fails
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Registration successful! You can now login.',
+      farmer: {
+        id: farmer.id,
+        fullName: farmer.name,
+        email: farmer.email,
+        mobile: farmer.phone,
         location: farmer.location,
-        cropType: farmer.cropType,
-        status: 'PENDING',
-        registeredAt: farmer.registeredAt
+        registeredAt: farmer.created_at
       }
     });
 
   } catch (error) {
     console.error('[FARMER REGISTER] Error:', error);
     
-    if (error.code === 11000) {
+    if (error.code === '23505') { // PostgreSQL unique violation
       return res.status(409).json({
         success: false,
         message: 'Email or mobile number already registered'
@@ -128,7 +90,7 @@ router.post('/register', async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: 'Registration failed',
+      message: 'Registration failed. Database connection required.',
       error: error.message
     });
   }
@@ -136,7 +98,7 @@ router.post('/register', async (req, res) => {
 
 /**
  * @route   POST /api/farmers/login
- * @desc    Farmer login - Authentication happens first, then approval check
+ * @desc    Farmer login - Uses PostgreSQL (Neon) database only
  * @access  Public
  */
 router.post('/login', async (req, res) => {
@@ -154,202 +116,46 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Check if using JSON storage mode
-    if (process.env.USE_JSON_STORAGE === 'true' || !process.env.MONGODB_URI) {
-      console.log('[FARMER LOGIN] Using JSON storage mode');
+    // Find farmer in PostgreSQL
+    const farmerQuery = await pool.query(
+      'SELECT id, name, email, phone, location, password, is_approved FROM farmers WHERE email = $1',
+      [email.toLowerCase()]
+    );
 
-      // STEP 1: Find farmer by email
-      const farmer = jsonStorage.findFarmerByEmail(email);
-
-      if (!farmer) {
-        console.log('[FARMER LOGIN] ❌ Farmer not found:', email);
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid email or password'
-        });
-      }
-
-      console.log('[FARMER LOGIN] ✅ Farmer found:', farmer.email, 'Status:', farmer.status);
-
-      // STEP 2: Verify password (BEFORE checking approval status)
-      const isPasswordValid = await jsonStorage.comparePassword(password, farmer.password);
-
-      if (!isPasswordValid) {
-        console.log('[FARMER LOGIN] ❌ Invalid password for:', email);
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid email or password'
-        });
-      }
-
-      console.log('[FARMER LOGIN] ✅ Password verified for:', email);
-
-      // STEP 3: Check approval status (AFTER successful authentication)
-      if (farmer.status === 'pending') {
-        console.log('[FARMER LOGIN] ⏳ Account pending approval:', email);
-        return res.status(403).json({
-          success: false,
-          message: 'Your account is awaiting admin approval',
-          status: 'PENDING'
-        });
-      }
-
-      if (farmer.status === 'rejected') {
-        console.log('[FARMER LOGIN] ❌ Account rejected:', email);
-        return res.status(403).json({
-          success: false,
-          message: 'Your registration was rejected by admin',
-          status: 'REJECTED',
-          reason: farmer.rejectionReason || 'No reason provided'
-        });
-      }
-
-      if (farmer.status === 'suspended') {
-        console.log('[FARMER LOGIN] 🚫 Account suspended:', email);
-        return res.status(403).json({
-          success: false,
-          message: 'Your account has been suspended. Please contact admin.',
-          status: 'SUSPENDED'
-        });
-      }
-
-      // STEP 4: Check if status is APPROVED
-      if (farmer.status !== 'approved') {
-        console.log('[FARMER LOGIN] ⚠️ Invalid status:', farmer.status);
-        return res.status(403).json({
-          success: false,
-          message: 'Access denied. Invalid account status.',
-          status: farmer.status
-        });
-      }
-
-      // Check if farmer is active
-      if (!farmer.isActive) {
-        console.log('[FARMER LOGIN] ❌ Account inactive:', email);
-        return res.status(403).json({
-          success: false,
-          message: 'Your account is inactive'
-        });
-      }
-
-      // STEP 5: Successful login - Update last login
-      jsonStorage.updateFarmer(farmer._id, { lastLogin: new Date().toISOString() });
-
-      // Generate JWT token
-      const token = jwt.sign(
-        {
-          id: farmer._id,
-          email: farmer.email,
-          role: 'farmer'
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-
-      console.log('[FARMER LOGIN] ✅ Login successful for:', email);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        token,
-        farmer: {
-          id: farmer._id,
-          fullName: farmer.fullName,
-          email: farmer.email,
-          mobile: farmer.mobile,
-          location: farmer.location,
-          cropType: farmer.cropType,
-          language: farmer.language,
-          status: farmer.status
-        }
-      });
-    }
-
-    // MongoDB mode - original logic
-    console.log('[FARMER LOGIN] Using MongoDB mode');
-
-    // STEP 1: Find farmer by email (include password for comparison)
-    const farmer = await Farmer.findOne({ email: email.toLowerCase() }).select('+password');
-
-    if (!farmer) {
-      console.log('❌ Farmer not found:', email);
+    if (farmerQuery.rows.length === 0) {
+      console.log('[FARMER LOGIN] ❌ Farmer not found:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
 
-    console.log('✅ Farmer found:', farmer.email, 'Status:', farmer.status);
+    const farmer = farmerQuery.rows[0];
+    console.log('[FARMER LOGIN] ✅ Farmer found:', farmer.email);
 
-    // STEP 2: Verify password (BEFORE checking approval status)
-    const isPasswordValid = await farmer.comparePassword(password);
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, farmer.password);
 
     if (!isPasswordValid) {
-      console.log('❌ Invalid password for:', email);
+      console.log('[FARMER LOGIN] ❌ Invalid password for:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
 
-    console.log('✅ Password verified for:', email);
+    console.log('[FARMER LOGIN] ✅ Password verified for:', email);
 
-    // STEP 3: Check approval status (AFTER successful authentication)
-    if (farmer.status === 'pending') {
-      console.log('⏳ Account pending approval:', email);
-      return res.status(403).json({
-        success: false,
-        message: 'Your account is awaiting admin approval',
-        status: 'PENDING'
-      });
-    }
-
-    if (farmer.status === 'rejected') {
-      console.log('❌ Account rejected:', email);
-      return res.status(403).json({
-        success: false,
-        message: 'Your registration was rejected by admin',
-        status: 'REJECTED',
-        reason: farmer.rejectionReason || 'No reason provided'
-      });
-    }
-
-    if (farmer.status === 'suspended') {
-      console.log('🚫 Account suspended:', email);
-      return res.status(403).json({
-        success: false,
-        message: 'Your account has been suspended. Please contact admin.',
-        status: 'SUSPENDED'
-      });
-    }
-
-    // STEP 4: Check if status is APPROVED
-    if (farmer.status !== 'approved') {
-      console.log('⚠️ Invalid status:', farmer.status);
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Invalid account status.',
-        status: farmer.status
-      });
-    }
-
-    // Check if farmer is active
-    if (!farmer.isActive) {
-      console.log('❌ Account inactive:', email);
-      return res.status(403).json({
-        success: false,
-        message: 'Your account is inactive'
-      });
-    }
-
-    // STEP 5: Successful login - Update last login
-    farmer.lastLogin = new Date();
-    await farmer.save();
+    // Update last login
+    await pool.query(
+      'UPDATE farmers SET last_login = NOW() WHERE id = $1',
+      [farmer.id]
+    );
 
     // Generate JWT token
     const token = jwt.sign(
       {
-        id: farmer._id,
+        id: farmer.id,
         email: farmer.email,
         role: 'farmer'
       },
@@ -357,21 +163,18 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    console.log('✅ Login successful for:', email);
+    console.log('[FARMER LOGIN] ✅ Login successful for:', email);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Login successful',
       token,
       farmer: {
-        id: farmer._id,
-        fullName: farmer.fullName,
+        id: farmer.id,
+        fullName: farmer.name,
         email: farmer.email,
-        mobile: farmer.mobile,
-        location: farmer.location,
-        cropType: farmer.cropType,
-        language: farmer.language,
-        status: farmer.status
+        mobile: farmer.phone,
+        location: farmer.location
       }
     });
 
@@ -379,7 +182,7 @@ router.post('/login', async (req, res) => {
     console.error('[FARMER LOGIN] Error:', error);
     res.status(500).json({
       success: false,
-      message: 'Login failed',
+      message: 'Login failed. Database connection required.',
       error: error.message
     });
   }
@@ -387,20 +190,32 @@ router.post('/login', async (req, res) => {
 
 /**
  * @route   GET /api/farmers/profile
- * @desc    Get farmer profile
- * @access  Private (Approved farmers only)
+ * @desc    Get farmer profile - Uses PostgreSQL only
+ * @access  Private
  */
 router.get('/profile', verifyApprovedFarmer, async (req, res) => {
   try {
+    const farmerQuery = await pool.query(
+      'SELECT id, name, email, phone, location, created_at FROM farmers WHERE id = $1',
+      [req.user.id]
+    );
+
+    if (farmerQuery.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Farmer not found'
+      });
+    }
+
     res.json({
       success: true,
-      farmer: req.farmer
+      farmer: farmerQuery.rows[0]
     });
   } catch (error) {
     console.error('Error fetching profile:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch profile',
+      message: 'Failed to fetch profile. Database connection required.',
       error: error.message
     });
   }
@@ -408,44 +223,34 @@ router.get('/profile', verifyApprovedFarmer, async (req, res) => {
 
 /**
  * @route   PUT /api/farmers/profile
- * @desc    Update farmer profile
- * @access  Private (Approved farmers only)
+ * @desc    Update farmer profile - Uses PostgreSQL only
+ * @access  Private
  */
 router.put('/profile', verifyApprovedFarmer, async (req, res) => {
   try {
-    const { fullName, mobile, location, cropType, language } = req.body;
+    const { fullName, mobile, location } = req.body;
 
-    // Prevent status change by farmer
-    const updateFields = {
-      fullName,
-      mobile,
-      location,
-      cropType,
-      language
-    };
-
-    // Remove undefined fields
-    Object.keys(updateFields).forEach(key => 
-      updateFields[key] === undefined && delete updateFields[key]
+    const updateQuery = await pool.query(
+      `UPDATE farmers 
+       SET name = COALESCE($1, name), 
+           phone = COALESCE($2, phone), 
+           location = COALESCE($3, location)
+       WHERE id = $4
+       RETURNING id, name, email, phone, location`,
+      [fullName, mobile, location, req.user.id]
     );
-
-    const farmer = await Farmer.findByIdAndUpdate(
-      req.farmer._id,
-      updateFields,
-      { new: true, runValidators: true }
-    ).select('-password');
 
     res.json({
       success: true,
       message: 'Profile updated successfully',
-      farmer
+      farmer: updateQuery.rows[0]
     });
 
   } catch (error) {
     console.error('Error updating profile:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update profile',
+      message: 'Failed to update profile. Database connection required.',
       error: error.message
     });
   }
@@ -453,37 +258,44 @@ router.put('/profile', verifyApprovedFarmer, async (req, res) => {
 
 /**
  * @route   GET /api/farmers/subsidies
- * @desc    Get all active subsidies
- * @access  Private (Approved farmers only)
+ * @desc    Get all active subsidies - Uses PostgreSQL only
+ * @access  Private
  */
 router.get('/subsidies', verifyApprovedFarmer, async (req, res) => {
   try {
     const { category, state } = req.query;
 
-    const query = { isActive: true };
+    let query = 'SELECT * FROM subsidies WHERE is_active = true';
+    const params = [];
+    let paramCount = 1;
 
     if (category) {
-      query.category = category;
+      query += ` AND category = $${paramCount}`;
+      params.push(category);
+      paramCount++;
     }
 
     if (state) {
-      query.state = state;
+      query += ` AND state = $${paramCount}`;
+      params.push(state);
+      paramCount++;
     }
 
-    const subsidies = await Subsidy.find(query)
-      .sort({ applicationDeadline: 1 });
+    query += ' ORDER BY created_at DESC';
+
+    const subsidiesQuery = await pool.query(query, params);
 
     res.json({
       success: true,
-      count: subsidies.length,
-      subsidies
+      count: subsidiesQuery.rows.length,
+      subsidies: subsidiesQuery.rows
     });
 
   } catch (error) {
     console.error('Error fetching subsidies:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch subsidies',
+      message: 'Failed to fetch subsidies. Database connection required.',
       error: error.message
     });
   }
@@ -491,61 +303,29 @@ router.get('/subsidies', verifyApprovedFarmer, async (req, res) => {
 
 /**
  * @route   GET /api/farmers/notifications
- * @desc    Get farmer notifications
- * @access  Private (Approved farmers only)
+ * @desc    Get farmer notifications - Uses PostgreSQL only
+ * @access  Private
  */
 router.get('/notifications', verifyApprovedFarmer, async (req, res) => {
   try {
-    const { unreadOnly } = req.query;
-    
-    // Get farmer location and crop for filtering
-    const farmerLocation = req.farmer.location;
-    const farmerCrop = req.farmer.cropType;
-
-    // Try file-based storage first
-    const notificationService = require('../services/notification.service');
-    const storedNotifications = await notificationService.getNotificationsForAudience(
-      'all',
-      farmerLocation,
-      farmerCrop
+    const notificationsQuery = await pool.query(
+      `SELECT * FROM notifications 
+       WHERE target_audience IN ('all', 'farmers')
+       ORDER BY created_at DESC
+       LIMIT 50`
     );
-
-    if (storedNotifications && storedNotifications.length > 0) {
-      // Filter by read status if requested
-      let filteredNotifications = storedNotifications;
-      if (unreadOnly === 'true') {
-        filteredNotifications = storedNotifications.filter(n => !n.read);
-      }
-
-      return res.json({
-        success: true,
-        count: filteredNotifications.length,
-        notifications: filteredNotifications.slice(0, 50) // Limit to 50
-      });
-    }
-
-    // Fallback to MongoDB
-    const query = { farmer: req.farmer._id };
-
-    if (unreadOnly === 'true') {
-      query.read = false;
-    }
-
-    const notifications = await Notification.find(query)
-      .sort({ createdAt: -1 })
-      .limit(50);
 
     res.json({
       success: true,
-      count: notifications.length,
-      notifications
+      count: notificationsQuery.rows.length,
+      notifications: notificationsQuery.rows
     });
 
   } catch (error) {
     console.error('Error fetching notifications:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch notifications',
+      message: 'Failed to fetch notifications. Database connection required.',
       error: error.message
     });
   }
@@ -553,28 +333,16 @@ router.get('/notifications', verifyApprovedFarmer, async (req, res) => {
 
 /**
  * @route   PUT /api/farmers/notifications/:id/read
- * @desc    Mark notification as read
- * @access  Private (Approved farmers only)
+ * @desc    Mark notification as read (stub - notifications table doesn't track individual reads)
+ * @access  Private
  */
 router.put('/notifications/:id/read', verifyApprovedFarmer, async (req, res) => {
   try {
-    const notification = await Notification.findOneAndUpdate(
-      { _id: req.params.id, farmer: req.farmer._id },
-      { read: true, readAt: new Date() },
-      { new: true }
-    );
-
-    if (!notification) {
-      return res.status(404).json({
-        success: false,
-        message: 'Notification not found'
-      });
-    }
-
+    // This is a stub endpoint since notifications table doesn't track individual farmer reads
+    // In future, you can add a separate table for farmer_notification_reads
     res.json({
       success: true,
-      message: 'Notification marked as read',
-      notification
+      message: 'Notification marked as read'
     });
 
   } catch (error) {

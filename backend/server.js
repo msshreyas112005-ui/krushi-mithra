@@ -67,31 +67,34 @@ const path = require('path');
 app.use('/frontend', express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../frontend'))); // Also serve from root for backward compatibility
 
-// Database Connection (PostgreSQL with Neon)
+// Database Connection (PostgreSQL with Neon) - REQUIRED
 const { pool, initializeTables } = require('./db');
-let isDbConnected = false;
 
-// Initialize PostgreSQL connection and tables
+// Initialize PostgreSQL connection and tables - EXIT IF FAILS
 (async () => {
   try {
     // Test connection
     const client = await pool.connect();
     client.release();
     console.log('✅ PostgreSQL database connected successfully (Neon)');
-    isDbConnected = true;
     
     // Initialize tables
     await initializeTables();
-    console.log('✅ Database tables ready\n');
+    console.log('✅ All database tables initialized successfully!\n');
+    
+    console.log('💡 Running with PostgreSQL Database (Neon Cloud)');
+    console.log('   All data is persisted in the database');
+    console.log('   Real-time data storage and retrieval active\n');
+    
   } catch (error) {
-    console.error('❌ PostgreSQL connection failed:', error.message);
-    console.warn('⚠️  Running without database - Some features may not work');
-    isDbConnected = false;
+    console.error('\n❌ CRITICAL ERROR: PostgreSQL connection failed!');
+    console.error('   Error:', error.message);
+    console.error('   Database connection is REQUIRED for this application.');
+    console.error('   Please check your DATABASE_URL in .env file.\n');
+    console.error('   Exiting server...\n');
+    process.exit(1); // Exit with error code
   }
 })();
-
-// Export DB status for controllers
-app.locals.isDbConnected = () => isDbConnected;
 
 // Routes
 app.get('/', (req, res) => {
@@ -118,7 +121,7 @@ app.use(errorHandler);
 // Initialize scheduled jobs
 const { initializeScheduledJobs, triggerManualUpdate } = require('./config/scheduler');
 
-// Start server immediately - don't wait for DB
+// Start server immediately
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log(`\n${'='.repeat(60)}`);
@@ -138,18 +141,5 @@ try {
 } catch (error) {
   console.warn('⚠️  Scheduler initialization skipped:', error.message);
 }
-
-// Wait for DB connection then show status
-setTimeout(() => {
-  if (isDbConnected) {
-    console.log('💡 Running with PostgreSQL Database (Neon Cloud)');
-    console.log('   All data is persisted in the database');
-    console.log('   Real-time data storage and retrieval active\n');
-  } else {
-    console.log('💡 Running in DEMO MODE - Database not connected');
-    console.log('   Some features may not work properly');
-    console.log('   Check your DATABASE_URL in .env file\n');
-  }
-}, 2000); // Wait 2 seconds for DB connection
 
 module.exports = server;

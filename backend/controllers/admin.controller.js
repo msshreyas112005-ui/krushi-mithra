@@ -1,6 +1,12 @@
+/**
+ * DEPRECATED: This controller is no longer used.
+ * All admin functionality has been moved to routes/admin.routes.js
+ * This file is kept for reference only.
+ */
+
 const Farmer = require('../models/farmer.model');
 const Admin = require('../models/admin.model');
-const jsonStorage = require('../utils/jsonStorage');
+const { pool } = require('../db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 

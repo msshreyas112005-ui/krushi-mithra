@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const Admin = require('../models/admin.model');
-const Farmer = require('../models/farmer.model');
-const Subsidy = require('../models/subsidy.model');
-const Notification = require('../models/notification.model');
 const { verifyMainAdmin } = require('../middleware/admin.auth.middleware');
-const jsonStorage = require('../utils/jsonStorage');
+const { pool } = require('../db');
 
 // Import PostgreSQL controller for dynamic stats
 const adminPgController = require('../controllers/admin.postgres.controller');
@@ -16,7 +12,7 @@ const karnatakaMarketService = require('../services/karnataka-market-price.servi
 
 /**
  * @route   POST /api/admin/login
- * @desc    Main Admin Login - ONLY for MAIN_ADMIN
+ * @desc    Main Admin Login - Uses environment variables (PostgreSQL mode only)
  * @access  Public
  */
 router.post('/login', async (req, res) => {
@@ -33,122 +29,59 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // If using JSON storage mode (no MongoDB), validate against env variables
-    if (process.env.USE_JSON_STORAGE === 'true' || !process.env.MONGODB_URI) {
-      console.log('[ADMIN LOGIN] Using JSON storage mode authentication');
-      
-      const adminEmail = process.env.ADMIN_EMAIL;
-      const adminPassword = process.env.ADMIN_PASSWORD;
-
-      if (!adminEmail || !adminPassword) {
-        console.error('[ADMIN LOGIN] Admin credentials not set in environment');
-        return res.status(500).json({
-          success: false,
-          message: 'Server configuration error'
-        });
-      }
-
-      // Check credentials
-      if (email.toLowerCase() !== adminEmail.toLowerCase() || password !== adminPassword) {
-        console.log('[ADMIN LOGIN] Invalid credentials');
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid credentials'
-        });
-      }
-
-      // Generate JWT token
-      const token = jwt.sign(
-        {
-          id: 'main_admin_json',
-          email: adminEmail,
-          role: 'MAIN_ADMIN'
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '24h' }
-      );
-
-      console.log('[ADMIN LOGIN] Login successful');
-
-      return res.json({
-        success: true,
-        message: 'Login successful',
-        token,
-        admin: {
-          email: adminEmail,
-          role: 'MAIN_ADMIN',
-          isActive: true,
-          lastLogin: new Date().toISOString()
-        }
-      });
-    }
-
-    // MongoDB mode - original logic
-    console.log('[ADMIN LOGIN] Using MongoDB authentication');
+    // PostgreSQL mode - validate against environment variables
+    console.log('[ADMIN LOGIN] Using PostgreSQL authentication');
     
-    // Find admin by email (include password for comparison)
-    const admin = await Admin.findOne({ email: email.toLowerCase() }).select('+password');
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
 
-    if (!admin) {
+    if (!adminEmail || !adminPassword) {
+      console.error('[ADMIN LOGIN] Admin credentials not set in environment');
+      return res.status(500).json({
+        success: false,
+        message: 'Server configuration error. Database connection required.'
+      });
+    }
+
+    // Check credentials
+    if (email.toLowerCase() !== adminEmail.toLowerCase() || password !== adminPassword) {
+      console.log('[ADMIN LOGIN] Invalid credentials');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
-
-    // Verify role is MAIN_ADMIN
-    if (admin.role !== 'MAIN_ADMIN') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied: Only main admin allowed'
-      });
-    }
-
-    // Check if admin is active
-    if (!admin.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: 'Admin account is inactive'
-      });
-    }
-
-    // Compare password
-    const isPasswordValid = await admin.comparePassword(password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
-    }
-
-    // Update last login
-    admin.lastLogin = new Date();
-    await admin.save();
 
     // Generate JWT token
     const token = jwt.sign(
       {
-        id: admin._id,
-        email: admin.email,
-        role: admin.role
+        id: 'main_admin_postgresql',
+        email: adminEmail,
+        role: 'MAIN_ADMIN'
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    res.json({
+    console.log('[ADMIN LOGIN] Login successful');
+
+    return res.json({
       success: true,
       message: 'Login successful',
       token,
-      admin: admin.toSafeObject()
+      admin: {
+        email: adminEmail,
+        role: 'MAIN_ADMIN',
+        isActive: true,
+        lastLogin: new Date().toISOString()
+      }
     });
 
   } catch (error) {
     console.error('[ADMIN LOGIN] Error:', error);
     res.status(500).json({
       success: false,
-      message: 'Login failed',
+      message: 'Login failed. Database connection required.',
       error: error.message
     });
   }
@@ -161,90 +94,65 @@ router.post('/login', async (req, res) => {
  */
 router.get('/farmers', verifyMainAdmin, async (req, res) => {
   try {
-    const { status, search, page = 1, limit = 20 } = req.query;
+    const { search, page = 1, limit = 100 } = req.query;
 
-    console.log('[ADMIN FARMERS] Fetching farmers, status:', status);
+    console.log('[ADMIN FARMERS] Fetching all farmers from Neon PostgreSQL');
 
-    // Check if using JSON storage mode
-    if (process.env.USE_JSON_STORAGE === 'true' || !process.env.MONGODB_URI) {
-      console.log('[ADMIN FARMERS] Using JSON storage mode');
+    // Query PostgreSQL directly - match actual schema
+    let query = 'SELECT id, name, email, phone, location, is_approved, created_at, last_login FROM farmers';
+    let params = [];
+    let whereClauses = [];
 
-      let farmers = jsonStorage.getAllFarmers();
+    // Filter by is_approved (always show approved farmers by default)
+    whereClauses.push('is_approved = true');
 
-      // Filter by status
-      if (status) {
-        farmers = farmers.filter(f => f.status === status);
-      }
-
-      // Filter by search
-      if (search) {
-        const searchLower = search.toLowerCase();
-        farmers = farmers.filter(f =>
-          f.fullName.toLowerCase().includes(searchLower) ||
-          f.email.toLowerCase().includes(searchLower) ||
-          f.mobile.includes(searchLower) ||
-          f.location.toLowerCase().includes(searchLower)
-        );
-      }
-
-      // Sort by registeredAt (newest first)
-      farmers.sort((a, b) => new Date(b.registeredAt) - new Date(b.registeredAt));
-
-      // Remove password field
-      farmers = farmers.map(({ password, ...farmer }) => farmer);
-
-      // Pagination
-      const total = farmers.length;
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + parseInt(limit);
-      const paginatedFarmers = farmers.slice(startIndex, endIndex);
-
-      console.log('[ADMIN FARMERS] Found', total, 'farmers');
-
-      return res.json({
-        success: true,
-        farmers: paginatedFarmers,
-        pagination: {
-          total,
-          page: parseInt(page),
-          pages: Math.ceil(total / limit),
-          limit: parseInt(limit)
-        }
-      });
-    }
-
-    // MongoDB mode - original logic
-    console.log('[ADMIN FARMERS] Using MongoDB mode');
-
-    // Build query
-    const query = {};
-    
-    if (status) {
-      query.status = status;
-    }
-
+    // Filter by search
     if (search) {
-      query.$or = [
-        { fullName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { mobile: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } }
-      ];
+      const searchParam = `%${search.toLowerCase()}%`;
+      whereClauses.push(`(LOWER(name) LIKE $${params.length + 1} OR LOWER(email) LIKE $${params.length + 2} OR phone LIKE $${params.length + 3} OR LOWER(location) LIKE $${params.length + 4})`);
+      params.push(searchParam, searchParam, search, searchParam);
     }
 
-    // Get farmers with pagination
-    const farmers = await Farmer.find(query)
-      .select('-password')
-      .populate('approvedBy', 'email')
-      .sort({ registeredAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+    if (whereClauses.length > 0) {
+      query += ' WHERE ' + whereClauses.join(' AND ');
+    }
 
-    const total = await Farmer.countDocuments(query);
+    // Sort by created_at (newest first)
+    query += ' ORDER BY created_at DESC';
 
-    res.json({
+    // Pagination
+    const offset = (page - 1) * limit;
+    query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(parseInt(limit), offset);
+
+    const result = await pool.query(query, params);
+    
+    // Map database fields to frontend-expected format
+    const farmers = result.rows.map(farmer => ({
+      id: farmer.id,
+      fullName: farmer.name,
+      name: farmer.name,
+      email: farmer.email,
+      mobile: farmer.phone,
+      phone: farmer.phone,
+      location: farmer.location,
+      isActive: farmer.is_approved,
+      status: farmer.is_approved ? 'approved' : 'pending',
+      registeredAt: farmer.created_at,
+      createdAt: farmer.created_at,
+      lastLogin: farmer.last_login
+    }));
+
+    // Get total count
+    let countQuery = 'SELECT COUNT(*) as count FROM farmers WHERE is_approved = true';
+    const countResult = await pool.query(countQuery);
+    const total = parseInt(countResult.rows[0].count);
+
+    console.log('[ADMIN FARMERS] ✅ Found', total, 'approved farmers in Neon DB');
+
+    return res.json({
       success: true,
-      farmers,
+      farmers: farmers,
       pagination: {
         total,
         page: parseInt(page),
@@ -254,10 +162,10 @@ router.get('/farmers', verifyMainAdmin, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('[ADMIN FARMERS] Error fetching farmers:', error);
+    console.error('[ADMIN FARMERS] ❌ Error fetching farmers from Neon DB:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch farmers',
+      message: 'Failed to fetch farmers. Database connection required.',
       error: error.message
     });
   }
@@ -265,104 +173,39 @@ router.get('/farmers', verifyMainAdmin, async (req, res) => {
 
 /**
  * @route   PUT /api/admin/farmers/:id/approve
- * @desc    Approve farmer account
+ * @desc    Approve farmer account - Uses PostgreSQL only
  * @access  Private (MAIN_ADMIN only)
  */
 router.put('/farmers/:id/approve', verifyMainAdmin, async (req, res) => {
   try {
     console.log('[ADMIN APPROVE] Approving farmer:', req.params.id);
 
-    // Check if using JSON storage mode
-    if (process.env.USE_JSON_STORAGE === 'true' || !process.env.MONGODB_URI) {
-      console.log('[ADMIN APPROVE] Using JSON storage mode');
+    // Update farmer status in PostgreSQL
+    const updateQuery = await pool.query(
+      'UPDATE farmers SET is_approved = true WHERE id = $1 RETURNING id, name, email, phone, location',
+      [req.params.id]
+    );
 
-      const farmer = jsonStorage.findFarmerById(req.params.id);
-
-      if (!farmer) {
-        return res.status(404).json({
-          success: false,
-          message: 'Farmer not found'
-        });
-      }
-
-      if (farmer.status === 'approved') {
-        return res.status(400).json({
-          success: false,
-          message: 'Farmer is already approved'
-        });
-      }
-
-      // Update farmer status
-      const updatedFarmer = jsonStorage.updateFarmer(req.params.id, {
-        status: 'approved',
-        approvedBy: req.admin.id || 'main_admin_json',
-        approvedAt: new Date().toISOString(),
-        rejectionReason: undefined
-      });
-
-      console.log('[ADMIN APPROVE] ✅ Farmer approved:', updatedFarmer.email);
-
-      // Remove password from response
-      const { password, ...farmerData } = updatedFarmer;
-
-      return res.json({
-        success: true,
-        message: 'Farmer approved successfully',
-        farmer: farmerData
-      });
-    }
-
-    // MongoDB mode - original logic
-    console.log('[ADMIN APPROVE] Using MongoDB mode');
-
-    const farmer = await Farmer.findById(req.params.id);
-
-    if (!farmer) {
+    if (updateQuery.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Farmer not found'
       });
     }
 
-    if (farmer.status === 'approved') {
-      return res.status(400).json({
-        success: false,
-        message: 'Farmer is already approved'
-      });
-    }
+    console.log('[ADMIN APPROVE] ✅ Farmer approved:', updateQuery.rows[0].email);
 
-    // Update farmer status
-    farmer.status = 'approved';
-    farmer.approvedBy = req.admin._id;
-    farmer.approvedAt = new Date();
-    farmer.rejectionReason = undefined; // Clear rejection reason if any
-
-    await farmer.save();
-
-    // Create notification for farmer
-    try {
-      await Notification.create({
-        farmer: farmer._id,
-        title: 'Account Approved',
-        message: 'Congratulations! Your KRUSHI MITHRA account has been approved. You can now access all features.',
-        type: 'account',
-        priority: 'high'
-      });
-    } catch (notifError) {
-      console.error('Error creating notification:', notifError);
-    }
-
-    res.json({
+    return res.json({
       success: true,
       message: 'Farmer approved successfully',
-      farmer: farmer.toObject({ getters: true, virtuals: false })
+      farmer: updateQuery.rows[0]
     });
 
   } catch (error) {
     console.error('[ADMIN APPROVE] Error approving farmer:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to approve farmer',
+      message: 'Failed to approve farmer. Database connection required.',
       error: error.message
     });
   }
@@ -370,7 +213,7 @@ router.put('/farmers/:id/approve', verifyMainAdmin, async (req, res) => {
 
 /**
  * @route   PUT /api/admin/farmers/:id/reject
- * @desc    Reject farmer account
+ * @desc    Reject farmer account - Uses PostgreSQL only
  * @access  Private (MAIN_ADMIN only)
  */
 router.put('/farmers/:id/reject', verifyMainAdmin, async (req, res) => {
@@ -384,45 +227,30 @@ router.put('/farmers/:id/reject', verifyMainAdmin, async (req, res) => {
       });
     }
 
-    const farmer = await Farmer.findById(req.params.id);
+    // Update farmer in PostgreSQL
+    const updateQuery = await pool.query(
+      'UPDATE farmers SET is_approved = false WHERE id = $1 RETURNING id, name, email, phone, location',
+      [req.params.id]
+    );
 
-    if (!farmer) {
+    if (updateQuery.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Farmer not found'
       });
     }
 
-    // Update farmer status
-    farmer.status = 'rejected';
-    farmer.rejectionReason = reason;
-
-    await farmer.save();
-
-    // Create notification for farmer
-    try {
-      await Notification.create({
-        farmer: farmer._id,
-        title: 'Account Rejected',
-        message: `Your KRUSHI MITHRA account registration has been rejected. Reason: ${reason}`,
-        type: 'account',
-        priority: 'high'
-      });
-    } catch (notifError) {
-      console.error('Error creating notification:', notifError);
-    }
-
     res.json({
       success: true,
       message: 'Farmer rejected successfully',
-      farmer: farmer.toObject({ getters: true, virtuals: false })
+      farmer: updateQuery.rows[0]
     });
 
   } catch (error) {
     console.error('Error rejecting farmer:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to reject farmer',
+      message: 'Failed to reject farmer. Database connection required.',
       error: error.message
     });
   }
@@ -430,40 +258,77 @@ router.put('/farmers/:id/reject', verifyMainAdmin, async (req, res) => {
 
 /**
  * @route   PUT /api/admin/farmers/:id/suspend
- * @desc    Suspend farmer account
+ * @desc    Suspend farmer account - Uses PostgreSQL only
  * @access  Private (MAIN_ADMIN only)
  */
 router.put('/farmers/:id/suspend', verifyMainAdmin, async (req, res) => {
   try {
     const { reason } = req.body;
 
-    const farmer = await Farmer.findById(req.params.id);
+    // Update farmer in PostgreSQL
+    const updateQuery = await pool.query(
+      'UPDATE farmers SET is_approved = false WHERE id = $1 RETURNING id, name, email, phone, location',
+      [req.params.id]
+    );
 
-    if (!farmer) {
+    if (updateQuery.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Farmer not found'
       });
     }
 
-    farmer.status = 'suspended';
-    if (reason) {
-      farmer.rejectionReason = reason;
-    }
-
-    await farmer.save();
-
     res.json({
       success: true,
       message: 'Farmer suspended successfully',
-      farmer: farmer.toObject({ getters: true, virtuals: false })
+      farmer: updateQuery.rows[0]
     });
 
   } catch (error) {
     console.error('Error suspending farmer:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to suspend farmer',
+      message: 'Failed to suspend farmer. Database connection required.',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route   DELETE /api/admin/farmers/:id
+ * @desc    Delete farmer from database - Uses PostgreSQL only
+ * @access  Private (MAIN_ADMIN only)
+ */
+router.delete('/farmers/:id', verifyMainAdmin, async (req, res) => {
+  try {
+    console.log('[ADMIN DELETE] Deleting farmer:', req.params.id);
+
+    // Delete farmer from PostgreSQL
+    const deleteQuery = await pool.query(
+      'DELETE FROM farmers WHERE id = $1 RETURNING id, name, email',
+      [req.params.id]
+    );
+
+    if (deleteQuery.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Farmer not found'
+      });
+    }
+
+    console.log('[ADMIN DELETE] ✅ Farmer deleted:', deleteQuery.rows[0].email);
+
+    res.json({
+      success: true,
+      message: 'Farmer deleted successfully',
+      farmer: deleteQuery.rows[0]
+    });
+
+  } catch (error) {
+    console.error('[ADMIN DELETE] ❌ Error deleting farmer:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete farmer. Database connection required.',
       error: error.message
     });
   }
@@ -471,24 +336,26 @@ router.put('/farmers/:id/suspend', verifyMainAdmin, async (req, res) => {
 
 /**
  * @route   GET /api/admin/subsidies
- * @desc    Get all subsidies
+ * @desc    Get all subsidies - Uses PostgreSQL only
  * @access  Private (MAIN_ADMIN only)
  */
 router.get('/subsidies', verifyMainAdmin, async (req, res) => {
   try {
-    const subsidies = await Subsidy.find().sort({ createdAt: -1 });
+    const subsidiesQuery = await pool.query(
+      'SELECT * FROM subsidies ORDER BY created_at DESC'
+    );
 
     res.json({
       success: true,
-      count: subsidies.length,
-      subsidies
+      count: subsidiesQuery.rows.length,
+      subsidies: subsidiesQuery.rows
     });
 
   } catch (error) {
     console.error('Error fetching subsidies:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch subsidies',
+      message: 'Failed to fetch subsidies. Database connection required.',
       error: error.message
     });
   }
@@ -496,25 +363,31 @@ router.get('/subsidies', verifyMainAdmin, async (req, res) => {
 
 /**
  * @route   POST /api/admin/subsidies
- * @desc    Create new subsidy scheme
+ * @desc    Create new subsidy scheme - Uses PostgreSQL only
  * @access  Private (MAIN_ADMIN only)
  */
 router.post('/subsidies', verifyMainAdmin, async (req, res) => {
   try {
-    const subsidy = new Subsidy(req.body);
-    await subsidy.save();
+    const { title, description, government_url, category, state, eligibility } = req.body;
+
+    const insertQuery = await pool.query(
+      `INSERT INTO subsidies (title, description, government_url, category, state, eligibility, is_active, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, true, NOW())
+       RETURNING *`,
+      [title, description, government_url, category || 'other', state || 'All India', eligibility || '']
+    );
 
     res.status(201).json({
       success: true,
       message: 'Subsidy created successfully',
-      subsidy
+      subsidy: insertQuery.rows[0]
     });
 
   } catch (error) {
     console.error('Error creating subsidy:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create subsidy',
+      message: 'Failed to create subsidy. Database connection required.',
       error: error.message
     });
   }
@@ -522,18 +395,28 @@ router.post('/subsidies', verifyMainAdmin, async (req, res) => {
 
 /**
  * @route   PUT /api/admin/subsidies/:id
- * @desc    Update subsidy scheme
+ * @desc    Update subsidy scheme - Uses PostgreSQL only
  * @access  Private (MAIN_ADMIN only)
  */
 router.put('/subsidies/:id', verifyMainAdmin, async (req, res) => {
   try {
-    const subsidy = await Subsidy.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
+    const { title, description, government_url, category, state, eligibility, is_active } = req.body;
+
+    const updateQuery = await pool.query(
+      `UPDATE subsidies 
+       SET title = COALESCE($1, title),
+           description = COALESCE($2, description),
+           government_url = COALESCE($3, government_url),
+           category = COALESCE($4, category),
+           state = COALESCE($5, state),
+           eligibility = COALESCE($6, eligibility),
+           is_active = COALESCE($7, is_active)
+       WHERE id = $8
+       RETURNING *`,
+      [title, description, government_url, category, state, eligibility, is_active, req.params.id]
     );
 
-    if (!subsidy) {
+    if (updateQuery.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Subsidy not found'
@@ -543,14 +426,14 @@ router.put('/subsidies/:id', verifyMainAdmin, async (req, res) => {
     res.json({
       success: true,
       message: 'Subsidy updated successfully',
-      subsidy
+      subsidy: updateQuery.rows[0]
     });
 
   } catch (error) {
     console.error('Error updating subsidy:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update subsidy',
+      message: 'Failed to update subsidy. Database connection required.',
       error: error.message
     });
   }
@@ -558,14 +441,17 @@ router.put('/subsidies/:id', verifyMainAdmin, async (req, res) => {
 
 /**
  * @route   DELETE /api/admin/subsidies/:id
- * @desc    Delete subsidy scheme
+ * @desc    Delete subsidy scheme - Uses PostgreSQL only
  * @access  Private (MAIN_ADMIN only)
  */
 router.delete('/subsidies/:id', verifyMainAdmin, async (req, res) => {
   try {
-    const subsidy = await Subsidy.findByIdAndDelete(req.params.id);
+    const deleteQuery = await pool.query(
+      'DELETE FROM subsidies WHERE id = $1 RETURNING id',
+      [req.params.id]
+    );
 
-    if (!subsidy) {
+    if (deleteQuery.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Subsidy not found'
@@ -581,7 +467,7 @@ router.delete('/subsidies/:id', verifyMainAdmin, async (req, res) => {
     console.error('Error deleting subsidy:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete subsidy',
+      message: 'Failed to delete subsidy. Database connection required.',
       error: error.message
     });
   }

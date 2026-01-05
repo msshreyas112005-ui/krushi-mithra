@@ -19,20 +19,20 @@
 
     <header>
         <nav class="navbar">
-            <div class="container">
+            <div class="container navbar-container">
                 <h1 class="logo" data-i18n="home.logo">🌾 KRUSHI MITHRA 🚜</h1>
                 <ul class="nav-links">
                     <li><a href="index.html" data-i18n="header.home">🏠 Home</a></li>
                     <li><a href="register.html" class="active" data-i18n="register.title">📝 Register</a></li>
                     <li><a href="farmer-login.html" data-i18n="login.title">🔑 Login</a></li>
-                    <li>
-                        <select id="languageSelect" class="language-dropdown">
-                            <option value="en">English</option>
-                            <option value="kn">ಕನ್ನಡ</option>
-                            <option value="hi">हिंदी</option>
-                        </select>
-                    </li>
                 </ul>
+                <div class="language-selector">
+                    <select id="languageSelect" class="language-dropdown">
+                        <option value="en">🌐 English</option>
+                        <option value="kn">🌐 ಕನ್ನಡ</option>
+                        <option value="hi">🌐 हिंदी</option>
+                    </select>
+                </div>
             </div>
         </nav>
     </header>
@@ -189,15 +189,6 @@
                             <option value="hindi">हिन्दी (Hindi)</option>
                         </select>
                         <span class="error-message" id="languageError"></span>
-                    </div>
-
-                    <!-- Terms and Conditions -->
-                    <div class="form-group checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="terms" name="terms" required>
-                            <span data-i18n="register.terms">I agree to the <a href="#terms">Terms and Conditions</a></span>
-                        </label>
-                        <span class="error-message" id="termsError"></span>
                     </div>
 
                     <!-- Submit Button -->

@@ -202,17 +202,16 @@ async function loadDashboardStats() {
                 // Update Total Farmers - only registered and logged in farmers
                 document.getElementById('totalFarmers').textContent = data.stats.totalFarmers || 0;
                 
-                // Update Market Price Updates count from localStorage
-                const updateCount = localStorage.getItem('marketPriceUpdateCount') || 0;
-                document.getElementById('marketPriceUpdates').textContent = updateCount;
+                // Market price updates will be loaded from API
+                // No localStorage caching
                 
                 console.log('✅ Dashboard stats loaded:', data.stats);
                 return;
             }
         }
         
-        // Fallback: Load from localStorage or show zeros
-        console.warn('⚠️ Stats API failed, using localStorage/default values');
+        // Fallback: Show zeros on error
+        console.warn('⚠️ Stats API failed, using default values');
         loadFallbackStats();
         
     } catch (error) {
@@ -233,9 +232,8 @@ async function loadDashboardStats() {
 
 // Load fallback stats from localStorage or defaults
 function loadFallbackStats() {
-    // Get stored farmer count or default to 0
-    const farmerCount = localStorage.getItem('totalFarmersCount') || 0;
-    document.getElementById('totalFarmers').textContent = farmerCount;
+    // Set default values - data will be loaded from API
+    document.getElementById('totalFarmers').textContent = '0';
     
     // Get market price update count
     const updateCount = localStorage.getItem('marketPriceUpdateCount') || 0;
@@ -249,66 +247,84 @@ async function loadRegisteredFarmers() {
         
         if (!token) {
             console.warn('⚠️ No authentication token found');
-            displayDemoFarmers();
+            if (farmersTableBody) {
+                farmersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #e74c3c;">Authentication required. Please log in.</td></tr>';
+            }
             return;
         }
 
         // Show loading state
         if (farmersTableBody) {
-            farmersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;"><div class="loading">⏳ Loading registered farmers...</div></td></tr>';
+            farmersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;"><div class="loading">⏳ Loading farmers from Neon DB...</div></td></tr>';
         }
         
-        // Fetch all approved/registered farmers with timeout
+        // Fetch ALL approved farmers from Neon PostgreSQL with cache-busting
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         
-        const response = await fetch(`${API_URL}/admin/farmers?status=approved`, {
+        console.log('📡 Fetching farmers from:', `${API_URL}/admin/farmers`);
+        
+        const response = await fetch(`${API_URL}/admin/farmers?_=${Date.now()}`, {
+            method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
             },
+            cache: 'no-store',
             signal: controller.signal
         });
         
         clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
         
         console.log('📊 Farmers API Response:', {
             success: data.success,
             count: data.farmers ? data.farmers.length : 0,
-            hasData: Array.isArray(data.farmers)
+            hasData: Array.isArray(data.farmers),
+            sample: data.farmers && data.farmers[0] ? data.farmers[0] : null
         });
         
-        if (data.success && data.farmers) {
-            console.log('✅ Displaying', data.farmers.length, 'registered farmers');
+        if (data.success && Array.isArray(data.farmers)) {
+            console.log('✅ Displaying', data.farmers.length, 'farmers from Neon DB');
             displayRegisteredFarmers(data.farmers);
             
-            // Update total farmers count
-            if (data.farmers.length > 0) {
-                localStorage.setItem('totalFarmersCount', data.farmers.length);
-                document.getElementById('totalFarmers').textContent = data.farmers.length;
+            // Update total farmers count directly from database
+            const totalFarmersEl = document.getElementById('totalFarmers');
+            if (totalFarmersEl) {
+                totalFarmersEl.textContent = data.farmers.length;
             }
         } else {
-            console.log('⚠️ No farmers data in response, showing demo');
-            displayDemoFarmers();
+            console.log('⚠️ No farmers data in response or empty array');
+            if (farmersTableBody) {
+                farmersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #95a5a6;">No registered farmers found in database.</td></tr>';
+            }
+            const totalFarmersEl = document.getElementById('totalFarmers');
+            if (totalFarmersEl) {
+                totalFarmersEl.textContent = '0';
+            }
         }
         
     } catch (error) {
         if (error.name === 'AbortError') {
-            console.warn('⚠️ Farmers API timeout, using demo data');
+            console.warn('⚠️ Farmers API timeout');
         } else {
             console.error('❌ Error loading farmers:', error);
         }
-        // Demo mode - show sample data
-        displayDemoFarmers();
-    } finally {
-        // Only clear if STILL showing loading spinner (⏳)
-        const farmersBody = document.getElementById('farmersTableBody');
-        if (farmersBody && farmersBody.innerHTML.includes('⏳')) {
-            console.log('⚠️ Farmers data never rendered, showing fallback');
-            farmersBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Unable to load farmers data.</td></tr>';
+        // Show error message - NO fallback data
+        if (farmersTableBody) {
+            farmersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #e74c3c;">Unable to load farmers data from database. Please try refreshing.</td></tr>';
         }
-        console.log('✅ Farmers loading complete');
+        const totalFarmersEl = document.getElementById('totalFarmers');
+        if (totalFarmersEl) {
+            totalFarmersEl.textContent = '0';
+        }
     }
 }
 
@@ -321,6 +337,9 @@ function displayRegisteredFarmers(farmers) {
         console.error('❌ farmersTableBody element not found!');
         return;
     }
+    
+    // Clear existing data first to prevent stale data display
+    tableBody.innerHTML = '';
     
     if (!farmers || farmers.length === 0) {
         console.log('📋 No farmers to display');
@@ -354,37 +373,7 @@ function displayRegisteredFarmers(farmers) {
     }
 }
 
-// Display Demo Farmers
-function displayDemoFarmers() {
-    const demoFarmers = [
-        {
-            fullName: 'Rajesh Kumar',
-            email: 'rajesh@example.com',
-            mobile: '+91 98765 43210',
-            location: 'Mysore, Karnataka',
-            registeredAt: '2025-12-15',
-            status: 'approved'
-        },
-        {
-            fullName: 'Sita Devi',
-            email: 'sita@example.com',
-            mobile: '+91 98765 43211',
-            location: 'Bangalore, Karnataka',
-            registeredAt: '2025-12-20',
-            status: 'active'
-        },
-        {
-            fullName: 'Ramesh Gowda',
-            email: 'ramesh@example.com',
-            mobile: '+91 98765 43212',
-            location: 'Mandya, Karnataka',
-            registeredAt: '2025-12-28',
-            status: 'approved'
-        }
-    ];
-    
-    displayRegisteredFarmers(demoFarmers);
-}
+// displayDemoFarmers function removed - using only database data
 
 // Load Market Stats
 async function loadMarketStats() {
@@ -518,15 +507,11 @@ async function updateMarketPrices() {
         const data = await response.json();
         
         if (data.success) {
-            // Increment market price update count
-            const currentCount = parseInt(localStorage.getItem('marketPriceUpdateCount') || '0');
-            const newCount = currentCount + 1;
-            localStorage.setItem('marketPriceUpdateCount', newCount);
+            // Market prices updated successfully
+            // Count will be displayed from API response
             
-            // Update the display
-            document.getElementById('marketPriceUpdates').textContent = newCount;
-            
-            alert(`✅ Market prices updated successfully!\n\nFetched: ${data.data?.totalFetched || 0} prices\nSaved: ${data.data?.totalSaved || 0} prices\nTotal Updates: ${newCount}`);
+            // Show success message
+            alert(`✅ Market prices updated successfully!\n\nFetched: ${data.data?.totalFetched || 0} prices\nSaved: ${data.data?.totalSaved || 0} prices`);
             
             // Reload stats and market data
             loadMarketStats();

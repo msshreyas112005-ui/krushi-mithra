@@ -1,6 +1,5 @@
 const notificationService = require('../services/notification.service');
-const Farmer = require('../models/farmer.model');
-const jsonStorage = require('../utils/jsonStorage');
+const { pool } = require('../db');
 
 // Store notifications in memory (in production, use database)
 let notifications = [
@@ -162,30 +161,18 @@ const createNotification = async (req, res) => {
     
     if (sendEmail) {
       try {
-        // Get farmer emails
+        // Get farmer emails from PostgreSQL
         let farmerEmails = [];
         
-        // Check if using JSON storage mode
-        if (process.env.USE_JSON_STORAGE === 'true' || !process.env.MONGODB_URI) {
-          console.log('📧 Fetching farmer emails from JSON storage');
-          const farmers = await jsonStorage.getAllFarmers();
-          
-          // Filter approved farmers
-          const approvedFarmers = farmers.filter(f => f.status === 'approved');
-          farmerEmails = approvedFarmers
-            .filter(f => f.email && f.email.trim() !== '')
-            .map(f => f.email);
-          
-        } else {
-          // MongoDB mode
-          console.log('📧 Fetching farmer emails from MongoDB');
-          const farmers = await Farmer.find({ 
-            status: 'approved',
-            email: { $exists: true, $ne: '' }
-          }).select('email');
-          
-          farmerEmails = farmers.map(f => f.email);
-        }
+        console.log('📧 Fetching farmer emails from PostgreSQL (Neon)');
+        
+        const farmersQuery = await pool.query(
+          'SELECT email FROM farmers WHERE is_approved = true AND email IS NOT NULL'
+        );
+        
+        farmerEmails = farmersQuery.rows
+          .filter(f => f.email && f.email.trim() !== '')
+          .map(f => f.email);
 
         console.log(`📧 Found ${farmerEmails.length} farmer email(s) to notify`);
 
