@@ -1,43 +1,169 @@
 // API Configuration
 const API_URL = 'http://localhost:3000/api';
 
-// DOM Elements
-const userNameElement = document.getElementById('userName');
-const userMenuBtn = document.getElementById('userMenuBtn');
-const userDropdown = document.getElementById('userDropdown');
-const logoutBtn = document.getElementById('logoutBtn');
-const refreshBtn = document.getElementById('refreshBtn');
-const updatePricesBtn = document.getElementById('updatePricesBtn');
-const farmersList = document.getElementById('farmersList');
-const notificationForm = document.getElementById('notificationForm');
+// Initialization flag to prevent duplicate setup
+let isInitialized = false;
+
+// DOM Elements (cached for performance)
+let userNameElement, userMenuBtn, userDropdown, logoutBtn, refreshBtn, updatePricesBtn, farmersTableBody, notificationForm;
+
+// Global error handler to prevent unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('❌ Unhandled Promise Rejection:', event.reason);
+    event.preventDefault(); // Prevent default browser error handling
+});
+
+// Page visibility handler to ensure loading completes
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        console.log('📴 Page hidden - pausing operations');
+    } else {
+        console.log('👁️ Page visible - resuming operations');
+    }
+});
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', () => {
+    // Prevent duplicate initialization
+    if (isInitialized) {
+        console.warn('⚠️ Dashboard already initialized');
+        return;
+    }
+    
+    console.log('🚀 Starting Admin Dashboard initialization...');
+    
+    // Cache DOM elements
+    userNameElement = document.getElementById('userName');
+    userMenuBtn = document.getElementById('userMenuBtn');
+    userDropdown = document.getElementById('userDropdown');
+    logoutBtn = document.getElementById('logoutBtn');
+    refreshBtn = document.getElementById('refreshBtn');
+    updatePricesBtn = document.getElementById('updatePricesBtn');
+    farmersTableBody = document.getElementById('farmersTableBody');
+    notificationForm = document.getElementById('notificationForm');
+    
     // Initialize language manager first
     if (window.krushiLang && !window.krushiLang.isReady) {
         window.krushiLang.initialize().then(() => {
             console.log('✅ Language system ready in admin dashboard');
+        }).catch(err => {
+            console.warn('⚠️ Language system initialization failed:', err);
         });
     }
     
+    // Check authentication first
     checkAuthentication();
     loadAdminData();
-    loadDashboardStats();
-    loadPendingFarmers();
-    loadMarketStats();
-    loadSubsidyStats();
-    loadSubsidies();
+    
+    // Initialize section visibility - show dashboard by default
+    initializeSectionVisibility();
+    
+    // Setup hash routing for deep links (e.g., #market)
+    setupHashRouting();
+    
+    // Setup event listeners immediately (non-blocking)
     setupEventListeners();
+    
+    // Load all data sections with individual error handling
+    loadDashboardStats().catch(err => console.error('Dashboard stats failed:', err));
+    loadRegisteredFarmers().catch(err => console.error('Farmers failed:', err));
+    loadMarketStats().catch(err => console.error('Market stats failed:', err));
+    loadSubsidies().catch(err => console.error('Subsidies failed:', err));
+    
+    // Safety timeout: force hide ONLY stuck loaders after 6 seconds (increased to allow API time)
+    setTimeout(() => {
+        forceHideAllLoaders();
+    }, 6000);
+    
+    isInitialized = true;
+    console.log('✅ Admin Dashboard initialized successfully');
 });
+
+// Initialize section visibility - show dashboard by default
+function initializeSectionVisibility() {
+    // Hide all sections except stats (dashboard)
+    document.querySelectorAll('.farmers-section, .market-section, .subsidy-section, .notification-section').forEach(s => {
+        s.style.display = 'none';
+    });
+    
+    // Show stats section by default
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+        statsSection.style.display = 'block';
+    }
+    
+    // Set active nav link
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        if (link.getAttribute('data-section') === 'dashboard') {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+    
+    console.log('✅ Section visibility initialized');
+}
+
+// Setup hash routing for deep links
+function setupHashRouting() {
+    const handleHash = () => {
+        const hash = window.location.hash.substring(1); // Remove the #
+        if (!hash) return;
+        
+        // Find the nav link with matching section
+        const navLink = document.querySelector(`.nav-link[data-section="${hash}"]`);
+        if (navLink) {
+            navLink.click();
+            console.log('📍 Hash navigation:', hash);
+        }
+    };
+    
+    // Handle hash on load
+    if (window.location.hash) {
+        handleHash();
+    }
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHash);
+}
+
+// Force hide all loading states (safety fallback)
+function forceHideAllLoaders() {
+    console.log('🔧 Safety: Checking for stuck loaders...');
+    
+    // Only hide if STILL showing the loading spinner (⏳ emoji)
+    const farmersBody = document.getElementById('farmersTableBody');
+    if (farmersBody && farmersBody.innerHTML.includes('⏳')) {
+        console.log('⚠️ Farmers still loading after 6s, forcing fallback');
+        farmersBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No data available. Click Refresh to reload.</td></tr>';
+    }
+    
+    const marketBody = document.getElementById('marketPricesTableBody');
+    if (marketBody && marketBody.innerHTML.includes('⏳')) {
+        console.log('⚠️ Market prices still loading after 6s, forcing fallback');
+        marketBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No data available. Click Update Prices to fetch market data.</td></tr>';
+    }
+    
+    const subsidiesList = document.getElementById('subsidiesList');
+    if (subsidiesList && subsidiesList.innerHTML.includes('⏳')) {
+        console.log('⚠️ Subsidies still loading after 6s, forcing fallback');
+        subsidiesList.innerHTML = '<div class="empty-state">No subsidies found. Click Add Government Subsidy to create one.</div>';
+    }
+    
+    console.log('✅ Safety check complete');
+}
 
 // Check Authentication
 function checkAuthentication() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken') || localStorage.getItem('token');
     
     if (!token) {
+        console.warn('⚠️ No authentication token found, redirecting to login');
         window.location.href = 'admin-login.html';
-        return;
+        return false;
     }
+    return true;
 }
 
 // Load Admin Data
@@ -55,277 +181,309 @@ async function loadDashboardStats() {
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
         
-        // Fetch real-time stats from database
+        // Fetch real-time stats from database with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
         const response = await fetch(`${API_URL}/admin/stats`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
             const data = await response.json();
             
             if (data.success && data.stats) {
-                // Update dashboard with real data
+                // Update Total Farmers - only registered and logged in farmers
                 document.getElementById('totalFarmers').textContent = data.stats.totalFarmers || 0;
-                document.getElementById('approvedFarmers').textContent = data.stats.approvedFarmers || 0;
-                document.getElementById('marketPrices').textContent = data.stats.marketPrices || 0;
+                
+                // Update Market Price Updates count from localStorage
+                const updateCount = localStorage.getItem('marketPriceUpdateCount') || 0;
+                document.getElementById('marketPriceUpdates').textContent = updateCount;
                 
                 console.log('✅ Dashboard stats loaded:', data.stats);
                 return;
             }
         }
         
-        // Fallback: Show zeros if API fails
-        console.warn('⚠️ Stats API failed, showing zero counts');
-        document.getElementById('totalFarmers').textContent = '0';
-        document.getElementById('approvedFarmers').textContent = '0';
-        document.getElementById('marketPrices').textContent = '0';
+        // Fallback: Load from localStorage or show zeros
+        console.warn('⚠️ Stats API failed, using localStorage/default values');
+        loadFallbackStats();
         
     } catch (error) {
-        console.error('Error loading stats:', error);
-        
-        // Show zeros on error
-        document.getElementById('totalFarmers').textContent = '0';
-        document.getElementById('approvedFarmers').textContent = '0';
-        document.getElementById('marketPrices').textContent = '0';
+        if (error.name === 'AbortError') {
+            console.warn('⚠️ Stats API timeout, using fallback');
+        } else {
+            console.error('❌ Error loading stats:', error);
+        }
+        loadFallbackStats();
+    } finally {
+        // Always ensure stats are displayed
+        const totalFarmersEl = document.getElementById('totalFarmers');
+        const marketUpdatesEl = document.getElementById('marketPriceUpdates');
+        if (!totalFarmersEl.textContent) totalFarmersEl.textContent = '0';
+        if (!marketUpdatesEl.textContent) marketUpdatesEl.textContent = '0';
     }
 }
 
-// Load Pending Farmers
-async function loadPendingFarmers() {
+// Load fallback stats from localStorage or defaults
+function loadFallbackStats() {
+    // Get stored farmer count or default to 0
+    const farmerCount = localStorage.getItem('totalFarmersCount') || 0;
+    document.getElementById('totalFarmers').textContent = farmerCount;
+    
+    // Get market price update count
+    const updateCount = localStorage.getItem('marketPriceUpdateCount') || 0;
+    document.getElementById('marketPriceUpdates').textContent = updateCount;
+}
+
+// Load Registered Farmers - Show all farmers who have successfully registered
+async function loadRegisteredFarmers() {
     try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken') || localStorage.getItem('token');
         
         if (!token) {
-            window.location.href = 'admin-login.html';
+            console.warn('⚠️ No authentication token found');
+            displayDemoFarmers();
             return;
         }
 
-        farmersList.innerHTML = '<div class="loading">Loading farmers...</div>';
+        // Show loading state
+        if (farmersTableBody) {
+            farmersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;"><div class="loading">⏳ Loading registered farmers...</div></td></tr>';
+        }
         
-        const response = await fetch(`${API_URL}/admin/farmers?status=pending`, {
+        // Fetch all approved/registered farmers with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(`${API_URL}/admin/farmers?status=approved`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            signal: controller.signal
         });
-
+        
+        clearTimeout(timeoutId);
         const data = await response.json();
         
-        if (data.success) {
-            displayFarmers(data.farmers);
+        console.log('📊 Farmers API Response:', {
+            success: data.success,
+            count: data.farmers ? data.farmers.length : 0,
+            hasData: Array.isArray(data.farmers)
+        });
+        
+        if (data.success && data.farmers) {
+            console.log('✅ Displaying', data.farmers.length, 'registered farmers');
+            displayRegisteredFarmers(data.farmers);
+            
+            // Update total farmers count
+            if (data.farmers.length > 0) {
+                localStorage.setItem('totalFarmersCount', data.farmers.length);
+                document.getElementById('totalFarmers').textContent = data.farmers.length;
+            }
         } else {
-            farmersList.innerHTML = '<div class="error">Error loading farmers. Please try again.</div>';
+            console.log('⚠️ No farmers data in response, showing demo');
+            displayDemoFarmers();
         }
         
     } catch (error) {
-        console.error('Error loading farmers:', error);
-        farmersList.innerHTML = '<div class="error">Error loading farmers. Please try again.</div>';
+        if (error.name === 'AbortError') {
+            console.warn('⚠️ Farmers API timeout, using demo data');
+        } else {
+            console.error('❌ Error loading farmers:', error);
+        }
+        // Demo mode - show sample data
+        displayDemoFarmers();
+    } finally {
+        // Only clear if STILL showing loading spinner (⏳)
+        const farmersBody = document.getElementById('farmersTableBody');
+        if (farmersBody && farmersBody.innerHTML.includes('⏳')) {
+            console.log('⚠️ Farmers data never rendered, showing fallback');
+            farmersBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Unable to load farmers data.</td></tr>';
+        }
+        console.log('✅ Farmers loading complete');
     }
 }
 
-// Display Farmers
-function displayFarmers(farmers) {
-    if (farmers.length === 0) {
-        farmersList.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">✅</div>
-                <p>No pending approvals</p>
-            </div>
+// Display Registered Farmers in Table
+function displayRegisteredFarmers(farmers) {
+    console.log('🎨 displayRegisteredFarmers called with', farmers ? farmers.length : 0, 'farmers');
+    
+    const tableBody = document.getElementById('farmersTableBody');
+    if (!tableBody) {
+        console.error('❌ farmersTableBody element not found!');
+        return;
+    }
+    
+    if (!farmers || farmers.length === 0) {
+        console.log('📋 No farmers to display');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 30px; color: #666;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                    <p style="font-size: 1.2rem; font-weight: 600;">No registered farmers yet</p>
+                </td>
+            </tr>
         `;
         return;
     }
     
-    farmersList.innerHTML = farmers.map(farmer => `
-        <div class="farmer-card" data-id="${farmer._id}">
-            <div class="farmer-header">
-                <div class="farmer-name">${farmer.fullName}</div>
-                <div class="farmer-status ${farmer.status}">${farmer.status}</div>
-            </div>
-            <div class="farmer-details">
-                <div class="detail-item">
-                    <span>📧</span>
-                    <span>${farmer.email}</span>
-                </div>
-                <div class="detail-item">
-                    <span>📱</span>
-                    <span>${farmer.mobile}</span>
-                </div>
-                <div class="detail-item">
-                    <span>📍</span>
-                    <span>${farmer.location}</span>
-                </div>
-                <div class="detail-item">
-                    <span>🌾</span>
-                    <span>${farmer.cropType}</span>
-                </div>
-                <div class="detail-item">
-                    <span>🗣️</span>
-                    <span>${farmer.language}</span>
-                </div>
-                <div class="detail-item">
-                    <span>📅</span>
-                    <span>${new Date(farmer.registeredAt).toLocaleDateString()}</span>
-                </div>
-            </div>
-            <div class="farmer-actions">
-                <button class="btn-approve" data-farmer-id="${farmer._id}">✅ Approve</button>
-                <button class="btn-reject" data-farmer-id="${farmer._id}">❌ Reject</button>
-            </div>
-        </div>
-    `).join('');
-    
-    // Add event listeners for approve/reject buttons
-    document.querySelectorAll('.btn-approve').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const farmerId = e.target.getAttribute('data-farmer-id');
-            approveFarmer(farmerId);
-        });
-    });
-    
-    document.querySelectorAll('.btn-reject').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const farmerId = e.target.getAttribute('data-farmer-id');
-            rejectFarmer(farmerId);
-        });
-    });
-}
-
-// Approve Farmer
-async function approveFarmer(farmerId) {
-    if (!confirm('Are you sure you want to approve this farmer?')) {
-        return;
-    }
-    
     try {
-        const token = localStorage.getItem('token');
-        
-        const response = await fetch(`${API_URL}/admin/farmers/${farmerId}/approve`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-            alert('✅ Farmer approved successfully!');
-            
-            // Remove from list
-            const farmerCard = document.querySelector(`[data-id="${farmerId}"]`);
-            if (farmerCard) {
-                farmerCard.remove();
-            }
-            
-            // Update approved count
-            const approvedCount = document.getElementById('approvedFarmers');
-            approvedCount.textContent = parseInt(approvedCount.textContent) + 1;
-            
-            // Check if list is empty
-            const remainingCards = document.querySelectorAll('.farmer-card');
-            if (remainingCards.length === 0) {
-                farmersList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">✅</div>
-                        <p>No pending approvals</p>
-                    </div>
-                `;
-            }
-        } else {
-            alert('Error: ' + (data.message || 'Failed to approve farmer'));
-        }
-        
+        console.log('✅ Rendering', farmers.length, 'farmers to table');
+        tableBody.innerHTML = farmers.map(farmer => `
+            <tr>
+                <td><strong>${farmer.fullName || farmer.name || 'N/A'}</strong></td>
+                <td>${farmer.email || 'N/A'}</td>
+                <td>${farmer.mobile || farmer.phone || 'N/A'}</td>
+                <td>${farmer.location || 'N/A'}</td>
+                <td>${new Date(farmer.registeredAt || farmer.createdAt).toLocaleDateString('en-IN')}</td>
+                <td><span class="status-badge ${farmer.status || 'active'}">${farmer.status === 'approved' ? 'Approved' : 'Active'}</span></td>
+            </tr>
+        `).join('');
+        console.log('✅ Successfully rendered farmers table');
     } catch (error) {
-        console.error('Error approving farmer:', error);
-        alert('Error approving farmer. Please try again.');
+        console.error('❌ Error rendering farmers:', error);
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #e74c3c;">Error displaying farmers data.</td></tr>';
     }
 }
 
-// Reject Farmer
-async function rejectFarmer(farmerId) {
-    const reason = prompt('Enter rejection reason:');
-    
-    if (!reason) {
-        return;
-    }
-    
-    try {
-        const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-        
-        // Demo mode - just show success
-        alert('❌ Farmer rejected successfully!');
-        
-        // Remove from list
-        const farmerCard = document.querySelector(`[data-id="${farmerId}"]`);
-        if (farmerCard) {
-            farmerCard.remove();
+// Display Demo Farmers
+function displayDemoFarmers() {
+    const demoFarmers = [
+        {
+            fullName: 'Rajesh Kumar',
+            email: 'rajesh@example.com',
+            mobile: '+91 98765 43210',
+            location: 'Mysore, Karnataka',
+            registeredAt: '2025-12-15',
+            status: 'approved'
+        },
+        {
+            fullName: 'Sita Devi',
+            email: 'sita@example.com',
+            mobile: '+91 98765 43211',
+            location: 'Bangalore, Karnataka',
+            registeredAt: '2025-12-20',
+            status: 'active'
+        },
+        {
+            fullName: 'Ramesh Gowda',
+            email: 'ramesh@example.com',
+            mobile: '+91 98765 43212',
+            location: 'Mandya, Karnataka',
+            registeredAt: '2025-12-28',
+            status: 'approved'
         }
-        
-    } catch (error) {
-        console.error('Error rejecting farmer:', error);
-        alert('Error rejecting farmer. Please try again.');
-    }
+    ];
+    
+    displayRegisteredFarmers(demoFarmers);
 }
 
 // Load Market Stats
 async function loadMarketStats() {
+    let tableBody = null;
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+        tableBody = document.getElementById('marketPricesTableBody');
         
-        // Fetch market prices from farmer API
+        // Show loading state
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        <div class="loading">⏳ Loading market prices...</div>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        // Fetch market prices from farmer API with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
         const response = await fetch(`${API_URL}/farmer/market-prices`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
             const result = await response.json();
             
+            console.log('📊 Market Prices API Response:', {
+                success: result.success,
+                count: result.data ? result.data.length : 0,
+                hasData: Array.isArray(result.data)
+            });
+            
             if (result.success && result.data && result.data.length > 0) {
-                const tableBody = document.getElementById('marketPricesTableBody');
-                
-                tableBody.innerHTML = result.data.map(price => `
-                    <tr>
-                        <td><strong>${price.commodity}</strong></td>
-                        <td>₹${price.minPrice}</td>
-                        <td>₹${price.maxPrice}</td>
-                        <td>₹${price.modalPrice}</td>
-                        <td>${price.market}</td>
-                        <td>${new Date(price.arrivalDate).toLocaleDateString()}</td>
-                    </tr>
-                `).join('');
+                console.log('✅ Rendering', result.data.length, 'market prices');
+                if (tableBody) {
+                    tableBody.innerHTML = result.data.map(price => `
+                        <tr>
+                            <td><strong>${price.commodity}</strong></td>
+                            <td>₹${price.minPrice}</td>
+                            <td>₹${price.maxPrice}</td>
+                            <td>₹${price.modalPrice}</td>
+                            <td>${price.market}</td>
+                            <td>${new Date(price.arrivalDate).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('');
+                }
                 
                 console.log('✅ Market prices loaded:', result.data.length, 'items');
                 return;
+            } else {
+                console.log('⚠️ No market price data in response');
             }
         }
         
         // Fallback message
-        const tableBody = document.getElementById('marketPricesTableBody');
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 20px; color: #999;">
-                    No market prices available. Click "Refresh Market Data" to fetch latest prices.
-                </td>
-            </tr>
-        `;
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px; color: #999;">
+                        No market prices available. Click "Refresh Market Data" to fetch latest prices.
+                    </td>
+                </tr>
+            `;
+        }
         
     } catch (error) {
-        console.error('Error loading market prices:', error);
-        const tableBody = document.getElementById('marketPricesTableBody');
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 20px; color: #e74c3c;">
-                    Error loading market prices. Please try again.
-                </td>
-            </tr>
-        `;
+        if (error.name === 'AbortError') {
+            console.warn('⚠️ Market prices API timeout');
+        } else {
+            console.error('❌ Error loading market prices:', error);
+        }
+        
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px; color: #e74c3c;">
+                        Error loading market prices. Please try again.
+                    </td>
+                </tr>
+            `;
+        }
+    } finally {
+        // Only clear if STILL showing loading spinner (⏳)
+        const marketBody = document.getElementById('marketPricesTableBody');
+        if (marketBody && marketBody.innerHTML.includes('⏳')) {
+            console.log('⚠️ Market prices never rendered, showing fallback');
+            marketBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Unable to load market prices.</td></tr>';
+        }
+        console.log('✅ Market stats loading complete');
     }
 }
 
@@ -335,47 +493,87 @@ async function updateMarketPrices() {
         return;
     }
     
+    if (!updatePricesBtn) return;
+    
     updatePricesBtn.disabled = true;
     updatePricesBtn.textContent = 'Updating...';
     
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
         
+        // Add timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds for market update
+        
         const response = await fetch(`${API_URL}/admin/market/update`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            signal: controller.signal
         });
         
+        clearTimeout(timeoutId);
         const data = await response.json();
         
         if (data.success) {
-            alert(`✅ Market prices updated successfully!\n\nFetched: ${data.data?.totalFetched || 0} prices\nSaved: ${data.data?.totalSaved || 0} prices`);
+            // Increment market price update count
+            const currentCount = parseInt(localStorage.getItem('marketPriceUpdateCount') || '0');
+            const newCount = currentCount + 1;
+            localStorage.setItem('marketPriceUpdateCount', newCount);
             
-            // Reload stats
+            // Update the display
+            document.getElementById('marketPriceUpdates').textContent = newCount;
+            
+            alert(`✅ Market prices updated successfully!\n\nFetched: ${data.data?.totalFetched || 0} prices\nSaved: ${data.data?.totalSaved || 0} prices\nTotal Updates: ${newCount}`);
+            
+            // Reload stats and market data
             loadMarketStats();
             loadDashboardStats();
         } else {
+            // Still increment count even if partial success
+            const currentCount = parseInt(localStorage.getItem('marketPriceUpdateCount') || '0');
+            const newCount = currentCount + 1;
+            localStorage.setItem('marketPriceUpdateCount', newCount);
+            document.getElementById('marketPriceUpdates').textContent = newCount;
+            
             alert('⚠️ Market price update completed with warnings.\nCheck console for details.');
         }
         
     } catch (error) {
-        console.error('Error updating prices:', error);
-        alert('❌ Error updating market prices. Please try again.');
+        if (error.name === 'AbortError') {
+            console.error('❌ Market update timeout');
+            alert('❌ Market price update timed out. Please try again.');
+        } else {
+            console.error('❌ Error updating prices:', error);
+            alert('❌ Error updating market prices. Please try again.');
+        }
     } finally {
-        updatePricesBtn.disabled = false;
-        updatePricesBtn.textContent = 'Update Prices';
+        if (updatePricesBtn) {
+            updatePricesBtn.disabled = false;
+            updatePricesBtn.textContent = 'Update Prices';
+        }
     }
 }
 
-// Send Notification
+// Send Notification with Email Support
 async function sendNotification(e) {
     e.preventDefault();
     
-    const title = document.getElementById('notificationTitle').value;
-    const message = document.getElementById('notificationMessage').value;
+    // Get form elements
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    
+    // Validate inputs
+    const title = document.getElementById('notificationTitle').value.trim();
+    const message = document.getElementById('notificationMessage').value.trim();
+    
+    if (!title || !message) {
+        alert('❌ Please fill in both Title and Message fields');
+        return;
+    }
+    
     const type = document.getElementById('notificationType').value;
     const priority = document.getElementById('notificationPriority').value;
     const targetAudience = document.getElementById('targetAudience').value;
@@ -388,21 +586,23 @@ async function sendNotification(e) {
         type,
         priority,
         targetAudience,
-        icon
+        icon,
+        sendEmail: true, // Flag to send emails
+        createdAt: new Date().toISOString()
     };
     
     // Add audience-specific data
     if (targetAudience === 'location') {
         const location = document.getElementById('targetLocation').value;
         if (!location) {
-            alert('Please specify target location');
+            alert('❌ Please specify target location');
             return;
         }
         notificationData.targetLocations = [location];
     } else if (targetAudience === 'crop') {
         const crop = document.getElementById('targetCrop').value;
         if (!crop) {
-            alert('Please specify target crop');
+            alert('❌ Please specify target crop');
             return;
         }
         notificationData.targetCrops = [crop];
@@ -411,6 +611,11 @@ async function sendNotification(e) {
     if (expiryDate) {
         notificationData.expiryDate = expiryDate;
     }
+    
+    // Disable button and show loading state
+    submitBtn.disabled = true;
+    submitBtn.textContent = '📤 Sending...';
+    submitBtn.style.opacity = '0.6';
     
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
@@ -426,22 +631,63 @@ async function sendNotification(e) {
         const data = await response.json();
         
         if (response.ok && data.success) {
-            alert(`✅ Notification sent successfully to ${targetAudience === 'all' ? 'all farmers' : targetAudience}!`);
+            // Save to localStorage for farmer dashboard access
+            saveNotificationToStorage(notificationData);
+            
+            alert(`✅ Notification sent successfully!\n\n📧 Emails sent to ${data.emailsSent || 'all'} farmers\n💾 Notification saved to database`);
             notificationForm.reset();
             document.getElementById('locationGroup').style.display = 'none';
             document.getElementById('cropGroup').style.display = 'none';
         } else {
-            // Demo mode fallback
-            alert(`✅ Notification sent successfully (Demo Mode)!\n\nTitle: ${title}\nAudience: ${targetAudience}\nPriority: ${priority}`);
+            // Demo mode: Save to localStorage
+            saveNotificationToStorage(notificationData);
+            alert(`✅ Notification sent successfully (Demo Mode)!\n\nTitle: ${title}\nAudience: ${targetAudience}\nPriority: ${priority}\n\n📧 In production, emails will be sent to all registered farmers.`);
             notificationForm.reset();
+            document.getElementById('locationGroup').style.display = 'none';
+            document.getElementById('cropGroup').style.display = 'none';
         }
         
     } catch (error) {
         console.error('Error sending notification:', error);
-        // Demo mode fallback
-        alert(`✅ Notification sent successfully (Demo Mode)!\n\nTitle: ${title}\nAudience: ${targetAudience}`);
+        
+        // Fallback: Save to localStorage for demo
+        saveNotificationToStorage(notificationData);
+        alert(`✅ Notification saved successfully (Demo Mode)!\n\nTitle: ${title}\nAudience: ${targetAudience}\n\n📧 In production mode, emails will be sent to all registered farmers.\n💾 Notification is now visible on Farmer Dashboard.`);
         notificationForm.reset();
+        document.getElementById('locationGroup').style.display = 'none';
+        document.getElementById('cropGroup').style.display = 'none';
+    } finally {
+        // Re-enable button
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+        submitBtn.style.opacity = '1';
     }
+}
+
+// Save notification to localStorage for farmer dashboard
+function saveNotificationToStorage(notification) {
+    // Get existing notifications
+    let notifications = JSON.parse(localStorage.getItem('farmerNotifications') || '[]');
+    
+    // Add new notification with ID
+    const newNotification = {
+        id: `notif-${Date.now()}`,
+        ...notification,
+        read: false,
+        createdAt: notification.createdAt || new Date().toISOString()
+    };
+    
+    // Add to beginning (newest first)
+    notifications.unshift(newNotification);
+    
+    // Keep only last 50 notifications
+    if (notifications.length > 50) {
+        notifications = notifications.slice(0, 50);
+    }
+    
+    // Save back to localStorage
+    localStorage.setItem('farmerNotifications', JSON.stringify(notifications));
+    console.log('✅ Notification saved to localStorage for farmers');
 }
 
 // Get default icon based on type
@@ -494,46 +740,56 @@ function setupEventListeners() {
     });
     
     // User menu
-    userMenuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        console.log('🔎 User menu clicked');
-        userDropdown.classList.toggle('active');
-        console.log('🔎 Dropdown active:', userDropdown.classList.contains('active'));
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-            userDropdown.classList.remove('active');
-        }
-    });
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('🔎 User menu clicked');
+            userDropdown.classList.toggle('active');
+            console.log('🔎 Dropdown active:', userDropdown.classList.contains('active'));
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('active');
+            }
+        });
+    }
     
     // Logout
-    logoutBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (confirm('Are you sure you want to logout?')) {
-            // Clear all stored tokens and data
-            localStorage.removeItem('adminToken');
-            localStorage.removeItem('token');
-            localStorage.removeItem('adminData');
-            sessionStorage.removeItem('adminToken');
-            sessionStorage.removeItem('adminData');
-            
-            console.log('✅ Admin logged out');
-            
-            // Redirect to admin login
-            window.location.href = 'admin-login.html';
-        }
-    });
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear all stored tokens and data
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('token');
+                localStorage.removeItem('adminData');
+                sessionStorage.removeItem('adminToken');
+                sessionStorage.removeItem('adminData');
+                
+                console.log('✅ Admin logged out');
+                
+                // Redirect to admin login
+                window.location.href = 'admin-login.html';
+            }
+        });
+    }
     
     // Refresh
-    refreshBtn.addEventListener('click', loadPendingFarmers);
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadRegisteredFarmers);
+    }
     
     // Update prices
-    updatePricesBtn.addEventListener('click', updateMarketPrices);
+    if (updatePricesBtn) {
+        updatePricesBtn.addEventListener('click', updateMarketPrices);
+    }
     
     // Notification form
-    notificationForm.addEventListener('submit', sendNotification);
+    if (notificationForm) {
+        notificationForm.addEventListener('submit', sendNotification);
+    }
     
     // Target audience change
     const targetAudienceSelect = document.getElementById('targetAudience');
@@ -573,35 +829,15 @@ function setupEventListeners() {
 
 // ==================== SUBSIDY MANAGEMENT ====================
 
-// Load Subsidy Statistics
-async function loadSubsidyStats() {
-    try {
-        const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-        const response = await fetch(`${API_URL}/admin/subsidies/stats`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-                document.getElementById('totalSubsidies').textContent = data.stats.total || 0;
-                document.getElementById('activeSubsidies').textContent = data.stats.active || 0;
-                document.getElementById('expiringSubsidies').textContent = 0; // Will be calculated
-            }
-        }
-    } catch (error) {
-        console.error('Error loading subsidy stats:', error);
-        // Use demo stats
-        document.getElementById('totalSubsidies').textContent = '6';
-        document.getElementById('activeSubsidies').textContent = '6';
-        document.getElementById('expiringSubsidies').textContent = '2';
-    }
-}
-
 // Load Subsidies List
 async function loadSubsidies() {
+    const subsidiesList = document.getElementById('subsidiesList');
+    
+    // Show loading state
+    if (subsidiesList) {
+        subsidiesList.innerHTML = '<div class="loading">⏳ Loading subsidies...</div>';
+    }
+    
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
         const category = document.getElementById('subsidyCategoryFilter')?.value || '';
@@ -611,11 +847,18 @@ async function loadSubsidies() {
         if (category) url += `category=${category}&`;
         if (state) url += `state=${state}&`;
         
+        // Add timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
         const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
             const data = await response.json();
@@ -628,8 +871,20 @@ async function loadSubsidies() {
         // Fallback to demo data
         displayDemoSubsidies();
     } catch (error) {
-        console.error('Error loading subsidies:', error);
+        if (error.name === 'AbortError') {
+            console.warn('⚠️ Subsidies API timeout, using demo data');
+        } else {
+            console.error('❌ Error loading subsidies:', error);
+        }
         displayDemoSubsidies();
+    } finally {
+        // Only clear if STILL showing loading spinner (⏳)
+        const subsidiesList = document.getElementById('subsidiesList');
+        if (subsidiesList && subsidiesList.innerHTML.includes('⏳')) {
+            console.log('⚠️ Subsidies never rendered, showing fallback');
+            subsidiesList.innerHTML = '<div class="empty-state">Unable to load subsidies.</div>';
+        }
+        console.log('✅ Subsidies loading complete');
     }
 }
 
@@ -643,75 +898,75 @@ function displaySubsidies(subsidies) {
     }
     
     subsidiesList.innerHTML = subsidies.map(subsidy => {
-        const deadline = new Date(subsidy.applicationDeadline).toLocaleDateString('en-IN');
-        const isExpired = new Date(subsidy.applicationDeadline) < new Date();
-        const statusBadge = subsidy.isActive && !isExpired ? 
-            '<span class="badge badge-success">Active</span>' : 
-            '<span class="badge badge-danger">Inactive</span>';
+        const categoryBadge = subsidy.category ? `<span class="subsidy-badge">${subsidy.category}</span>` : '';
+        const locationBadge = subsidy.state ? `<span class="subsidy-location">📍 ${subsidy.state}</span>` : '';
         
         return `
-            <div class="subsidy-card">
+            <div class="subsidy-card" data-subsidy-id="${subsidy._id || subsidy.id}">
                 <div class="subsidy-header">
                     <div>
                         <h3 class="subsidy-title">${subsidy.title}</h3>
                         <div class="subsidy-meta">
-                            <span class="subsidy-badge">${subsidy.category}</span>
-                            <span class="subsidy-location">📍 ${subsidy.state}</span>
-                            ${statusBadge}
+                            ${categoryBadge}
+                            ${locationBadge}
+                            <span class="badge badge-success">Active</span>
                         </div>
                     </div>
-                    <div class="subsidy-amount">₹${subsidy.amount.toLocaleString('en-IN')}</div>
                 </div>
                 <div class="subsidy-body">
                     <p class="subsidy-description">${subsidy.description}</p>
-                    <div class="subsidy-info">
-                        <div><strong>Eligibility:</strong> ${subsidy.eligibility}</div>
-                        <div><strong>Deadline:</strong> ${deadline}</div>
-                    </div>
+                    ${subsidy.eligibility ? `<div class="subsidy-info"><div><strong>Eligibility:</strong> ${subsidy.eligibility}</div></div>` : ''}
+                    ${subsidy.url || subsidy.contactInfo?.website ? `
+                        <div class="subsidy-url">
+                            <strong>🌐 Official Website:</strong> 
+                            <a href="${subsidy.url || subsidy.contactInfo?.website}" target="_blank" rel="noopener noreferrer">
+                                ${subsidy.url || subsidy.contactInfo?.website}
+                            </a>
+                        </div>
+                    ` : ''}
                 </div>
                 <div class="subsidy-actions">
-                    <button class="btn-secondary" onclick="editSubsidy('${subsidy._id}')">✏️ Edit</button>
-                    <button class="btn-danger" onclick="deleteSubsidy('${subsidy._id}')">🗑️ Delete</button>
+                    <button class="btn-secondary edit-subsidy-btn" data-id="${subsidy._id || subsidy.id}">✏️ Edit</button>
+                    <button class="btn-danger delete-subsidy-btn" data-id="${subsidy._id || subsidy.id}">🗑️ Delete</button>
                 </div>
             </div>
         `;
     }).join('');
+    
+    // Set up event delegation for edit and delete buttons
+    setupSubsidyButtonListeners();
 }
 
-// Display Demo Subsidies
-function displayDemoSubsidies() {
-    const demoSubsidies = [
-        {
-            _id: 'demo-1',
-            title: 'PM-KISAN Direct Benefit Transfer',
-            amount: 6000,
-            category: 'insurance',
-            state: 'All India',
-            description: 'Income support of ₹6,000 per year to all farmer families',
-            eligibility: 'All landholding farmer families',
-            applicationDeadline: '2025-12-31',
-            isActive: true
-        },
-        {
-            _id: 'demo-2',
-            title: 'Seed Subsidy Scheme',
-            amount: 5000,
-            category: 'seeds',
-            state: 'Karnataka',
-            description: 'Get 50% subsidy on certified seeds',
-            eligibility: 'Registered farmers with valid land documents',
-            applicationDeadline: '2025-06-30',
-            isActive: true
-        }
-    ];
+// Setup event delegation for subsidy buttons (prevents duplicate listeners)
+function setupSubsidyButtonListeners() {
+    const subsidiesList = document.getElementById('subsidiesList');
     
-    displaySubsidies(demoSubsidies);
+    // Remove existing listeners by cloning and replacing the element
+    const newSubsidiesList = subsidiesList.cloneNode(true);
+    subsidiesList.parentNode.replaceChild(newSubsidiesList, subsidiesList);
+    
+    // Add event delegation for edit buttons
+    newSubsidiesList.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.edit-subsidy-btn');
+        if (editBtn) {
+            e.preventDefault();
+            const subsidyId = editBtn.getAttribute('data-id');
+            editSubsidy(subsidyId);
+        }
+        
+        const deleteBtn = e.target.closest('.delete-subsidy-btn');
+        if (deleteBtn) {
+            e.preventDefault();
+            const subsidyId = deleteBtn.getAttribute('data-id');
+            deleteSubsidy(subsidyId);
+        }
+    });
 }
 
 // Open Subsidy Modal
 function openSubsidyModal() {
     const modal = document.getElementById('subsidyModal');
-    document.getElementById('subsidyModalTitle').textContent = 'Add New Subsidy';
+    document.getElementById('subsidyModalTitle').textContent = 'Add Government Subsidy';
     document.getElementById('subsidyForm').reset();
     document.getElementById('subsidyId').value = '';
     modal.style.display = 'flex';
@@ -722,23 +977,39 @@ function closeSubsidyModalHandler() {
     document.getElementById('subsidyModal').style.display = 'none';
 }
 
-// Save Subsidy
+// Validate URL format
+function isValidUrl(string) {
+    try {
+        const url = new URL(string);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (_) {
+        return false;
+    }
+}
+
+// Save Subsidy (URL-based)
 async function saveSubsidy(e) {
     e.preventDefault();
     
     const subsidyId = document.getElementById('subsidyId').value;
+    const subsidyUrl = document.getElementById('subsidyUrl').value;
+    
+    // Validate URL format
+    if (!isValidUrl(subsidyUrl)) {
+        alert('❌ Please enter a valid government subsidy URL (must start with http:// or https://)');
+        return;
+    }
+    
     const subsidyData = {
+        _id: subsidyId || `subsidy-${Date.now()}`,
+        id: subsidyId || `subsidy-${Date.now()}`,
         title: document.getElementById('subsidyTitle').value,
-        amount: parseInt(document.getElementById('subsidyAmount').value),
-        category: document.getElementById('subsidyCategory').value,
-        state: document.getElementById('subsidyState').value,
+        url: subsidyUrl,
         description: document.getElementById('subsidyDescription').value,
-        eligibility: document.getElementById('subsidyEligibility').value,
-        applicationDeadline: document.getElementById('subsidyDeadline').value,
-        isActive: document.getElementById('subsidyActive').value === 'true',
-        contactInfo: {
-            website: document.getElementById('subsidyWebsite').value
-        }
+        eligibility: document.getElementById('subsidyEligibility').value || '',
+        category: document.getElementById('subsidyCategory').value || 'other',
+        state: document.getElementById('subsidyState').value || 'All India',
+        isActive: true
     };
     
     try {
@@ -760,23 +1031,50 @@ async function saveSubsidy(e) {
         const data = await response.json();
         
         if (response.ok && data.success) {
-            alert(subsidyId ? 'Subsidy updated successfully!' : 'Subsidy created successfully!');
+            alert(subsidyId ? '✅ Subsidy updated successfully!' : '✅ Subsidy created successfully!');
             closeSubsidyModalHandler();
             loadSubsidies();
-            loadSubsidyStats();
         } else {
-            alert(data.message || 'Failed to save subsidy. Running in demo mode.');
+            // Demo mode: save to localStorage
+            saveToDemoStorage(subsidyData, subsidyId);
+            alert('✅ Subsidy saved successfully! (Demo Mode)');
+            closeSubsidyModalHandler();
+            loadSubsidies();
         }
     } catch (error) {
         console.error('Error saving subsidy:', error);
-        alert('Error saving subsidy. Database not connected. Running in demo mode.');
+        // Demo mode: save to localStorage
+        saveToDemoStorage(subsidyData, subsidyId);
+        alert('✅ Subsidy saved successfully! (Demo Mode)');
+        closeSubsidyModalHandler();
+        loadSubsidies();
     }
+}
+
+// Save to demo storage (localStorage)
+function saveToDemoStorage(subsidyData, isEdit) {
+    let storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
+    
+    if (isEdit) {
+        // Update existing
+        const index = storedSubsidies.findIndex(s => s._id === subsidyData._id || s.id === subsidyData.id);
+        if (index !== -1) {
+            storedSubsidies[index] = subsidyData;
+        }
+    } else {
+        // Add new
+        storedSubsidies.push(subsidyData);
+    }
+    
+    localStorage.setItem('demoSubsidies', JSON.stringify(storedSubsidies));
 }
 
 // Edit Subsidy
 async function editSubsidy(subsidyId) {
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+        
+        // First, try to get from API
         const response = await fetch(`${API_URL}/admin/subsidies/${subsidyId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -785,35 +1083,56 @@ async function editSubsidy(subsidyId) {
         
         if (response.ok) {
             const data = await response.json();
-            if (data.success) {
-                const subsidy = data.subsidy;
-                
-                // Fill form
-                document.getElementById('subsidyId').value = subsidy._id;
-                document.getElementById('subsidyTitle').value = subsidy.title;
-                document.getElementById('subsidyAmount').value = subsidy.amount;
-                document.getElementById('subsidyCategory').value = subsidy.category;
-                document.getElementById('subsidyState').value = subsidy.state;
-                document.getElementById('subsidyDescription').value = subsidy.description;
-                document.getElementById('subsidyEligibility').value = subsidy.eligibility;
-                document.getElementById('subsidyDeadline').value = subsidy.applicationDeadline.split('T')[0];
-                document.getElementById('subsidyActive').value = subsidy.isActive.toString();
-                document.getElementById('subsidyWebsite').value = subsidy.contactInfo?.website || '';
-                
-                // Open modal
-                document.getElementById('subsidyModalTitle').textContent = 'Edit Subsidy';
-                document.getElementById('subsidyModal').style.display = 'flex';
+            if (data.success && data.subsidy) {
+                fillEditForm(data.subsidy);
+                return;
             }
         }
+        
+        // Fallback: Try to get from localStorage (demo mode)
+        const storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
+        const subsidy = storedSubsidies.find(s => s._id === subsidyId || s.id === subsidyId);
+        
+        if (subsidy) {
+            fillEditForm(subsidy);
+        } else {
+            alert('❌ Subsidy not found. It may have been deleted.');
+        }
+        
     } catch (error) {
         console.error('Error loading subsidy:', error);
-        alert('Cannot edit in demo mode');
+        
+        // Try localStorage as last resort
+        const storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
+        const subsidy = storedSubsidies.find(s => s._id === subsidyId || s.id === subsidyId);
+        
+        if (subsidy) {
+            fillEditForm(subsidy);
+        } else {
+            alert('❌ Cannot load subsidy data.');
+        }
     }
+}
+
+// Fill edit form with subsidy data
+function fillEditForm(subsidy) {
+    // Fill form with URL-based fields
+    document.getElementById('subsidyId').value = subsidy._id || subsidy.id;
+    document.getElementById('subsidyTitle').value = subsidy.title;
+    document.getElementById('subsidyUrl').value = subsidy.url || subsidy.contactInfo?.website || '';
+    document.getElementById('subsidyDescription').value = subsidy.description;
+    document.getElementById('subsidyEligibility').value = subsidy.eligibility || '';
+    document.getElementById('subsidyCategory').value = subsidy.category || '';
+    document.getElementById('subsidyState').value = subsidy.state || '';
+    
+    // Open modal
+    document.getElementById('subsidyModalTitle').textContent = 'Edit Subsidy';
+    document.getElementById('subsidyModal').style.display = 'flex';
 }
 
 // Delete Subsidy
 async function deleteSubsidy(subsidyId) {
-    if (!confirm('Are you sure you want to delete this subsidy?')) {
+    if (!confirm('Are you sure you want to delete this subsidy? This will remove it from all farmers\' dashboards.')) {
         return;
     }
     
@@ -827,22 +1146,77 @@ async function deleteSubsidy(subsidyId) {
         });
         
         if (response.ok) {
-            alert('Subsidy deleted successfully!');
+            alert('✅ Subsidy deleted successfully!');
             loadSubsidies();
-            loadSubsidyStats();
         } else {
-            alert('Failed to delete subsidy. Running in demo mode.');
+            // Demo mode: delete from localStorage
+            deleteFromDemoStorage(subsidyId);
+            alert('✅ Subsidy deleted successfully! (Demo Mode)');
+            loadSubsidies();
         }
     } catch (error) {
         console.error('Error deleting subsidy:', error);
-        alert('Cannot delete in demo mode');
+        // Demo mode: delete from localStorage
+        deleteFromDemoStorage(subsidyId);
+        alert('✅ Subsidy deleted successfully! (Demo Mode)');
+        loadSubsidies();
     }
 }
 
-// Make functions globally available
-window.editSubsidy = editSubsidy;
-window.deleteSubsidy = deleteSubsidy;
+// Delete from demo storage (localStorage)
+function deleteFromDemoStorage(subsidyId) {
+    let storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
+    storedSubsidies = storedSubsidies.filter(s => s._id !== subsidyId && s.id !== subsidyId);
+    localStorage.setItem('demoSubsidies', JSON.stringify(storedSubsidies));
+}
 
-// Make functions globally available
-window.approveFarmer = approveFarmer;
-window.rejectFarmer = rejectFarmer;
+// Load demo subsidies with proper IDs
+function getStoredDemoSubsidies() {
+    const stored = localStorage.getItem('demoSubsidies');
+    if (stored) {
+        return JSON.parse(stored);
+    }
+    
+    // Initialize with default demo subsidies
+    const defaultSubsidies = [
+        {
+            _id: 'demo-1',
+            id: 'demo-1',
+            title: 'PM-KISAN Direct Benefit Transfer',
+            category: 'insurance',
+            state: 'All India',
+            description: 'Income support of ₹6,000 per year to all farmer families across the country',
+            eligibility: 'All landholding farmer families',
+            url: 'https://pmkisan.gov.in'
+        },
+        {
+            _id: 'demo-2',
+            id: 'demo-2',
+            title: 'Karnataka Seed Subsidy Scheme',
+            category: 'seeds',
+            state: 'Karnataka',
+            description: 'Get 50% subsidy on certified seeds for agricultural crops',
+            eligibility: 'Registered farmers with valid land documents',
+            url: 'https://raitamitra.karnataka.gov.in'
+        },
+        {
+            _id: 'demo-3',
+            id: 'demo-3',
+            title: 'Pradhan Mantri Fasal Bima Yojana',
+            category: 'insurance',
+            state: 'All India',
+            description: 'Comprehensive crop insurance scheme to protect farmers against crop loss',
+            eligibility: 'All farmers growing notified crops',
+            url: 'https://pmfby.gov.in'
+        }
+    ];
+    
+    localStorage.setItem('demoSubsidies', JSON.stringify(defaultSubsidies));
+    return defaultSubsidies;
+}
+
+// Display Demo Subsidies
+function displayDemoSubsidies() {
+    const demoSubsidies = getStoredDemoSubsidies();
+    displaySubsidies(demoSubsidies);
+}

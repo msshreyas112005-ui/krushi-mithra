@@ -691,11 +691,18 @@ router.get('/statistics', verifyMainAdmin, async (req, res) => {
 });
 
 /**
- * @route   POST /api/admin/notifications/broadcast
- * @desc    Create and broadcast notification to farmers
+ * @route   POST /api/admin/notifications
+ * @desc    Create and send notification to farmers (with email support)
  * @access  Admin only
  */
 const notificationController = require('../controllers/notification.controller');
+router.post('/notifications', verifyMainAdmin, notificationController.createNotification);
+
+/**
+ * @route   POST /api/admin/notifications/broadcast
+ * @desc    Create and broadcast notification to farmers (legacy endpoint)
+ * @access  Admin only
+ */
 router.post('/notifications/broadcast', verifyMainAdmin, notificationController.createNotification);
 
 /**

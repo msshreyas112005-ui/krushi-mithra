@@ -368,7 +368,7 @@ async function loadGovernmentSchemes() {
     try {
         const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
         
-        // Fetch subsidies from API
+        // Fetch subsidies from API (same endpoint admin uses)
         const response = await fetch('/api/farmer/subsidies', {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -382,15 +382,16 @@ async function loadGovernmentSchemes() {
         const data = await response.json();
         
         if (data.success && data.data) {
-            // Convert API subsidies to schemes format
+            // Convert API subsidies to schemes format with URL support
             const schemes = data.data.slice(0, 6).map(subsidy => ({
                 id: subsidy._id,
                 title: subsidy.title,
-                amount: subsidy.amount,
+                amount: subsidy.amount || null,
                 category: subsidy.category,
                 description: subsidy.description || subsidy.eligibility,
-                deadline: new Date(subsidy.applicationDeadline).toLocaleDateString('en-IN'),
-                link: subsidy.contactInfo?.website || '#',
+                eligibility: subsidy.eligibility || '',
+                deadline: subsidy.applicationDeadline ? new Date(subsidy.applicationDeadline).toLocaleDateString('en-IN') : null,
+                link: subsidy.url || subsidy.contactInfo?.website || '#',
                 state: subsidy.state
             }));
             
@@ -413,34 +414,38 @@ function loadDemoSchemes() {
             amount: 6000,
             category: 'income support',
             description: 'Direct income support of ₹6000 per year to all landholding farmers',
+            eligibility: 'All landholding farmer families',
             deadline: '31/12/2025',
             link: 'https://pmkisan.gov.in',
             state: 'All India'
         },
         {
             title: 'Pradhan Mantri Fasal Bima Yojana (PMFBY)',
-            amount: 200000,
+            amount: null,
             category: 'insurance',
-            description: 'Comprehensive crop insurance scheme protecting farmers against crop loss',
+            description: 'Comprehensive crop insurance scheme protecting farmers against crop loss due to natural calamities',
+            eligibility: 'All farmers growing notified crops',
             deadline: '30/06/2025',
             link: 'https://pmfby.gov.in',
             state: 'All India'
         },
         {
-            title: 'Pradhan Mantri Krishi Sinchayee Yojana (PMKSY)',
-            amount: 50000,
-            category: 'irrigation',
-            description: 'Irrigation support to expand cultivable area - Per Drop More Crop initiative',
+            title: 'Karnataka Seed Subsidy Scheme',
+            amount: 5000,
+            category: 'seeds',
+            description: 'Get 50% subsidy on certified seeds for agricultural crops in Karnataka',
+            eligibility: 'Registered farmers with valid land documents',
             deadline: '31/03/2026',
-            link: 'https://pmksy.gov.in',
-            state: 'All India'
+            link: 'https://raitamitra.karnataka.gov.in',
+            state: 'Karnataka'
         },
         {
             title: 'Soil Health Card Scheme',
-            amount: 0,
+            amount: null,
             category: 'advisory',
             description: 'Free soil testing and customized fertilizer recommendations for farmers',
-            deadline: '31/12/2025',
+            eligibility: 'All farmers',
+            deadline: null,
             link: 'https://soilhealth.dac.gov.in',
             state: 'All India'
         },
@@ -448,18 +453,10 @@ function loadDemoSchemes() {
             title: 'PM Kisan Maandhan Yojana (Pension)',
             amount: 36000,
             category: 'pension',
-            description: '₹3,000 monthly pension to small and marginal farmers after 60 years',
+            description: '₹3,000 monthly pension to small and marginal farmers after 60 years of age',
+            eligibility: 'Small and marginal farmers aged 18-40 years',
             deadline: '28/02/2026',
             link: 'https://maandhan.in',
-            state: 'All India'
-        },
-        {
-            title: 'Kisan Drone Subsidy Scheme',
-            amount: 500000,
-            category: 'technology',
-            description: 'Financial assistance for purchasing drones for agricultural purposes',
-            deadline: '31/03/2026',
-            link: 'https://agricoop.nic.in',
             state: 'All India'
         }
     ];
@@ -475,7 +472,7 @@ function updateSchemesUI(schemes) {
         return;
     }
     
-    const registerText = window.krushiLang ? window.krushiLang.translate('subsidy.register') : 'Register';
+    const viewSchemeText = window.krushiLang ? window.krushiLang.translate('subsidy.viewScheme') : 'View Official Scheme';
     
     schemesList.innerHTML = schemes.map(scheme => `
         <div class="scheme-item">
@@ -488,8 +485,12 @@ function updateSchemesUI(schemes) {
                 ${scheme.state ? `<span class="scheme-location">📍 ${scheme.state}</span>` : ''}
             </div>
             <div class="scheme-desc">${scheme.description}</div>
+            ${scheme.eligibility ? `<div class="scheme-eligibility">✓ Eligibility: ${scheme.eligibility}</div>` : ''}
             ${scheme.deadline ? `<div class="scheme-deadline">⏰ Apply by: ${scheme.deadline}</div>` : ''}
-            <a href="${scheme.link}" class="scheme-action" target="_blank">${registerText} →</a>
+            <a href="${scheme.link}" class="scheme-action" target="_blank" rel="noopener noreferrer">
+                <span>🌐 ${viewSchemeText}</span>
+                <span>→</span>
+            </a>
         </div>
     `).join('');
     
@@ -504,42 +505,77 @@ function capitalizeFirst(str) {
 // Load Notifications
 async function loadNotifications() {
     try {
+        // Load from localStorage first (for notifications sent by admin)
+        const storedNotifications = JSON.parse(localStorage.getItem('farmerNotifications') || '[]');
+        
+        if (storedNotifications && storedNotifications.length > 0) {
+            // Format stored notifications
+            const formattedNotifications = storedNotifications.map(notif => ({
+                id: notif.id,
+                icon: notif.icon || getIconForType(notif.type),
+                title: notif.title,
+                text: notif.message,
+                time: getTimeAgo(new Date(notif.createdAt)),
+                type: notif.type,
+                priority: notif.priority,
+                unread: !notif.read
+            }));
+            
+            updateNotificationsUI(formattedNotifications);
+            console.log(`✅ Loaded ${formattedNotifications.length} notifications from storage`);
+            return;
+        }
+        
+        // Try API call
         const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
         
-        // Fetch notifications from API
         const response = await fetch(`${API_URL}/farmer/notifications`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
         
-        if (!response.ok) {
-            throw new Error('Failed to fetch notifications');
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.notifications) {
-            const formattedNotifications = data.notifications.map(notif => ({
-                id: notif._id,
-                icon: notif.icon || '📢',
-                title: notif.title,
-                text: notif.message,
-                time: getTimeAgo(new Date(notif.createdAt)),
-                type: notif.type,
-                priority: notif.priority,
-                unread: true // You could track read status
-            }));
+        if (response.ok) {
+            const data = await response.json();
             
-            updateNotificationsUI(formattedNotifications);
-        } else {
-            // Fallback to demo notifications
-            loadDemoNotifications();
+            if (data.success && data.notifications) {
+                const formattedNotifications = data.notifications.map(notif => ({
+                    id: notif._id,
+                    icon: notif.icon || getIconForType(notif.type),
+                    title: notif.title,
+                    text: notif.message,
+                    time: getTimeAgo(new Date(notif.createdAt)),
+                    type: notif.type,
+                    priority: notif.priority,
+                    unread: true
+                }));
+                
+                updateNotificationsUI(formattedNotifications);
+                return;
+            }
         }
+        
+        // Fallback to demo notifications
+        loadDemoNotifications();
     } catch (error) {
         console.error('Error loading notifications:', error);
         loadDemoNotifications();
     }
+}
+
+// Get icon for notification type
+function getIconForType(type) {
+    const icons = {
+        'announcement': '📢',
+        'alert': '⚠️',
+        'warning': '🌧️',
+        'info': 'ℹ️',
+        'success': '✅',
+        'subsidy': '💰',
+        'weather': '🌦️',
+        'market': '📈'
+    };
+    return icons[type] || '📢';
 }
 
 // Load demo notifications as fallback

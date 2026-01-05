@@ -497,7 +497,34 @@ router.get('/subsidies', verifyApprovedFarmer, async (req, res) => {
 router.get('/notifications', verifyApprovedFarmer, async (req, res) => {
   try {
     const { unreadOnly } = req.query;
+    
+    // Get farmer location and crop for filtering
+    const farmerLocation = req.farmer.location;
+    const farmerCrop = req.farmer.cropType;
 
+    // Try file-based storage first
+    const notificationService = require('../services/notification.service');
+    const storedNotifications = await notificationService.getNotificationsForAudience(
+      'all',
+      farmerLocation,
+      farmerCrop
+    );
+
+    if (storedNotifications && storedNotifications.length > 0) {
+      // Filter by read status if requested
+      let filteredNotifications = storedNotifications;
+      if (unreadOnly === 'true') {
+        filteredNotifications = storedNotifications.filter(n => !n.read);
+      }
+
+      return res.json({
+        success: true,
+        count: filteredNotifications.length,
+        notifications: filteredNotifications.slice(0, 50) // Limit to 50
+      });
+    }
+
+    // Fallback to MongoDB
     const query = { farmer: req.farmer._id };
 
     if (unreadOnly === 'true') {

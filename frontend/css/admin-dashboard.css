@@ -122,6 +122,7 @@ body::before {
     display: flex;
     list-style: none;
     gap: 0.5rem;
+    align-items: center;
 }
 
 .nav-menu a {
@@ -165,6 +166,36 @@ body::before {
         0 6px 20px rgba(76, 175, 80, 0.4),
         0 0 0 3px rgba(76, 175, 80, 0.1);
     font-weight: 800;
+}
+
+/* Language Selector in Navbar */
+.language-nav-item {
+    margin-left: 1rem;
+}
+
+.language-dropdown-nav {
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #81C784;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+    color: #2E7D32;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+}
+
+.language-dropdown-nav:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+    border-color: #4CAF50;
+}
+
+.language-dropdown-nav:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
 /* User Section */
@@ -302,8 +333,10 @@ body::before {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 .stat-card {
@@ -568,6 +601,71 @@ body::before {
     gap: 1.5rem;
 }
 
+/* Farmers Table Styling */
+.farmers-table-container {
+    overflow-x: auto;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.1);
+}
+
+.farmers-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.farmers-table thead {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white;
+}
+
+.farmers-table th {
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.farmers-table tbody tr {
+    border-bottom: 1px solid #E8F5E9;
+    transition: all 0.3s ease;
+}
+
+.farmers-table tbody tr:hover {
+    background: #F1F8E9;
+    transform: scale(1.01);
+}
+
+.farmers-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.farmers-table td {
+    padding: 1.2rem 1.5rem;
+    color: #2E7D32;
+    font-weight: 500;
+}
+
+.farmers-table .status-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.farmers-table .status-badge.approved,
+.farmers-table .status-badge.active {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
 .farmer-card {
     background: linear-gradient(135deg, #ffffff 0%, #f9fdf9 100%);
     padding: 2rem;
@@ -766,6 +864,106 @@ body::before {
     border-color: #4CAF50;
 }
 
+.subsidy-header {
+    margin-bottom: 1.5rem;
+}
+
+.subsidy-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1B5E20;
+    margin-bottom: 0.8rem;
+}
+
+.subsidy-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.subsidy-badge,
+.subsidy-location {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.subsidy-badge {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.subsidy-location {
+    background: #FFF3E0;
+    color: #F57C00;
+}
+
+.subsidy-body {
+    margin-bottom: 1.5rem;
+}
+
+.subsidy-description {
+    color: #424242;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.subsidy-url {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #F1F8E9;
+    border-radius: 10px;
+    border-left: 4px solid #4CAF50;
+}
+
+.subsidy-url strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2E7D32;
+}
+
+.subsidy-url a {
+    color: #1976D2;
+    text-decoration: none;
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.subsidy-url a:hover {
+    text-decoration: underline;
+}
+
+.subsidy-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #FFFDE7;
+    border-radius: 10px;
+    font-size: 0.95rem;
+}
+
+.subsidy-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.btn-danger {
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-danger:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+}
+
 /* Modal Styles */
 .modal {
     position: fixed;
@@ -949,7 +1147,8 @@ body::before {
     }
     
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
     }
 }
 
@@ -964,6 +1163,11 @@ body::before {
         gap: 1rem;
     }
     
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
     .nav-menu ul {
         flex-wrap: wrap;
         width: 100%;
@@ -972,6 +1176,16 @@ body::before {
     .nav-menu a {
         padding: 0.8rem 1.2rem;
         font-size: 0.9rem;
+    }
+    
+    .language-nav-item {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .language-dropdown-nav {
+        width: 100%;
+        font-size: 0.95rem;
     }
     
     .section-title {
@@ -997,6 +1211,16 @@ body::before {
     .btn-approve,
     .btn-reject {
         flex: 1;
+    }
+    
+    .farmers-table-container {
+        overflow-x: auto;
+    }
+    
+    .farmers-table th,
+    .farmers-table td {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
     }
     
     .modal-content {

@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
@@ -68,41 +67,28 @@ const path = require('path');
 app.use('/frontend', express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../frontend'))); // Also serve from root for backward compatibility
 
-// Database Connection (non-blocking)
-const dbConfig = require('./config/database');
+// Database Connection (PostgreSQL with Neon)
+const { pool, initializeTables } = require('./db');
 let isDbConnected = false;
 
-// Only connect to MongoDB if MONGODB_URI is set
-if (process.env.MONGODB_URI) {
-  mongoose.connect(dbConfig.url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000 // Fail fast if MongoDB is not available
-  })
-  .then(() => {
-    console.log('✅ Successfully connected to MongoDB');
+// Initialize PostgreSQL connection and tables
+(async () => {
+  try {
+    // Test connection
+    const client = await pool.connect();
+    client.release();
+    console.log('✅ PostgreSQL database connected successfully (Neon)');
     isDbConnected = true;
     
-    // Initialize MAIN_ADMIN on successful DB connection
-    setTimeout(async () => {
-      try {
-        const { initializeMainAdmin } = require('./utils/initAdmin');
-        await initializeMainAdmin();
-      } catch (error) {
-        console.error('⚠️  Failed to initialize admin:', error.message);
-      }
-    }, 1000);
-  })
-  .catch((err) => {
-    console.warn('⚠️  MongoDB connection failed - Running in JSON storage mode');
-    console.warn('   All data will be stored in JSON files');
-    console.warn('   Error:', err.message);
+    // Initialize tables
+    await initializeTables();
+    console.log('✅ Database tables ready\n');
+  } catch (error) {
+    console.error('❌ PostgreSQL connection failed:', error.message);
+    console.warn('⚠️  Running without database - Some features may not work');
     isDbConnected = false;
-  });
-} else {
-  console.log('💾 Running in JSON file storage mode - No MongoDB connection');
-  console.log('   All data will be stored in data/ folder');
-}
+  }
+})();
 
 // Export DB status for controllers
 app.locals.isDbConnected = () => isDbConnected;
@@ -116,10 +102,12 @@ app.get('/', (req, res) => {
 const farmerRoutes = require('./routes/farmer.routes');
 const farmerApiRoutes = require('./routes/farmer.api.routes');
 const adminRoutes = require('./routes/admin.routes');
+const postgresRoutes = require('./routes/postgres.routes'); // PostgreSQL routes
 
 app.use('/api/farmers', farmerRoutes);
 app.use('/api/farmer', farmerApiRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', postgresRoutes); // Add PostgreSQL routes
 
 // 404 Handler - Must be after all routes
 app.use(notFoundHandler);
@@ -151,22 +139,17 @@ try {
   console.warn('⚠️  Scheduler initialization skipped:', error.message);
 }
 
-// Wait for DB connection then load prices
-setTimeout(async () => {
+// Wait for DB connection then show status
+setTimeout(() => {
   if (isDbConnected) {
-    try {
-      const { triggerManualUpdate } = require('./config/scheduler');
-      console.log('📊 Loading initial market prices...');
-      await triggerManualUpdate();
-      console.log('✅ Market prices loaded successfully\n');
-    } catch (error) {
-      console.warn('⚠️  Could not load market prices:', error.message);
-    }
+    console.log('💡 Running with PostgreSQL Database (Neon Cloud)');
+    console.log('   All data is persisted in the database');
+    console.log('   Real-time data storage and retrieval active\n');
   } else {
-    console.log('💡 Running in DEMO MODE - Using simulated data');
-    console.log('   All APIs will work with demo data');
-    console.log('   To enable database: Start MongoDB on localhost:27017\n');
+    console.log('💡 Running in DEMO MODE - Database not connected');
+    console.log('   Some features may not work properly');
+    console.log('   Check your DATABASE_URL in .env file\n');
   }
-}, 6000); // Wait 6 seconds for DB connection attempt
+}, 2000); // Wait 2 seconds for DB connection
 
 module.exports = server;
