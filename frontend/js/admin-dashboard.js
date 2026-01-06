@@ -572,7 +572,7 @@ async function sendNotification(e) {
         priority,
         targetAudience,
         icon,
-        sendEmail: true, // Flag to send emails
+        sendEmail: document.getElementById('sendEmailNotification')?.checked !== false, // Check if checkbox exists and is checked
         createdAt: new Date().toISOString()
     };
     
@@ -616,63 +616,23 @@ async function sendNotification(e) {
         const data = await response.json();
         
         if (response.ok && data.success) {
-            // Save to localStorage for farmer dashboard access
-            saveNotificationToStorage(notificationData);
-            
-            alert(`✅ Notification sent successfully!\n\n📧 Emails sent to ${data.emailsSent || 'all'} farmers\n💾 Notification saved to database`);
+            alert(`✅ Notification sent successfully!\n\n📧 Emails sent to ${data.emailsSent || 0} farmers\n💾 Notification saved to database`);
             notificationForm.reset();
             document.getElementById('locationGroup').style.display = 'none';
             document.getElementById('cropGroup').style.display = 'none';
         } else {
-            // Demo mode: Save to localStorage
-            saveNotificationToStorage(notificationData);
-            alert(`✅ Notification sent successfully (Demo Mode)!\n\nTitle: ${title}\nAudience: ${targetAudience}\nPriority: ${priority}\n\n📧 In production, emails will be sent to all registered farmers.`);
-            notificationForm.reset();
-            document.getElementById('locationGroup').style.display = 'none';
-            document.getElementById('cropGroup').style.display = 'none';
+            alert(`⚠️ ${data.message || 'Failed to send notification'}\n\nPlease try again.`);
         }
         
     } catch (error) {
         console.error('Error sending notification:', error);
-        
-        // Fallback: Save to localStorage for demo
-        saveNotificationToStorage(notificationData);
-        alert(`✅ Notification saved successfully (Demo Mode)!\n\nTitle: ${title}\nAudience: ${targetAudience}\n\n📧 In production mode, emails will be sent to all registered farmers.\n💾 Notification is now visible on Farmer Dashboard.`);
-        notificationForm.reset();
-        document.getElementById('locationGroup').style.display = 'none';
-        document.getElementById('cropGroup').style.display = 'none';
+        alert(`❌ Error sending notification: ${error.message}\n\nPlease check your connection and try again.`);
     } finally {
         // Re-enable button
         submitBtn.disabled = false;
         submitBtn.textContent = originalBtnText;
         submitBtn.style.opacity = '1';
     }
-}
-
-// Save notification to localStorage for farmer dashboard
-function saveNotificationToStorage(notification) {
-    // Get existing notifications
-    let notifications = JSON.parse(localStorage.getItem('farmerNotifications') || '[]');
-    
-    // Add new notification with ID
-    const newNotification = {
-        id: `notif-${Date.now()}`,
-        ...notification,
-        read: false,
-        createdAt: notification.createdAt || new Date().toISOString()
-    };
-    
-    // Add to beginning (newest first)
-    notifications.unshift(newNotification);
-    
-    // Keep only last 50 notifications
-    if (notifications.length > 50) {
-        notifications = notifications.slice(0, 50);
-    }
-    
-    // Save back to localStorage
-    localStorage.setItem('farmerNotifications', JSON.stringify(notifications));
-    console.log('✅ Notification saved to localStorage for farmers');
 }
 
 // Get default icon based on type
@@ -718,6 +678,8 @@ function setupEventListeners() {
                 document.querySelector('.market-section').style.display = 'block';
             } else if (section === 'subsidies') {
                 document.querySelector('.subsidy-section').style.display = 'block';
+            } else if (section === 'notifications') {
+                document.querySelector('.notification-section').style.display = 'block';
             }
             
             console.log('📍 Navigated to:', section);
@@ -834,7 +796,7 @@ async function loadSubsidies() {
         
         // Add timeout to prevent hanging
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased to 10 seconds
         
         const response = await fetch(url, {
             headers: {
@@ -848,28 +810,25 @@ async function loadSubsidies() {
         if (response.ok) {
             const data = await response.json();
             if (data.success) {
-                displaySubsidies(data.subsidies);
+                // Display subsidies even if empty array
+                displaySubsidies(data.subsidies || []);
                 return;
             }
         }
         
-        // Fallback to demo data
-        displayDemoSubsidies();
+        // Show error message if API failed
+        if (subsidiesList) {
+            subsidiesList.innerHTML = '<div class="empty-state">⚠️ Unable to load subsidies. Please try again.</div>';
+        }
     } catch (error) {
+        console.error('❌ Error loading subsidies:', error);
         if (error.name === 'AbortError') {
-            console.warn('⚠️ Subsidies API timeout, using demo data');
-        } else {
-            console.error('❌ Error loading subsidies:', error);
+            console.error('❌ Request timed out');
         }
-        displayDemoSubsidies();
-    } finally {
-        // Only clear if STILL showing loading spinner (⏳)
-        const subsidiesList = document.getElementById('subsidiesList');
-        if (subsidiesList && subsidiesList.innerHTML.includes('⏳')) {
-            console.log('⚠️ Subsidies never rendered, showing fallback');
-            subsidiesList.innerHTML = '<div class="empty-state">Unable to load subsidies.</div>';
+        // Show user-friendly error
+        if (subsidiesList) {
+            subsidiesList.innerHTML = '<div class="empty-state">⚠️ Unable to load subsidies. Please refresh the page.</div>';
         }
-        console.log('✅ Subsidies loading complete');
     }
 }
 
@@ -1020,46 +979,19 @@ async function saveSubsidy(e) {
             closeSubsidyModalHandler();
             loadSubsidies();
         } else {
-            // Demo mode: save to localStorage
-            saveToDemoStorage(subsidyData, subsidyId);
-            alert('✅ Subsidy saved successfully! (Demo Mode)');
-            closeSubsidyModalHandler();
-            loadSubsidies();
+            alert('❌ Error saving subsidy: ' + (data.message || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error saving subsidy:', error);
-        // Demo mode: save to localStorage
-        saveToDemoStorage(subsidyData, subsidyId);
-        alert('✅ Subsidy saved successfully! (Demo Mode)');
-        closeSubsidyModalHandler();
-        loadSubsidies();
+        alert('❌ Error saving subsidy. Please check database connection.');
     }
 }
 
-// Save to demo storage (localStorage)
-function saveToDemoStorage(subsidyData, isEdit) {
-    let storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
-    
-    if (isEdit) {
-        // Update existing
-        const index = storedSubsidies.findIndex(s => s._id === subsidyData._id || s.id === subsidyData.id);
-        if (index !== -1) {
-            storedSubsidies[index] = subsidyData;
-        }
-    } else {
-        // Add new
-        storedSubsidies.push(subsidyData);
-    }
-    
-    localStorage.setItem('demoSubsidies', JSON.stringify(storedSubsidies));
-}
-
-// Edit Subsidy
+// Edit Subsidy - Load subsidy data and open modal
 async function editSubsidy(subsidyId) {
     try {
         const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
         
-        // First, try to get from API
         const response = await fetch(`${API_URL}/admin/subsidies/${subsidyId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1074,28 +1006,10 @@ async function editSubsidy(subsidyId) {
             }
         }
         
-        // Fallback: Try to get from localStorage (demo mode)
-        const storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
-        const subsidy = storedSubsidies.find(s => s._id === subsidyId || s.id === subsidyId);
-        
-        if (subsidy) {
-            fillEditForm(subsidy);
-        } else {
-            alert('❌ Subsidy not found. It may have been deleted.');
-        }
-        
+        alert('❌ Subsidy not found or unable to load.');
     } catch (error) {
         console.error('Error loading subsidy:', error);
-        
-        // Try localStorage as last resort
-        const storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
-        const subsidy = storedSubsidies.find(s => s._id === subsidyId || s.id === subsidyId);
-        
-        if (subsidy) {
-            fillEditForm(subsidy);
-        } else {
-            alert('❌ Cannot load subsidy data.');
-        }
+        alert('❌ Cannot load subsidy data. Please check database connection.');
     }
 }
 
@@ -1130,78 +1044,18 @@ async function deleteSubsidy(subsidyId) {
             }
         });
         
-        if (response.ok) {
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
             alert('✅ Subsidy deleted successfully!');
             loadSubsidies();
         } else {
-            // Demo mode: delete from localStorage
-            deleteFromDemoStorage(subsidyId);
-            alert('✅ Subsidy deleted successfully! (Demo Mode)');
-            loadSubsidies();
+            alert('❌ Error deleting subsidy: ' + (data.message || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error deleting subsidy:', error);
-        // Demo mode: delete from localStorage
-        deleteFromDemoStorage(subsidyId);
-        alert('✅ Subsidy deleted successfully! (Demo Mode)');
-        loadSubsidies();
+        alert('❌ Error deleting subsidy. Please check database connection.');
     }
 }
 
-// Delete from demo storage (localStorage)
-function deleteFromDemoStorage(subsidyId) {
-    let storedSubsidies = JSON.parse(localStorage.getItem('demoSubsidies') || '[]');
-    storedSubsidies = storedSubsidies.filter(s => s._id !== subsidyId && s.id !== subsidyId);
-    localStorage.setItem('demoSubsidies', JSON.stringify(storedSubsidies));
-}
 
-// Load demo subsidies with proper IDs
-function getStoredDemoSubsidies() {
-    const stored = localStorage.getItem('demoSubsidies');
-    if (stored) {
-        return JSON.parse(stored);
-    }
-    
-    // Initialize with default demo subsidies
-    const defaultSubsidies = [
-        {
-            _id: 'demo-1',
-            id: 'demo-1',
-            title: 'PM-KISAN Direct Benefit Transfer',
-            category: 'insurance',
-            state: 'All India',
-            description: 'Income support of ₹6,000 per year to all farmer families across the country',
-            eligibility: 'All landholding farmer families',
-            url: 'https://pmkisan.gov.in'
-        },
-        {
-            _id: 'demo-2',
-            id: 'demo-2',
-            title: 'Karnataka Seed Subsidy Scheme',
-            category: 'seeds',
-            state: 'Karnataka',
-            description: 'Get 50% subsidy on certified seeds for agricultural crops',
-            eligibility: 'Registered farmers with valid land documents',
-            url: 'https://raitamitra.karnataka.gov.in'
-        },
-        {
-            _id: 'demo-3',
-            id: 'demo-3',
-            title: 'Pradhan Mantri Fasal Bima Yojana',
-            category: 'insurance',
-            state: 'All India',
-            description: 'Comprehensive crop insurance scheme to protect farmers against crop loss',
-            eligibility: 'All farmers growing notified crops',
-            url: 'https://pmfby.gov.in'
-        }
-    ];
-    
-    localStorage.setItem('demoSubsidies', JSON.stringify(defaultSubsidies));
-    return defaultSubsidies;
-}
-
-// Display Demo Subsidies
-function displayDemoSubsidies() {
-    const demoSubsidies = getStoredDemoSubsidies();
-    displaySubsidies(demoSubsidies);
-}

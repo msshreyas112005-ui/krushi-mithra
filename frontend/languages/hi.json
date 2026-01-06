@@ -157,7 +157,8 @@
     "amount": "राशि",
     "deadline": "अंतिम तिथि",
     "status": "स्थिति",
-    "register": "पंजीकरण करें"
+    "register": "पंजीकरण",
+    "viewScheme": "योजना देखें"
   },
   "notifications": {
     "title": "सूचनाएं",

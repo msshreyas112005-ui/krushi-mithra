@@ -157,7 +157,8 @@
     "amount": "ಮೊತ್ತ",
     "deadline": "ಅಂತಿಮ ದಿನಾಂಕ",
     "status": "ಸ್ಥಿತಿ",
-    "register": "ನೋಂದಣಿ ಮಾಡಿ"
+    "register": "ನೋಂದಣಿ",
+    "viewScheme": "ಯೋಜನೆ ವೀಕ್ಷಿಸಿ"
   },
   "notifications": {
     "title": "ಅಧಿಸೂಚನೆಗಳು",

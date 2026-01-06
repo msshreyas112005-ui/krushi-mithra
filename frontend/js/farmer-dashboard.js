@@ -13,18 +13,33 @@ const languageSelect = document.getElementById('languageSelect');
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🌾 ========================================');
     console.log('🌾 Initializing Farmer Dashboard');
+    console.log('🌾 ========================================');
     
-    checkAuthentication();
-    loadFarmerData();
-    initializeDate();
-    loadWeatherData();
-    loadMarketPrices('all');
-    loadGovernmentSchemes();
-    loadNotifications();
-    setupEventListeners();
-    
-    console.log('✅ Dashboard initialized');
+    try {
+        // Step 1: Check authentication
+        checkAuthentication();
+        
+        // Step 2: Setup event listeners FIRST (before loading data)
+        console.log('📌 Step 1: Setting up event listeners...');
+        setupEventListeners();
+        
+        // Step 3: Load all data
+        console.log('📌 Step 2: Loading dashboard data...');
+        loadFarmerData();
+        initializeDate();
+        loadWeatherData();
+        loadMarketPrices('all');
+        loadGovernmentSchemes();
+        loadNotifications();
+        
+        console.log('✅ ========================================');
+        console.log('✅ Dashboard initialized successfully!');
+        console.log('✅ ========================================');
+    } catch (error) {
+        console.error('❌ Dashboard initialization error:', error);
+    }
 });
 
 // Check Authentication
@@ -41,51 +56,98 @@ function checkAuthentication() {
 // Load Farmer Data
 async function loadFarmerData() {
     try {
-        // Get farmer data from storage
-        const farmerDataStr = localStorage.getItem('farmerData') || sessionStorage.getItem('farmerData');
+        const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
         
-        if (farmerDataStr) {
-            const farmerData = JSON.parse(farmerDataStr);
-            updateFarmerInfo(farmerData);
-        } else {
-            // Fetch from API if not in storage
-            const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
-            const response = await fetch(`${API_URL}/farmers/profile`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+        if (!token) {
+            console.warn('No auth token found');
+            return;
+        }
+        
+        // Fetch fresh farmer data from API
+        const response = await fetch(`${API_URL}/farmer/profile`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.farmer) {
+                // Store farmer data
+                const farmerData = result.farmer;
+                localStorage.setItem('farmerData', JSON.stringify(farmerData));
+                
+                // Update UI with farmer information
+                updateFarmerInfo(farmerData);
+            } else {
+                console.warn('Failed to load farmer data:', result.message);
+                // Try to use cached data
+                const cachedData = localStorage.getItem('farmerData');
+                if (cachedData) {
+                    updateFarmerInfo(JSON.parse(cachedData));
                 }
-            });
-            
-            if (response.ok) {
-                const result = await response.json();
-                updateFarmerInfo(result.data);
+            }
+        } else {
+            console.error('API error:', response.status);
+            // Try to use cached data
+            const cachedData = localStorage.getItem('farmerData');
+            if (cachedData) {
+                updateFarmerInfo(JSON.parse(cachedData));
             }
         }
     } catch (error) {
         console.error('Error loading farmer data:', error);
-        // Use demo data
-        updateFarmerInfo({
-            fullName: 'Ravi Kumar',
-            location: 'Mysore, Karnataka',
-            cropType: 'Rice',
-            language: 'kannada'
-        });
+        // Try to use cached data as last resort
+        const cachedData = localStorage.getItem('farmerData');
+        if (cachedData) {
+            updateFarmerInfo(JSON.parse(cachedData));
+        }
     }
 }
 
 // Update Farmer Information
 function updateFarmerInfo(data) {
-    if (data.fullName) {
-        farmerNameElement.textContent = data.fullName;
-        document.getElementById('userName').textContent = data.fullName.split(' ')[0];
+    console.log('Updating farmer info:', data);
+    
+    // Update name
+    if (data.name || data.fullName) {
+        const name = data.name || data.fullName;
+        farmerNameElement.textContent = name;
+        document.getElementById('userName').textContent = name.split(' ')[0];
     }
+    
+    // Update location
     if (data.location) {
         farmerLocationElement.textContent = data.location;
     }
-    if (data.cropType) {
-        const cropName = data.cropType.charAt(0).toUpperCase() + data.cropType.slice(1);
+    
+    // Update crop information
+    if (data.crop_type || data.cropType) {
+        const cropType = data.crop_type || data.cropType;
+        const cropName = cropType.charAt(0).toUpperCase() + cropType.slice(1);
         farmerCropElement.textContent = cropName;
+        
+        // Add additional crop details if available
+        const cropDetails = [];
+        if (data.crop_date) {
+            const date = new Date(data.crop_date);
+            cropDetails.push(`Planted: ${date.toLocaleDateString()}`);
+        }
+        if (data.crop_location) {
+            cropDetails.push(`Location: ${data.crop_location}`);
+        }
+        
+        if (cropDetails.length > 0) {
+            farmerCropElement.title = cropDetails.join(' | ');
+        }
+        
+        console.log('✅ Crop data loaded:', cropName, cropDetails.join(' | '));
+    } else {
+        farmerCropElement.textContent = 'No crop selected yet';
+        console.log('⚠️ No crop data available in database');
     }
+    
+    // Update language preference
     if (data.language) {
         languageSelect.value = data.language;
     }
@@ -96,6 +158,113 @@ function initializeDate() {
     const now = new Date();
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     currentDateElement.textContent = now.toLocaleDateString('en-US', options);
+}
+
+// District data by state
+const districtsByState = {
+    'Karnataka': ['Bengaluru Urban', 'Bengaluru Rural', 'Mysuru', 'Mandya', 'Hassan', 'Chikkamagaluru', 'Tumakuru', 'Kolar', 'Chitradurga', 'Davanagere', 'Shivamogga', 'Belagavi', 'Vijayapura', 'Bagalkot', 'Dharwad', 'Gadag', 'Haveri', 'Uttara Kannada', 'Ballari', 'Bidar', 'Kalaburagi', 'Raichur', 'Koppal', 'Yadgir', 'Chamarajanagar', 'Chikkaballapur', 'Dakshina Kannada', 'Kodagu', 'Ramanagara', 'Udupi', 'Vijayanagara'],
+    'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli', 'Tiruppur', 'Ranipet', 'Nagercoil', 'Thanjavur', 'Vellore', 'Kancheepuram', 'Erode', 'Tiruvannamalai', 'Karur', 'Sivaganga', 'Virudhunagar', 'Dindigul', 'Ramanathapuram', 'Theni', 'Namakkal', 'Dharmapuri', 'Krishnagiri', 'Pudukkottai', 'Nilgiris', 'Perambalur', 'Cuddalore', 'Villupuram', 'Nagapattinam', 'Tenkasi'],
+    'Andhra Pradesh': ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Nellore', 'Kurnool', 'Kakinada', 'Rajahmundry', 'Tirupati', 'Kadapa', 'Anantapur', 'Vizianagaram', 'Eluru', 'Ongole', 'Nandyal', 'Machilipatnam', 'Adoni', 'Tenali', 'Chittoor', 'Hindupur', 'Proddatur', 'Bhimavaram', 'Madanapalle', 'Guntakal', 'Dharmavaram', 'Gudivada', 'Srikakulam', 'Narasaraopet'],
+    'Kerala': ['Thiruvananthapuram', 'Kochi', 'Kozhikode', 'Kollam', 'Thrissur', 'Kannur', 'Alappuzha', 'Kottayam', 'Palakkad', 'Malappuram', 'Kasaragod', 'Pathanamthitta', 'Idukki', 'Wayanad'],
+    'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik', 'Aurangabad', 'Solapur', 'Kolhapur', 'Amravati', 'Nanded', 'Sangli', 'Jalgaon', 'Akola', 'Latur', 'Dhule', 'Ahmednagar', 'Chandrapur', 'Parbhani', 'Jalna', 'Bhiwandi', 'Navi Mumbai', 'Panvel', 'Satara', 'Beed', 'Yavatmal', 'Wardha', 'Osmanabad', 'Hingoli', 'Buldhana', 'Washim', 'Raigad', 'Ratnagiri', 'Sindhudurg', 'Gondia', 'Bhandara', 'Gadchiroli'],
+    'Telangana': ['Hyderabad', 'Warangal', 'Nizamabad', 'Khammam', 'Karimnagar', 'Ramagundam', 'Mahbubnagar', 'Nalgonda', 'Adilabad', 'Suryapet', 'Siddipet', 'Miryalaguda', 'Jagtial', 'Mancherial', 'Nirmal', 'Kothagudem', 'Bodhan', 'Palwancha', 'Mandapeta', 'Koratla', 'Sircilla', 'Tandur', 'Sangareddy', 'Vikarabad', 'Wanaparthy', 'Medak', 'Nagarkurnool', 'Kamareddy']
+};
+
+// Initialize State/District selectors
+function initializeWeatherSelectors() {
+    const stateSelect = document.getElementById('weatherState');
+    const districtSelect = document.getElementById('weatherDistrict');
+    const fetchWeatherBtn = document.getElementById('fetchWeatherBtn');
+    
+    if (!stateSelect || !districtSelect || !fetchWeatherBtn) {
+        console.warn('⚠️ Weather selector elements not found');
+        return;
+    }
+    
+    // State change handler
+    stateSelect.addEventListener('change', (e) => {
+        const selectedState = e.target.value;
+        districtSelect.innerHTML = '<option value="">Select District</option>';
+        
+        if (selectedState && districtsByState[selectedState]) {
+            districtsByState[selectedState].forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+            districtSelect.disabled = false;
+        } else {
+            districtSelect.disabled = true;
+        }
+    });
+    
+    // Fetch weather button handler
+    fetchWeatherBtn.addEventListener('click', async () => {
+        const state = stateSelect.value;
+        const district = districtSelect.value;
+        
+        if (!state || !district) {
+            alert('Please select both State and District');
+            return;
+        }
+        
+        console.log(`🌤️ Fetching weather for ${district}, ${state}`);
+        await loadWeatherByLocation(district, state);
+    });
+    
+    console.log('✅ Weather selectors initialized');
+}
+
+// Load weather by specific location
+async function loadWeatherByLocation(district, state) {
+    try {
+        const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
+        
+        if (!token) {
+            console.warn('No token, cannot fetch weather');
+            return;
+        }
+        
+        // Show loading state
+        const weatherIcon = document.getElementById('weatherIcon');
+        const temperature = document.getElementById('temperature');
+        const weatherDesc = document.getElementById('weatherDesc');
+        
+        if (weatherIcon) weatherIcon.textContent = '⏳';
+        if (temperature) temperature.textContent = 'Loading...';
+        if (weatherDesc) weatherDesc.textContent = 'Fetching weather data';
+        
+        // Fetch weather with location parameter
+        const response = await fetch(`${API_URL}/farmer/weather?location=${encodeURIComponent(district)}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                updateWeatherUI(result);
+                console.log(`✅ Weather loaded for ${district}, ${state}`);
+            } else {
+                throw new Error(result.message || 'Failed to fetch weather');
+            }
+        } else {
+            throw new Error(`API error: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('❌ Error fetching weather:', error);
+        
+        // Show error in UI
+        const weatherIcon = document.getElementById('weatherIcon');
+        const temperature = document.getElementById('temperature');
+        const weatherDesc = document.getElementById('weatherDesc');
+        
+        if (weatherIcon) weatherIcon.textContent = '❌';
+        if (temperature) temperature.textContent = 'Error';
+        if (weatherDesc) weatherDesc.textContent = 'Failed to fetch weather. Please try again.';
+    }
 }
 
 // Load Weather Data from API
@@ -504,62 +673,106 @@ function capitalizeFirst(str) {
 
 // Load Notifications
 async function loadNotifications() {
+    console.log('[NOTIFICATIONS] 🔄 Starting fresh load...');
+    
+    // STEP 1: Clear any old localStorage notifications
     try {
-        // Load from localStorage first (for notifications sent by admin)
-        const storedNotifications = JSON.parse(localStorage.getItem('farmerNotifications') || '[]');
+        localStorage.removeItem('farmerNotifications');
+        localStorage.removeItem('notifications');
+        console.log('[NOTIFICATIONS] ✅ Cleared old localStorage data');
+    } catch (e) {
+        console.warn('[NOTIFICATIONS] Could not clear localStorage:', e);
+    }
+    
+    const notificationsList = document.getElementById('notificationsList');
+    const notificationCount = document.getElementById('notificationCount');
+    
+    try {
+        console.log('[NOTIFICATIONS] Fetching from API...');
         
-        if (storedNotifications && storedNotifications.length > 0) {
-            // Format stored notifications
-            const formattedNotifications = storedNotifications.map(notif => ({
-                id: notif.id,
+        // Clear existing notifications FIRST
+        if (notificationsList) {
+            notificationsList.innerHTML = '<div class="loading">⏳ Loading notifications...</div>';
+        }
+        
+        const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
+        
+        if (!token) {
+            console.log('[NOTIFICATIONS] ⚠️ No token found');
+            if (notificationsList) {
+                notificationsList.innerHTML = '<div class="no-notifications">📢 Please login to view notifications</div>';
+            }
+            if (notificationCount) notificationCount.textContent = '0';
+            return;
+        }
+        
+        const response = await fetch(`${API_URL}/farmer/notifications`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log(`[NOTIFICATIONS] API response status: ${response.status}`);
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Unauthorized - please login again');
+            }
+            throw new Error(`API returned ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('[NOTIFICATIONS] 📦 Received data:', data);
+        
+        if (data.success && data.notifications && data.notifications.length > 0) {
+            const formattedNotifications = data.notifications.map(notif => ({
+                id: notif.id || notif._id,
                 icon: notif.icon || getIconForType(notif.type),
                 title: notif.title,
                 text: notif.message,
                 time: getTimeAgo(new Date(notif.createdAt)),
                 type: notif.type,
                 priority: notif.priority,
-                unread: !notif.read
+                unread: true
             }));
             
+            console.log(`[NOTIFICATIONS] ✅ Loaded ${formattedNotifications.length} notifications from database`);
             updateNotificationsUI(formattedNotifications);
-            console.log(`✅ Loaded ${formattedNotifications.length} notifications from storage`);
-            return;
-        }
-        
-        // Try API call
-        const token = localStorage.getItem('farmerToken') || sessionStorage.getItem('farmerToken');
-        
-        const response = await fetch(`${API_URL}/farmer/notifications`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
+        } else {
+            // No notifications found
+            console.log('[NOTIFICATIONS] ℹ️ No notifications in database');
+            if (notificationsList) {
+                notificationsList.innerHTML = `
+                    <div class="no-notifications">
+                        <span class="no-notif-icon">🔔</span>
+                        <p>No notifications available</p>
+                        <small>Check back later for updates</small>
+                    </div>
+                `;
             }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            
-            if (data.success && data.notifications) {
-                const formattedNotifications = data.notifications.map(notif => ({
-                    id: notif._id,
-                    icon: notif.icon || getIconForType(notif.type),
-                    title: notif.title,
-                    text: notif.message,
-                    time: getTimeAgo(new Date(notif.createdAt)),
-                    type: notif.type,
-                    priority: notif.priority,
-                    unread: true
-                }));
-                
-                updateNotificationsUI(formattedNotifications);
-                return;
+            if (notificationCount) {
+                notificationCount.textContent = '0';
             }
         }
-        
-        // Fallback to demo notifications
-        loadDemoNotifications();
     } catch (error) {
-        console.error('Error loading notifications:', error);
-        loadDemoNotifications();
+        console.error('[NOTIFICATIONS] ❌ Error loading notifications:', error);
+        
+        // Show error state with retry button
+        if (notificationsList) {
+            notificationsList.innerHTML = `
+                <div class="no-notifications">
+                    <span class="no-notif-icon">⚠️</span>
+                    <p>Unable to load notifications</p>
+                    <small>${error.message}</small>
+                    <button onclick="loadNotifications()" style="margin-top: 10px; padding: 8px 16px; border: none; background: #667eea; color: white; border-radius: 6px; cursor: pointer;">🔄 Retry</button>
+                </div>
+            `;
+        }
+        if (notificationCount) {
+            notificationCount.textContent = '0';
+        }
     }
 }
 
@@ -657,10 +870,37 @@ function getTimeAgo(date) {
 // Update Notifications UI
 function updateNotificationsUI(notifications) {
     const notificationsList = document.getElementById('notificationsList');
+    const notificationCountBadge = document.getElementById('notificationCount');
+    
+    if (!notificationsList) {
+        console.error('[NOTIFICATIONS] notificationsList element not found');
+        return;
+    }
+    
+    // Clear existing content FIRST
+    notificationsList.innerHTML = '';
+    
+    // Check if we have notifications
+    if (!notifications || notifications.length === 0) {
+        notificationsList.innerHTML = `
+            <div class="no-notifications">
+                <span class="no-notif-icon">🔔</span>
+                <p>No notifications available</p>
+            </div>
+        `;
+        if (notificationCountBadge) {
+            notificationCountBadge.textContent = '0';
+        }
+        return;
+    }
+    
     const unreadCount = notifications.filter(n => n.unread).length;
     
-    document.getElementById('notificationCount').textContent = unreadCount;
+    if (notificationCountBadge) {
+        notificationCountBadge.textContent = unreadCount;
+    }
     
+    // Render notifications
     notificationsList.innerHTML = notifications.map(notif => {
         const priorityClass = notif.priority === 'urgent' ? 'urgent' : notif.priority === 'high' ? 'high' : '';
         const typeClass = notif.type || 'info';
@@ -682,11 +922,12 @@ function updateNotificationsUI(notifications) {
     }).join('');
     
     // Add real-time pulse animation to new notifications
-    if (unreadCount > 0) {
-        const badge = document.getElementById('notificationCount');
-        badge.classList.add('pulse');
-        setTimeout(() => badge.classList.remove('pulse'), 2000);
+    if (unreadCount > 0 && notificationCountBadge) {
+        notificationCountBadge.classList.add('pulse');
+        setTimeout(() => notificationCountBadge.classList.remove('pulse'), 2000);
     }
+    
+    console.log(`[NOTIFICATIONS] ✅ Rendered ${notifications.length} notifications (${unreadCount} unread)`);
 }
 
 // Setup Event Listeners
@@ -711,6 +952,69 @@ function setupEventListeners() {
         e.preventDefault();
         handleLogout();
     });
+    
+    // Navbar section navigation with show/hide
+    console.log('🔗 Setting up navbar navigation...');
+    const navLinks = document.querySelectorAll('.nav-link[data-section]');
+    console.log(`✅ Found ${navLinks.length} navigation links`);
+    
+    if (navLinks.length === 0) {
+        console.error('❌ No navigation links found! Check HTML structure.');
+        return;
+    }
+    
+    navLinks.forEach((link, index) => {
+        const sectionId = link.getAttribute('data-section');
+        console.log(`   [${index + 1}] Link: ${sectionId}`);
+        
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log(`🖱️ Navbar clicked: ${sectionId}`);
+            
+            const section = document.getElementById(sectionId);
+            
+            if (!section) {
+                console.error(`❌ Section not found: ${sectionId}`);
+                return;
+            }
+            
+            console.log(`✅ Switching to section: ${sectionId}`);
+            
+            // Remove active class from all links
+            navLinks.forEach(l => l.classList.remove('active'));
+            // Add active class to clicked link
+            link.classList.add('active');
+            
+            // Hide all sections
+            const allSections = document.querySelectorAll('.dashboard-section');
+            console.log(`   Hiding ${allSections.length} sections`);
+            allSections.forEach(s => {
+                s.classList.remove('active');
+            });
+            
+            // Show selected section
+            section.classList.add('active');
+            console.log(`   ✅ Section ${sectionId} is now visible`);
+            
+            // Scroll to top of dashboard
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+    
+    console.log('✅ Navbar navigation setup complete');
+    
+    // Initialize weather location selectors
+    initializeWeatherSelectors();
+    
+    // Weather refresh button
+    const refreshWeatherBtn = document.getElementById('refreshWeather');
+    if (refreshWeatherBtn) {
+        refreshWeatherBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('🔄 Refreshing weather data...');
+            await loadWeatherData();
+        });
+    }
     
     // Language change - with proper update
     if (languageSelect) {
@@ -748,12 +1052,14 @@ function setupEventListeners() {
         });
     });
     
-    // Refresh weather
-    const refreshWeatherBtn = document.getElementById('refreshWeather');
-    if (refreshWeatherBtn) {
-        refreshWeatherBtn.addEventListener('click', () => {
-            showToast('Refreshing weather data...', 'info');
-            loadWeatherData();
+    // Refresh market prices
+    const refreshPricesBtn = document.getElementById('refreshPricesBtn');
+    if (refreshPricesBtn) {
+        refreshPricesBtn.addEventListener('click', () => {
+            showToast('Refreshing market prices...', 'info');
+            const activeTab = document.querySelector('.tab-btn.active');
+            const category = activeTab ? activeTab.dataset.tab : 'all';
+            loadMarketPrices(category);
         });
     }
     

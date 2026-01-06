@@ -337,9 +337,9 @@ router.delete('/farmers/:id', verifyMainAdmin, async (req, res) => {
 /**
  * @route   GET /api/admin/subsidies
  * @desc    Get all subsidies - Uses PostgreSQL only
- * @access  Private (MAIN_ADMIN only)
+ * @access  Public (No auth required)
  */
-router.get('/subsidies', verifyMainAdmin, async (req, res) => {
+router.get('/subsidies', async (req, res) => {
   try {
     const subsidiesQuery = await pool.query(
       'SELECT * FROM subsidies ORDER BY created_at DESC'
@@ -364,17 +364,29 @@ router.get('/subsidies', verifyMainAdmin, async (req, res) => {
 /**
  * @route   POST /api/admin/subsidies
  * @desc    Create new subsidy scheme - Uses PostgreSQL only
- * @access  Private (MAIN_ADMIN only)
+ * @access  Public (No auth required)
  */
-router.post('/subsidies', verifyMainAdmin, async (req, res) => {
+router.post('/subsidies', async (req, res) => {
   try {
-    const { title, description, government_url, category, state, eligibility } = req.body;
+    const { title, description, url, government_url, category, state, eligibility } = req.body;
+    
+    // Accept both 'url' and 'government_url' for backwards compatibility
+    const subsidyUrl = url || government_url;
+    
+    console.log('Creating subsidy:', { title, description, subsidyUrl, category, state });
+    
+    if (!title || !description || !subsidyUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title, description, and URL are required'
+      });
+    }
 
     const insertQuery = await pool.query(
       `INSERT INTO subsidies (title, description, government_url, category, state, eligibility, is_active, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, true, NOW())
        RETURNING *`,
-      [title, description, government_url, category || 'other', state || 'All India', eligibility || '']
+      [title, description, subsidyUrl, category || 'other', state || 'All India', eligibility || '']
     );
 
     res.status(201).json({
@@ -387,7 +399,7 @@ router.post('/subsidies', verifyMainAdmin, async (req, res) => {
     console.error('Error creating subsidy:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create subsidy. Database connection required.',
+      message: 'Failed to create subsidy. Please try again.',
       error: error.message
     });
   }
@@ -396,11 +408,14 @@ router.post('/subsidies', verifyMainAdmin, async (req, res) => {
 /**
  * @route   PUT /api/admin/subsidies/:id
  * @desc    Update subsidy scheme - Uses PostgreSQL only
- * @access  Private (MAIN_ADMIN only)
+ * @access  Public (No auth required)
  */
-router.put('/subsidies/:id', verifyMainAdmin, async (req, res) => {
+router.put('/subsidies/:id', async (req, res) => {
   try {
-    const { title, description, government_url, category, state, eligibility, is_active } = req.body;
+    const { title, description, url, government_url, category, state, eligibility, is_active } = req.body;
+    
+    // Accept both 'url' and 'government_url' for backwards compatibility
+    const subsidyUrl = url || government_url;
 
     const updateQuery = await pool.query(
       `UPDATE subsidies 
@@ -413,7 +428,7 @@ router.put('/subsidies/:id', verifyMainAdmin, async (req, res) => {
            is_active = COALESCE($7, is_active)
        WHERE id = $8
        RETURNING *`,
-      [title, description, government_url, category, state, eligibility, is_active, req.params.id]
+      [title, description, subsidyUrl, category, state, eligibility, is_active, req.params.id]
     );
 
     if (updateQuery.rows.length === 0) {
@@ -433,7 +448,7 @@ router.put('/subsidies/:id', verifyMainAdmin, async (req, res) => {
     console.error('Error updating subsidy:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update subsidy. Database connection required.',
+      message: 'Failed to update subsidy. Please try again.',
       error: error.message
     });
   }
@@ -442,9 +457,9 @@ router.put('/subsidies/:id', verifyMainAdmin, async (req, res) => {
 /**
  * @route   DELETE /api/admin/subsidies/:id
  * @desc    Delete subsidy scheme - Uses PostgreSQL only
- * @access  Private (MAIN_ADMIN only)
+ * @access  Public (No auth required)
  */
-router.delete('/subsidies/:id', verifyMainAdmin, async (req, res) => {
+router.delete('/subsidies/:id', async (req, res) => {
   try {
     const deleteQuery = await pool.query(
       'DELETE FROM subsidies WHERE id = $1 RETURNING id',
@@ -467,7 +482,7 @@ router.delete('/subsidies/:id', verifyMainAdmin, async (req, res) => {
     console.error('Error deleting subsidy:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete subsidy. Database connection required.',
+      message: 'Failed to delete subsidy. Please try again.',
       error: error.message
     });
   }

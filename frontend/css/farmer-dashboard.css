@@ -210,20 +210,37 @@ body {
     font-size: 1.05rem;
 }
 
-/* Dashboard Grid - Responsive Layout */
+/* Dashboard Grid - Responsive Layout with Fixed Column Alignment */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: 1fr;
     gap: 2rem;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* Dashboard Cards - Modern Design */
+/* Section visibility control */
+.dashboard-section {
+    display: none;
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.dashboard-section.active {
+    display: block;
+}
+
+/* Ensure all cards have equal heights in their row */
 .dashboard-card {
     background: white;
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .dashboard-card:hover {
@@ -295,6 +312,87 @@ body {
 }
 
 /* Weather Card */
+.weather-location-selector {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.location-inputs {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    flex: 1;
+    min-width: 180px;
+}
+
+.input-group label {
+    display: block;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.location-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #2d3748;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.location-select:hover {
+    border-color: white;
+    background: white;
+}
+
+.location-select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.location-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.fetch-weather-btn {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    white-space: nowrap;
+}
+
+.fetch-weather-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.fetch-weather-btn:active {
+    transform: translateY(0);
+}
+
 .weather-current {
     margin-bottom: 2rem;
 }
@@ -616,6 +714,22 @@ body {
     color: #4a5568;
     font-size: 0.95rem;
     line-height: 1.5;
+}
+
+.no-notifications,
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #718096;
+    font-size: 0.95rem;
+}
+
+.no-notifications i,
+.loading i {
+    display: block;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
 }
 
 .badge {

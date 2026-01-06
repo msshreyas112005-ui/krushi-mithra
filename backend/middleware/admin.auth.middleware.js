@@ -59,11 +59,11 @@ const verifyMainAdmin = async (req, res, next) => {
   try {
     // First verify token
     await verifyToken(req, res, async () => {
-      // Check if user has MAIN_ADMIN role
-      if (req.user.role !== 'MAIN_ADMIN') {
+      // Check if user has MAIN_ADMIN or admin role (for backward compatibility)
+      if (req.user.role !== 'MAIN_ADMIN' && req.user.role !== 'admin') {
         return res.status(403).json({
           success: false,
-          message: 'Access denied: Only main admin allowed'
+          message: 'Access denied: Only admin allowed'
         });
       }
 
@@ -71,7 +71,7 @@ const verifyMainAdmin = async (req, res, next) => {
       req.admin = {
         _id: req.user.id,
         email: req.user.email,
-        role: 'MAIN_ADMIN',
+        role: req.user.role,
         isActive: true
       };
       

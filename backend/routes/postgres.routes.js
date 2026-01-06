@@ -55,7 +55,7 @@ router.post('/admin/login', (req, res) => {
   
   if (email === adminEmail && password === adminPassword) {
     const token = jwt.sign(
-      { email: adminEmail, role: 'admin' },
+      { email: adminEmail, role: 'MAIN_ADMIN' },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
@@ -66,7 +66,7 @@ router.post('/admin/login', (req, res) => {
       success: true,
       message: 'Login successful',
       token,
-      admin: { email: adminEmail, role: 'admin' }
+      admin: { email: adminEmail, role: 'MAIN_ADMIN' }
     });
   }
   

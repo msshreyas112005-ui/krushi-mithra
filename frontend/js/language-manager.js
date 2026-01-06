@@ -214,19 +214,19 @@ window.krushiLang = new KrushiLanguageManager();
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         // Small delay to let page scripts run first
-        setTimeout(() => {
+        setTimeout(async () => {
             if (!window.krushiLang.isReady) {
                 console.log('🔄 Auto-initializing language manager');
-                window.krushiLang.initialize();
+                await window.krushiLang.initialize();
             }
         }, 100);
     });
 } else {
     // Document already loaded - only init if not ready
-    setTimeout(() => {
+    setTimeout(async () => {
         if (!window.krushiLang.isReady) {
             console.log('🔄 Auto-initializing language manager (immediate)');
-            window.krushiLang.initialize();
+            await window.krushiLang.initialize();
         }
     }, 100);
 }

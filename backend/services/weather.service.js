@@ -13,6 +13,38 @@ class WeatherService {
     this.ONE_CALL_URL = 'https://api.openweathermap.org/data/3.0/onecall';
     this.GEO_URL = 'http://api.openweathermap.org/geo/1.0';
     this.defaultLocation = { lat: 12.9716, lon: 77.5946, name: 'Bangalore' }; // Bangalore, Karnataka
+    
+    // Location name mapping for common misspellings/variations
+    this.locationMapping = {
+      'NANJANGUDU': 'Mysore', // Nanjangud is near Mysore
+      'NANJANGUD': 'Mysore',
+      'VIJAYAPURA': 'Bijapur',
+      'BENGALURU': 'Bangalore',
+      'BELAGAVI': 'Belgaum',
+      'TUMAKURU': 'Tumkur',
+      'SHIVAMOGGA': 'Shimoga',
+      'KALABURAGI': 'Gulbarga'
+    };
+  }
+
+  /**
+   * Normalize location name
+   * Handles case variations and common misspellings
+   */
+  normalizeLocation(location) {
+    if (!location) return 'Bangalore';
+    
+    // Convert to uppercase for matching
+    const upperLocation = location.toUpperCase().trim();
+    
+    // Check if it's in the mapping
+    if (this.locationMapping[upperLocation]) {
+      console.log(`[WEATHER] Location normalized: ${location} → ${this.locationMapping[upperLocation]}`);
+      return this.locationMapping[upperLocation];
+    }
+    
+    // Return original with proper capitalization
+    return location.trim();
   }
 
   /**
@@ -24,10 +56,13 @@ class WeatherService {
         return this.defaultLocation;
       }
 
+      // Normalize the location name
+      const normalizedLocation = this.normalizeLocation(location);
+
       const url = `${this.GEO_URL}/direct`;
       const response = await axios.get(url, {
         params: {
-          q: `${location},Karnataka,IN`,
+          q: `${normalizedLocation},Karnataka,IN`,
           limit: 1,
           appid: this.API_KEY
         },
@@ -36,6 +71,7 @@ class WeatherService {
 
       if (response.data && response.data.length > 0) {
         const place = response.data[0];
+        console.log(`[WEATHER] Coordinates found for ${normalizedLocation}: ${place.lat}, ${place.lon}`);
         return {
           lat: place.lat,
           lon: place.lon,
@@ -45,9 +81,10 @@ class WeatherService {
         };
       }
 
+      console.warn(`[WEATHER] Location not found: ${normalizedLocation}, using default (Bangalore)`);
       return this.defaultLocation;
     } catch (error) {
-      console.error('Geocoding error:', error.message);
+      console.error('[WEATHER] Geocoding error:', error.message);
       return this.defaultLocation;
     }
   }
@@ -165,11 +202,21 @@ class WeatherService {
    */
   async getWeatherByLocation(location) {
     try {
+      console.log(`[WEATHER] Fetching weather for farmer location: "${location}"`);
+      
       const coords = await this.getCoordinates(location);
+      console.log(`[WEATHER] Using coordinates: ${coords.lat}, ${coords.lon} (${coords.name})`);
+      
       const current = await this.getCurrentWeather(coords.lat, coords.lon);
+      console.log(`[WEATHER] Current weather fetched: ${current.temperature}°C, ${current.description}`);
+      
       const forecast = await this.getForecast(coords.lat, coords.lon);
+      console.log(`[WEATHER] ${forecast.length}-day forecast fetched successfully`);
+      
       const alerts = this.generateAgricultureAlerts(current, forecast);
       const advice = this.generateFarmingAdvice(current, forecast);
+
+      console.log(`[WEATHER] ✅ Weather data successfully fetched for ${coords.name}!`);
 
       return {
         success: true,
@@ -187,7 +234,7 @@ class WeatherService {
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      console.error('Weather service error:', error);
+      console.error('[WEATHER] ❌ Weather service error:', error);
       return this.getDemoWeatherData(location);
     }
   }

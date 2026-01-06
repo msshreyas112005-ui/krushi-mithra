@@ -1,56 +1,47 @@
 const notificationService = require('../services/notification.service');
 const { pool } = require('../db');
 
-// Store notifications in memory (in production, use database)
-let notifications = [
-  {
-    _id: '1',
-    title: 'Welcome to KRUSHI MITHRA',
-    message: 'Thank you for joining our platform!',
-    type: 'info',
-    isRead: false,
-    audience: 'farmer',
-    createdAt: new Date()
-  },
-  {
-    _id: '2',
-    title: 'Market Alert',
-    message: 'Rice prices increased by 10% in Mysore market',
-    type: 'alert',
-    isRead: false,
-    audience: 'farmer',
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
-  },
-  {
-    _id: '3',
-    title: 'New Farmer Registration',
-    message: 'A new farmer has registered and is awaiting approval',
-    type: 'info',
-    isRead: false,
-    audience: 'admin',
-    createdAt: new Date()
-  }
-];
-
 /**
- * Get Farmer Notifications
+ * Get Farmer Notifications from Database
  */
 const getFarmerNotifications = async (req, res) => {
   try {
-    // Filter notifications for farmers
-    const farmerNotifications = notifications.filter(n => 
-      n.audience === 'farmer' || n.audience === 'all'
+    console.log('[NOTIFICATION] Fetching notifications from PostgreSQL');
+    
+    // Fetch notifications from database
+    const result = await pool.query(
+      `SELECT id, title, message, type, icon, target_audience, created_at 
+       FROM notifications 
+       ORDER BY created_at DESC 
+       LIMIT 50`
     );
+
+    const notifications = result.rows.map(row => ({
+      _id: row.id,
+      id: row.id,
+      title: row.title,
+      message: row.message,
+      type: row.type || 'info',
+      priority: 'medium',
+      icon: row.icon || '📢',
+      audience: row.target_audience || 'all',
+      createdAt: row.created_at,
+      isRead: false
+    }));
+
+    console.log(`[NOTIFICATION] ✅ Found ${notifications.length} notifications`);
 
     res.json({
       success: true,
-      data: farmerNotifications
+      notifications: notifications,
+      data: notifications
     });
   } catch (error) {
     console.error('[NOTIFICATION] Get notifications error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching notifications'
+      message: 'Error fetching notifications',
+      notifications: []
     });
   }
 };
@@ -61,7 +52,10 @@ const getFarmerNotifications = async (req, res) => {
 const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(`[NOTIFICATION] Marking notification ${id} as read`);
 
+    // Note: In this simplified version, we just return success
+    // In production, you might add a read_status table
     res.json({
       success: true,
       message: 'Notification marked as read'
@@ -76,18 +70,71 @@ const markAsRead = async (req, res) => {
 };
 
 /**
+ * Delete Notification from Database
+ */
+const deleteNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`[NOTIFICATION] Deleting notification ${id} from PostgreSQL`);
+
+    // Delete from database
+    const result = await pool.query(
+      'DELETE FROM notifications WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Notification not found'
+      });
+    }
+
+    console.log(`[NOTIFICATION] ✅ Notification ${id} deleted successfully`);
+
+    res.json({
+      success: true,
+      message: 'Notification deleted successfully'
+    });
+  } catch (error) {
+    console.error('[NOTIFICATION] Delete notification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting notification'
+    });
+  }
+};
+
+/**
  * Get Admin Notifications
  */
 const getAdminNotifications = async (req, res) => {
   try {
-    // Filter notifications for admins
-    const adminNotifications = notifications.filter(n => 
-      n.audience === 'admin' || n.audience === 'all'
+    console.log('[NOTIFICATION] Fetching admin notifications from PostgreSQL');
+    
+    // Fetch all notifications from database
+    const result = await pool.query(
+      `SELECT id, title, message, type, priority, icon, target_audience, created_at 
+       FROM notifications 
+       ORDER BY created_at DESC 
+       LIMIT 100`
     );
+
+    const notifications = result.rows.map(row => ({
+      _id: row.id,
+      id: row.id,
+      title: row.title,
+      message: row.message,
+      type: row.type || 'info',
+      priority: row.priority || 'medium',
+      icon: row.icon || '📢',
+      audience: row.target_audience || 'all',
+      createdAt: row.created_at
+    }));
 
     res.json({
       success: true,
-      data: adminNotifications
+      data: notifications
     });
   } catch (error) {
     console.error('[NOTIFICATION] Get admin notifications error:', error);
@@ -140,21 +187,26 @@ const createNotification = async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    // Save notification to storage
-    const savedNotification = await notificationService.saveNotification(newNotification);
+    // Save notification to PostgreSQL database
+    console.log('[NOTIFICATION] Saving to PostgreSQL database');
+    const result = await pool.query(
+      `INSERT INTO notifications 
+       (title, message, type, priority, icon, target_audience, expiry_date, created_at) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) 
+       RETURNING id, title, message, created_at`,
+      [
+        title,
+        message,
+        type || 'announcement',
+        priority || 'medium',
+        icon || '📢',
+        targetAudience || 'all',
+        expiryDate || null
+      ]
+    );
 
-    // Add to in-memory array for immediate API access
-    notifications.unshift({
-      _id: savedNotification.id,
-      ...newNotification,
-      audience: 'farmer',
-      isRead: false
-    });
-
-    // Keep only last 100 in memory
-    if (notifications.length > 100) {
-      notifications = notifications.slice(0, 100);
-    }
+    const savedNotification = result.rows[0];
+    console.log('[NOTIFICATION] ✅ Notification saved to database with ID:', savedNotification.id);
 
     // Send email notifications if requested
     let emailResult = { success: false, emailsSent: 0 };
@@ -229,5 +281,6 @@ module.exports = {
   getFarmerNotifications,
   markAsRead,
   getAdminNotifications,
-  createNotification
+  createNotification,
+  deleteNotification
 };

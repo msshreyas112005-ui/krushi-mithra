@@ -50,6 +50,10 @@ async function initializeTables() {
                 phone VARCHAR(20) NOT NULL,
                 location VARCHAR(255) NOT NULL,
                 password VARCHAR(255) NOT NULL,
+                crop_type VARCHAR(255),
+                crop_date DATE,
+                crop_location VARCHAR(255),
+                language VARCHAR(10) DEFAULT 'en',
                 is_approved BOOLEAN DEFAULT true,
                 created_at TIMESTAMP DEFAULT NOW(),
                 last_login TIMESTAMP
@@ -93,11 +97,14 @@ async function initializeTables() {
                 title VARCHAR(255) NOT NULL,
                 message TEXT NOT NULL,
                 type VARCHAR(50) DEFAULT 'info',
+                priority VARCHAR(20) DEFAULT 'normal',
+                icon VARCHAR(100),
                 target_audience VARCHAR(100) DEFAULT 'all',
                 target_location VARCHAR(255),
                 target_crop VARCHAR(255),
-                icon VARCHAR(10) DEFAULT '📢',
-                created_at TIMESTAMP DEFAULT NOW()
+                expiry_date TIMESTAMP,
+                created_at TIMESTAMP DEFAULT NOW(),
+                is_read BOOLEAN DEFAULT FALSE
             )
         `);
         console.log('✅ Notifications table ready');

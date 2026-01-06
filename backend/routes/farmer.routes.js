@@ -41,16 +41,16 @@ router.post('/register', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert new farmer into PostgreSQL
+    // Insert new farmer into PostgreSQL with crop information
     const insertQuery = await pool.query(
-      `INSERT INTO farmers (name, email, phone, location, password, is_approved, created_at)
-       VALUES ($1, $2, $3, $4, $5, true, NOW())
-       RETURNING id, name, email, phone, location, created_at`,
-      [fullName, email.toLowerCase(), mobile, location, hashedPassword]
+      `INSERT INTO farmers (name, email, phone, location, password, crop_type, language, is_approved, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, true, NOW())
+       RETURNING id, name, email, phone, location, crop_type, language, created_at`,
+      [fullName, email.toLowerCase(), mobile, location, hashedPassword, cropType, language || 'en']
     );
 
     const farmer = insertQuery.rows[0];
-    console.log('[FARMER REGISTER] ✅ Farmer registered:', farmer.email);
+    console.log('[FARMER REGISTER] ✅ Farmer registered:', farmer.email, 'Crop:', farmer.crop_type);
 
     // Send welcome email notification
     try {
@@ -196,7 +196,7 @@ router.post('/login', async (req, res) => {
 router.get('/profile', verifyApprovedFarmer, async (req, res) => {
   try {
     const farmerQuery = await pool.query(
-      'SELECT id, name, email, phone, location, created_at FROM farmers WHERE id = $1',
+      'SELECT id, name, email, phone, location, crop_type, crop_date, crop_location, language, created_at FROM farmers WHERE id = $1',
       [req.user.id]
     );
 
@@ -215,7 +215,7 @@ router.get('/profile', verifyApprovedFarmer, async (req, res) => {
     console.error('Error fetching profile:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch profile. Database connection required.',
+      message: 'Failed to fetch profile. Please try again.',
       error: error.message
     });
   }

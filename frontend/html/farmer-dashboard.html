@@ -19,11 +19,11 @@
                 </div>
                 <nav class="nav-menu">
                     <ul>
-                        <li><a href="farmer-dashboard.html" class="nav-link active" data-i18n="header.dashboard">Dashboard</a></li>
-                        <li><a href="farmer-profile.html" class="nav-link" data-i18n="header.profile">Profile</a></li>
-                        <li><a href="farmer-crops.html" class="nav-link" data-i18n="header.crops">My Crops</a></li>
-                        <li><a href="farmer-market.html" class="nav-link" data-i18n="header.market">Market</a></li>
-                        <li><a href="farmer-support.html" class="nav-link" data-i18n="header.support">Support</a></li>
+                        <li><a href="#daily-info" class="nav-link active" data-section="daily-info" data-i18n="sections.dailyInfo">Daily Information</a></li>
+                        <li><a href="#weather-info" class="nav-link" data-section="weather-info" data-i18n="sections.weatherInfo">Weather Information</a></li>
+                        <li><a href="#market-prices" class="nav-link" data-section="market-prices" data-i18n="sections.marketPrices">Market Prices</a></li>
+                        <li><a href="#subsidies" class="nav-link" data-section="subsidies" data-i18n="sections.subsidies">Government Subsidies</a></li>
+                        <li><a href="#notifications" class="nav-link" data-section="notifications" data-i18n="sections.notifications">Notifications</a></li>
                     </ul>
                 </nav>
                 <div class="user-section">
@@ -41,7 +41,6 @@
                         </button>
                         <div class="user-dropdown" id="userDropdown">
                             <a href="farmer-profile.html" data-i18n="header.myProfile">My Profile</a>
-                            <a href="#settings" data-i18n="header.settings">Settings</a>
                             <a href="#" id="logoutBtn" data-i18n="header.logout">Logout</a>
                         </div>
                     </div>
@@ -78,7 +77,7 @@
             <!-- Dashboard Grid -->
             <div class="dashboard-grid">
                 <!-- Daily Farmer Information -->
-                <section class="dashboard-card daily-info">
+                <section id="daily-info" class="dashboard-section dashboard-card daily-info active">
                     <div class="card-header">
                         <h3><span class="icon">📋</span> <span data-i18n="sections.dailyInfo">Daily Information</span></h3>
                     </div>
@@ -109,12 +108,36 @@
                 </section>
 
                 <!-- Weather Update -->
-                <section class="dashboard-card weather-card">
+                <section id="weather-info" class="dashboard-section dashboard-card weather-card">
                     <div class="card-header">
                         <h3><span class="icon">🌤️</span> <span data-i18n="sections.weatherInfo">Weather Information</span></h3>
                         <button class="refresh-btn" id="refreshWeather" data-i18n="buttons.refresh">↻ Refresh</button>
                     </div>
                     <div class="card-content">
+                        <!-- Location Selector -->
+                        <div class="weather-location-selector">
+                            <div class="location-inputs">
+                                <div class="input-group">
+                                    <label for="weatherState">📍 State:</label>
+                                    <select id="weatherState" class="location-select">
+                                        <option value="">Select State</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                        <option value="Kerala">Kerala</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                        <option value="Telangana">Telangana</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="weatherDistrict">🏘️ District:</label>
+                                    <select id="weatherDistrict" class="location-select">
+                                        <option value="">Select District</option>
+                                    </select>
+                                </div>
+                                <button class="fetch-weather-btn" id="fetchWeatherBtn">Get Weather</button>
+                            </div>
+                        </div>
                         <div class="weather-current">
                             <div class="weather-main">
                                 <span class="weather-icon" id="weatherIcon">🌤️</span>
@@ -148,7 +171,7 @@
                 </section>
 
                 <!-- Market Prices -->
-                <section class="dashboard-card market-prices">
+                <section id="market-prices" class="dashboard-section dashboard-card market-prices">
                     <div class="card-header">
                         <h3><span class="icon">💰</span> Market Prices</h3>
                         <button class="view-all-btn" id="refreshPricesBtn">🔄 Refresh</button>
@@ -183,7 +206,7 @@
                 </section>
 
                 <!-- Government Schemes -->
-                <section class="dashboard-card schemes-card">
+                <section id="subsidies" class="dashboard-section dashboard-card schemes-card">
                     <div class="card-header">
                         <h3><span class="icon">🏛️</span> <span data-i18n="sections.subsidies">Government Subsidies</span></h3>
                     </div>
@@ -195,7 +218,7 @@
                 </section>
 
                 <!-- Admin Notifications -->
-                <section class="dashboard-card notifications-card">
+                <section id="notifications" class="dashboard-section dashboard-card notifications-card">
                     <div class="card-header">
                         <h3><span class="icon">🔔</span> <span data-i18n="sections.notifications">Notifications</span></h3>
                         <span class="badge" id="notificationCount">0</span>
@@ -207,32 +230,7 @@
                     </div>
                 </section>
 
-                <!-- Quick Actions -->
-                <section class="dashboard-card quick-actions">
-                    <div class="card-header">
-                        <h3><span class="icon">⚡</span> <span data-i18n="sections.quickActions">Quick Actions</span></h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="actions-grid">
-                            <button class="action-btn" id="uploadCropPhoto">
-                                <span class="action-icon">📸</span>
-                                <span class="action-label">Upload Crop Photo</span>
-                            </button>
-                            <button class="action-btn" id="askExpert">
-                                <span class="action-icon">💬</span>
-                                <span class="action-label">Ask Expert</span>
-                            </button>
-                            <button class="action-btn" id="viewReports">
-                                <span class="action-icon">📊</span>
-                                <span class="action-label">View Reports</span>
-                            </button>
-                            <button class="action-btn" id="orderSupplies">
-                                <span class="action-icon">🛒</span>
-                                <span class="action-label">Order Supplies</span>
-                            </button>
-                        </div>
-                    </div>
-                </section>
+
             </div>
         </div>
     </main>

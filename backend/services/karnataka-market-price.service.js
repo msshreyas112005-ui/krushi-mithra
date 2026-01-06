@@ -1,5 +1,5 @@
 const axios = require('axios');
-const db = require('../config/database.postgres');
+const { pool } = require('../db');
 
 /**
  * Karnataka Market Price Service
@@ -216,37 +216,36 @@ class KarnatakaMarketPriceService {
    * Save prices to database
    */
   async savePricesToDatabase(prices) {
-    if (!db.isConfigured()) {
-      console.warn('⚠️ Database not configured, skipping price save');
-      return 0;
-    }
-
     let savedCount = 0;
     
     for (const price of prices) {
       try {
-        await db.query(`
-          INSERT INTO market_prices 
-          (commodity_name, commodity_type, market_name, district, state, 
-           min_price, max_price, modal_price, unit, price_date)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-          ON CONFLICT DO NOTHING
-        `, [
-          price.commodity_name,
-          price.commodity_type,
-          price.market_name,
-          price.district || 'Unknown',
-          price.state || 'Karnataka',
-          price.min_price,
-          price.max_price,
-          price.modal_price,
-          price.unit || 'Quintal',
-          price.price_date
-        ]);
+        // Check if price already exists for this crop and market
+        const existingCheck = await pool.query(
+          'SELECT id FROM market_prices WHERE crop_name = $1 AND market_name = $2',
+          [price.commodity, price.market]
+        );
+        
+        if (existingCheck.rows.length > 0) {
+          // Update existing price
+          await pool.query(
+            `UPDATE market_prices 
+             SET price = $1, unit = $2, updated_at = NOW()
+             WHERE crop_name = $3 AND market_name = $4`,
+            [price.modalPrice, price.unit || 'per quintal', price.commodity, price.market]
+          );
+        } else {
+          // Insert new price
+          await pool.query(
+            `INSERT INTO market_prices (crop_name, price, market_name, unit, updated_at)
+             VALUES ($1, $2, $3, $4, NOW())`,
+            [price.commodity, price.modalPrice, price.market, price.unit || 'per quintal']
+          );
+        }
         
         savedCount++;
       } catch (error) {
-        console.error(`❌ Error saving price for ${price.commodity_name}:`, error.message);
+        console.error(`❌ Error saving price for ${price.commodity}:`, error.message);
       }
     }
     
@@ -265,16 +264,12 @@ class KarnatakaMarketPriceService {
       const prices = this.getLatestPrices();
       console.log(`📊 Fetched ${prices.length} price records`);
       
-      // Try to save to database if available
+      // Save to database
       let savedCount = 0;
-      if (db.isConfigured()) {
-        try {
-          savedCount = await this.savePricesToDatabase(prices);
-        } catch (dbError) {
-          console.warn('⚠️ Database save failed, but prices are available in cache:', dbError.message);
-        }
-      } else {
-        console.log('💡 No database configured - prices available in memory cache');
+      try {
+        savedCount = await this.savePricesToDatabase(prices);
+      } catch (dbError) {
+        console.warn('⚠️ Database save failed, but prices are available in cache:', dbError.message);
       }
       
       return {

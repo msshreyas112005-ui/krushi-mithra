@@ -37,12 +37,18 @@ const getAllMarketPrices = async (req, res) => {
         res.json({
             success: true,
             count: result.rows.length,
-            prices: result.rows.map(row => ({
+            data: result.rows.map(row => ({
                 id: row.id,
+                commodity: row.crop_name,
                 cropName: row.crop_name,
                 price: parseFloat(row.price),
+                modalPrice: parseFloat(row.price),
+                minPrice: parseFloat(row.price) * 0.9, // Estimate 10% lower
+                maxPrice: parseFloat(row.price) * 1.1, // Estimate 10% higher
+                market: row.market_name,
                 marketName: row.market_name,
                 unit: row.unit || 'per quintal',
+                arrivalDate: row.updated_at,
                 updatedAt: row.updated_at
             }))
         });

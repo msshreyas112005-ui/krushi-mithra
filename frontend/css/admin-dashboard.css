@@ -1306,3 +1306,162 @@ body::before {
     font-weight: 600;
     color: #4CAF50;
 }
+
+/* Notification Section */
+.notification-section {
+    margin-top: 2rem;
+}
+
+.notification-section .section-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-top: 0.5rem;
+    font-weight: normal;
+}
+
+.notification-form {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 1.5rem;
+}
+
+.notification-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.notification-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.notification-form .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.notification-form .form-group input[type="text"],
+.notification-form .form-group input[type="date"],
+.notification-form .form-group select,
+.notification-form .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.notification-form .form-group input:focus,
+.notification-form .form-group select:focus,
+.notification-form .form-group textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.notification-form .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.notification-form .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 12px;
+    background: #F1F8E9;
+    border-radius: 8px;
+    border: 2px solid #C8E6C9;
+    transition: all 0.3s ease;
+}
+
+.notification-form .checkbox-label:hover {
+    background: #E8F5E9;
+    border-color: #4CAF50;
+}
+
+.notification-form .checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #4CAF50;
+}
+
+.notification-form .checkbox-label span {
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.notification-form .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #F5F5F5;
+}
+
+.notification-form .btn-secondary,
+.notification-form .btn-primary {
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.notification-form .btn-secondary {
+    background: #F5F5F5;
+    color: #666;
+}
+
+.notification-form .btn-secondary:hover {
+    background: #E0E0E0;
+}
+
+.notification-form .btn-primary {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.notification-form .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.notification-form .btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design for Notifications */
+@media (max-width: 768px) {
+    .notification-form .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .notification-form {
+        padding: 1.5rem;
+    }
+    
+    .notification-form .form-actions {
+        flex-direction: column;
+    }
+    
+    .notification-form .btn-secondary,
+    .notification-form .btn-primary {
+        width: 100%;
+    }
+}

@@ -24,16 +24,15 @@ const getDashboardStats = async (req, res) => {
     }
 
     // Get real counts from database
-    const [farmersCount, pendingCount, approvedCount, marketCount] = await Promise.all([
+    const [farmersCount, approvedCount, marketCount] = await Promise.all([
       db.query('SELECT COUNT(*) as count FROM farmers'),
-      db.query('SELECT COUNT(*) as count FROM farmers WHERE status = $1', ['pending']),
-      db.query('SELECT COUNT(*) as count FROM farmers WHERE status = $1', ['approved']),
-      db.query('SELECT COUNT(DISTINCT commodity_name) as count FROM market_prices WHERE price_date >= CURRENT_DATE - INTERVAL \'7 days\'')
+      db.query('SELECT COUNT(*) as count FROM farmers WHERE is_approved = true'),
+      db.query('SELECT COUNT(DISTINCT crop_name) as count FROM market_prices WHERE updated_at >= CURRENT_DATE - INTERVAL \'7 days\'')
     ]);
 
     const stats = {
       totalFarmers: parseInt(farmersCount.rows[0].count),
-      pendingApprovals: parseInt(pendingCount.rows[0].count),
+      pendingApprovals: 0, // No pending system in simplified schema
       approvedFarmers: parseInt(approvedCount.rows[0].count),
       marketPrices: parseInt(marketCount.rows[0].count)
     };
@@ -256,13 +255,10 @@ const getMarketStats = async (req, res) => {
 
     const result = await db.query(`
       SELECT 
-        COUNT(DISTINCT commodity_name) as total,
-        COUNT(DISTINCT CASE WHEN commodity_type = 'Vegetable' THEN commodity_name END) as vegetables,
-        COUNT(DISTINCT CASE WHEN commodity_type = 'Fruit' THEN commodity_name END) as fruits,
-        COUNT(DISTINCT CASE WHEN commodity_type = 'Grain' THEN commodity_name END) as grains,
-        MAX(price_date) as last_updated
+        COUNT(DISTINCT crop_name) as total,
+        MAX(updated_at) as last_updated
       FROM market_prices
-      WHERE price_date >= CURRENT_DATE - INTERVAL '7 days'
+      WHERE updated_at >= CURRENT_DATE - INTERVAL '7 days'
     `);
 
     const stats = result.rows[0];
@@ -270,10 +266,10 @@ const getMarketStats = async (req, res) => {
     res.json({
       success: true,
       stats: {
-        totalCommodities: parseInt(stats.total),
-        vegetables: parseInt(stats.vegetables),
-        fruits: parseInt(stats.fruits),
-        grains: parseInt(stats.grains),
+        totalCommodities: parseInt(stats.total) || 0,
+        vegetables: 0,
+        fruits: 0,
+        grains: 0,
         lastUpdated: stats.last_updated
       }
     });
@@ -303,15 +299,11 @@ const getRecentMarketPrices = async (req, res) => {
 
     let query = `
       SELECT 
-        commodity_name, 
-        commodity_type, 
+        crop_name, 
         market_name, 
-        district,
-        modal_price, 
-        min_price, 
-        max_price, 
+        price, 
         unit, 
-        price_date
+        updated_at
       FROM market_prices
     `;
 
@@ -319,23 +311,9 @@ const getRecentMarketPrices = async (req, res) => {
     const params = [];
     let paramIndex = 1;
 
-    if (type) {
-      conditions.push(`commodity_type = $${paramIndex}`);
-      params.push(type);
-      paramIndex++;
-    }
-
-    if (district) {
-      conditions.push(`district = $${paramIndex}`);
-      params.push(district);
-      paramIndex++;
-    }
-
-    if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
-    }
-
-    query += ` ORDER BY price_date DESC, commodity_name LIMIT $${paramIndex}`;
+    // Note: type and district filters removed as columns don't exist in current schema
+    
+    query += ` ORDER BY updated_at DESC, crop_name LIMIT $${paramIndex}`;
     params.push(parseInt(limit));
 
     const result = await db.query(query, params);

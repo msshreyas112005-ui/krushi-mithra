@@ -157,7 +157,8 @@
     "amount": "Amount",
     "deadline": "Deadline",
     "status": "Status",
-    "register": "Register"
+    "register": "Register",
+    "viewScheme": "View Scheme"
   },
   "notifications": {
     "title": "Notifications",
