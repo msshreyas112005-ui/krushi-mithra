@@ -101,6 +101,16 @@ app.get('/', (req, res) => {
   res.redirect('/frontend/html/index.html');
 });
 
+// Health check endpoint for deployment platforms
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    database: 'connected'
+  });
+});
+
 // Import routes
 const farmerRoutes = require('./routes/farmer.routes');
 const farmerApiRoutes = require('./routes/farmer.api.routes');
@@ -123,14 +133,18 @@ const { initializeScheduledJobs, triggerManualUpdate } = require('./config/sched
 
 // Start server immediately
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+
+const server = app.listen(PORT, HOST, () => {
   console.log(`\n${'='.repeat(60)}`);
   console.log(`🌾 KRUSHI MITHRA Server Started`);
   console.log(`${'='.repeat(60)}`);
-  console.log(`📡 Server URL: http://localhost:${PORT}`);
-  console.log(`🌐 Frontend:   http://localhost:${PORT}/frontend/html/index.html`);
-  console.log(`👨‍🌾 Farmer:     http://localhost:${PORT}/frontend/html/register.html`);
-  console.log(`👨‍💼 Admin:      http://localhost:${PORT}/frontend/html/admin-login.html`);
+  console.log(`📡 Server URL: ${BASE_URL}`);
+  console.log(`🌐 Frontend:   ${BASE_URL}/frontend/html/index.html`);
+  console.log(`👨‍🌾 Farmer:     ${BASE_URL}/frontend/html/register.html`);
+  console.log(`👨‍💼 Admin:      ${BASE_URL}/frontend/html/admin-login.html`);
+  console.log(`💻 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`${'='.repeat(60)}\n`);
 });
 

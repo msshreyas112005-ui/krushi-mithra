@@ -1,5 +1,5 @@
-// API Configuration
-const API_URL = 'http://localhost:3000/api';
+// API Configuration - Uses config.js for environment-aware API URL
+// The API_URL is now loaded from config.js which auto-detects development vs production
 
 // DOM Elements
 const farmerNameElement = document.getElementById('farmerName');
@@ -933,25 +933,29 @@ function updateNotificationsUI(notifications) {
 // Setup Event Listeners
 function setupEventListeners() {
     // User menu toggle
-    userMenuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        console.log('🔎 User menu clicked');
-        userDropdown.classList.toggle('show');
-        console.log('🔎 Dropdown show:', userDropdown.classList.contains('show'));
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!userMenuBtn.contains(e.target)) {
-            userDropdown.classList.remove('show');
-        }
-    });
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('🔎 User menu clicked');
+            userDropdown.classList.toggle('show');
+            console.log('🔎 Dropdown show:', userDropdown.classList.contains('show'));
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenuBtn.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    }
     
     // Logout
-    logoutBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        handleLogout();
-    });
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
+    }
     
     // Navbar section navigation with show/hide
     console.log('🔗 Setting up navbar navigation...');
@@ -969,6 +973,7 @@ function setupEventListeners() {
         
         link.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             console.log(`🖱️ Navbar clicked: ${sectionId}`);
             
             const section = document.getElementById(sectionId);
@@ -996,7 +1001,7 @@ function setupEventListeners() {
             section.classList.add('active');
             console.log(`   ✅ Section ${sectionId} is now visible`);
             
-            // Scroll to top of dashboard
+            // Scroll to top of dashboard smoothly
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });

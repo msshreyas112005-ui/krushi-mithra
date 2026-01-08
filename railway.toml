@@ -1,0 +1,11 @@
+# Railway deployment configuration for KRUSHI MITHRA
+
+# Build settings
+[build]
+  builder = "NIXPACKS"
+  buildCommand = "cd backend && npm install"
+  startCommand = "cd backend && npm start"
+
+# Environment variables (set these in Railway dashboard)
+[env]
+  NODE_ENV = "production"

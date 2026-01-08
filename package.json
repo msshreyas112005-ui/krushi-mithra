@@ -1,4 +1,11 @@
 {
+  "name": "krushi-mithra",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "install-all": "npm install && cd backend && npm install"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "jsonwebtoken": "^9.0.3"

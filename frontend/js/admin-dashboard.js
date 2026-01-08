@@ -1,5 +1,5 @@
-// API Configuration
-const API_URL = 'http://localhost:3000/api';
+// API Configuration - Uses config.js for environment-aware API URL
+// The API_URL is now loaded from config.js which auto-detects development vs production
 
 // Initialization flag to prevent duplicate setup
 let isInitialized = false;

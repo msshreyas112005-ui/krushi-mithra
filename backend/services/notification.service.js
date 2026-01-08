@@ -389,6 +389,11 @@ class NotificationService {
 
         try {
             const { email, name } = farmerData;
+            
+            // Use environment variable or fallback to localhost
+            const baseUrl = process.env.BASE_URL || process.env.APP_URL || 'http://localhost:3000';
+            const dashboardUrl = `${baseUrl}/frontend/html/farmer-dashboard.html`;
+            const loginUrl = `${baseUrl}/frontend/html/farmer-login.html`;
 
             const htmlContent = `
 <!DOCTYPE html>
@@ -442,12 +447,23 @@ class NotificationService {
         .button {
             display: inline-block;
             background: #2ecc71;
-            color: white;
+            color: white !important;
             padding: 15px 30px;
             text-decoration: none;
             border-radius: 5px;
             margin: 20px 0;
             font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #27ae60;
+        }
+        .button:visited {
+            color: white;
+        }
+        a {
+            color: #2ecc71;
         }
         .footer {
             background: #f8f9fa;
@@ -483,8 +499,12 @@ class NotificationService {
             <p>You can now login to your farmer dashboard using your registered email address.</p>
 
             <center>
-                <a href="http://localhost:3000/frontend/html/farmer-login.html" class="button">Login to Dashboard</a>
+                <a href="${loginUrl}" class="button" style="color: white; text-decoration: none;">Login to Dashboard</a>
             </center>
+            
+            <p style="margin-top: 20px; text-align: center; font-size: 14px; color: #6c757d;">
+                Direct dashboard link: <a href="${dashboardUrl}" style="color: #2ecc71;">${dashboardUrl}</a>
+            </p>
 
             <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
                 <strong>Need Help?</strong><br>
