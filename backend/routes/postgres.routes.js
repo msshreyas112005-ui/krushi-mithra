@@ -24,6 +24,20 @@ router.post('/farmers/register', farmerController.registerFarmer);
 router.post('/farmers/login', farmerController.loginFarmer);
 
 /**
+ * @route   POST /api/farmers/send-otp
+ * @desc    Send OTP for registration (OPTIONAL - for OTP-based registration)
+ * @access  Public
+ */
+router.post('/farmers/send-otp', farmerController.sendOTP);
+
+/**
+ * @route   POST /api/farmers/verify-otp
+ * @desc    Verify OTP (OPTIONAL - for OTP-based registration)
+ * @access  Public
+ */
+router.post('/farmers/verify-otp', farmerController.verifyOTPEndpoint);
+
+/**
  * @route   GET /api/farmers/profile
  * @desc    Get farmer profile
  * @access  Private (Farmer)
@@ -54,19 +68,20 @@ router.post('/admin/login', (req, res) => {
   console.log('[ADMIN LOGIN] Login attempt for:', email);
   
   if (email === adminEmail && password === adminPassword) {
+    // Generate JWT token with 'admin' role (matches verifyAdmin middleware)
     const token = jwt.sign(
-      { email: adminEmail, role: 'MAIN_ADMIN' },
+      { email: adminEmail, role: 'admin', id: 1 },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
     
-    console.log('[ADMIN LOGIN] ✅ Login successful');
+    console.log('[ADMIN LOGIN] ✅ Login successful - Token generated with role: admin');
     
     return res.json({
       success: true,
       message: 'Login successful',
       token,
-      admin: { email: adminEmail, role: 'MAIN_ADMIN' }
+      admin: { email: adminEmail, role: 'admin', id: 1 }
     });
   }
   
@@ -112,7 +127,7 @@ router.get('/admin/subsidies', subsidyController.getAllSubsidies);
  * @desc    Create new subsidy
  * @access  Private (Admin)
  */
-router.post('/admin/subsidies', subsidyController.createSubsidy);
+router.post('/admin/subsidies', verifyAdmin, subsidyController.createSubsidy);
 
 /**
  * @route   GET /api/admin/subsidies/:id
@@ -126,14 +141,14 @@ router.get('/admin/subsidies/:id', subsidyController.getSubsidy);
  * @desc    Update subsidy
  * @access  Private (Admin)
  */
-router.put('/admin/subsidies/:id', subsidyController.updateSubsidy);
+router.put('/admin/subsidies/:id', verifyAdmin, subsidyController.updateSubsidy);
 
 /**
  * @route   DELETE /api/admin/subsidies/:id
  * @desc    Delete subsidy
  * @access  Private (Admin)
  */
-router.delete('/admin/subsidies/:id', subsidyController.deleteSubsidy);
+router.delete('/admin/subsidies/:id', verifyAdmin, subsidyController.deleteSubsidy);
 
 // ==================== MARKET PRICE ROUTES ====================
 
@@ -186,7 +201,7 @@ router.get('/notifications', notificationController.getAllNotifications);
  * @desc    Create new notification
  * @access  Private (Admin)
  */
-router.post('/admin/notifications', notificationController.createNotification);
+router.post('/admin/notifications', verifyAdmin, notificationController.createNotification);
 
 /**
  * @route   GET /api/admin/notifications/:id
@@ -200,6 +215,6 @@ router.get('/admin/notifications/:id', notificationController.getNotification);
  * @desc    Delete notification
  * @access  Private (Admin)
  */
-router.delete('/admin/notifications/:id', notificationController.deleteNotification);
+router.delete('/admin/notifications/:id', verifyAdmin, notificationController.deleteNotification);
 
 module.exports = router;

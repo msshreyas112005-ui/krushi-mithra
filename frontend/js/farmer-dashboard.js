@@ -957,7 +957,7 @@ function setupEventListeners() {
         });
     }
     
-    // Navbar section navigation with show/hide
+    // Navbar section navigation with proper show/hide
     console.log('🔗 Setting up navbar navigation...');
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
     console.log(`✅ Found ${navLinks.length} navigation links`);
@@ -967,6 +967,46 @@ function setupEventListeners() {
         return;
     }
     
+    // Function to show a specific section and hide all others
+    window.showSection = function(sectionId) {
+        console.log(`🔄 Switching to section: ${sectionId}`);
+        
+        const section = document.getElementById(sectionId);
+        if (!section) {
+            console.error(`❌ Section not found: ${sectionId}`);
+            return;
+        }
+        
+        // Hide ALL sections first
+        const allSections = document.querySelectorAll('.dashboard-section');
+        allSections.forEach(s => {
+            s.classList.remove('active');
+            s.style.display = 'none';
+        });
+        
+        // Show ONLY the selected section
+        section.classList.add('active');
+        section.style.display = 'flex';
+        
+        // Update navbar active state
+        navLinks.forEach(l => l.classList.remove('active'));
+        const activeLink = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+        
+        // Smooth scroll to top of content area
+        const dashboardMain = document.querySelector('.dashboard-main');
+        if (dashboardMain) {
+            dashboardMain.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        console.log(`✅ Section ${sectionId} is now visible`);
+    };
+    
+    // Attach click handlers to navbar links
     navLinks.forEach((link, index) => {
         const sectionId = link.getAttribute('data-section');
         console.log(`   [${index + 1}] Link: ${sectionId}`);
@@ -975,36 +1015,15 @@ function setupEventListeners() {
             e.preventDefault();
             e.stopPropagation();
             console.log(`🖱️ Navbar clicked: ${sectionId}`);
-            
-            const section = document.getElementById(sectionId);
-            
-            if (!section) {
-                console.error(`❌ Section not found: ${sectionId}`);
-                return;
-            }
-            
-            console.log(`✅ Switching to section: ${sectionId}`);
-            
-            // Remove active class from all links
-            navLinks.forEach(l => l.classList.remove('active'));
-            // Add active class to clicked link
-            link.classList.add('active');
-            
-            // Hide all sections
-            const allSections = document.querySelectorAll('.dashboard-section');
-            console.log(`   Hiding ${allSections.length} sections`);
-            allSections.forEach(s => {
-                s.classList.remove('active');
-            });
-            
-            // Show selected section
-            section.classList.add('active');
-            console.log(`   ✅ Section ${sectionId} is now visible`);
-            
-            // Scroll to top of dashboard smoothly
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showSection(sectionId);
         });
     });
+    
+    // Set default section on page load
+    console.log('🎯 Setting default section: daily-info');
+    setTimeout(() => {
+        showSection('daily-info');
+    }, 100);
     
     console.log('✅ Navbar navigation setup complete');
     

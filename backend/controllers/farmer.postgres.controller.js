@@ -1,49 +1,141 @@
 const { pool } = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { sendRegistrationEmail } = require('../services/email.service');
+const { sendRegistrationSMS } = require('../services/sms.service');
+const { generateOTP, storeOTP, verifyOTP } = require('../services/otp.service');
 
 /**
  * Farmer Registration (PostgreSQL)
  */
 const registerFarmer = async (req, res) => {
-    try {
-        const { name, email, phone, location, password } = req.body;
+    console.log('\n' + '='.repeat(70));
+    console.log('[FARMER REGISTRATION] 📝 New registration attempt');
+    console.log('[FARMER REGISTRATION] Request method:', req.method);
+    console.log('[FARMER REGISTRATION] Request URL:', req.url);
+    console.log('[FARMER REGISTRATION] Request path:', req.path);
+    console.log('[FARMER REGISTRATION] Base URL:', req.baseUrl);
+    console.log('[FARMER REGISTRATION] Full URL:', req.baseUrl + req.path);
+    console.log('='.repeat(70));
+    console.log('[FARMER REGISTRATION] Request body:', JSON.stringify({
+        ...req.body,
+        password: req.body.password ? '***HIDDEN***' : undefined
+    }, null, 2));
+    console.log('='.repeat(70));
 
-        // Validate required fields
-        if (!name || !email || !phone || !location || !password) {
+    try {
+        // Map frontend field names to backend field names
+        const { fullName, name, email, mobile, phone, location, password, cropType, language } = req.body;
+        
+        // Use fullName if name is not provided, mobile if phone is not provided
+        const farmerName = (name || fullName || '').trim();
+        const farmerPhone = (phone || mobile || '').trim();
+        const farmerEmail = email ? email.toLowerCase().trim() : '';
+        const farmerLocation = (location || '').trim();
+
+        console.log('[FARMER REGISTRATION] Mapped fields:', {
+            name: farmerName,
+            email: farmerEmail,
+            phone: farmerPhone,
+            location: farmerLocation,
+            password: password ? '***PROVIDED***' : '***MISSING***',
+            cropType,
+            language
+        });
+
+        // Validate required fields - check for both undefined and empty strings
+        const missingFields = [];
+        if (!farmerName) missingFields.push('name');
+        if (!farmerEmail) missingFields.push('email');
+        if (!farmerPhone) missingFields.push('phone');
+        if (!farmerLocation) missingFields.push('location');
+        if (!password) missingFields.push('password');
+
+        if (missingFields.length > 0) {
+            console.log('[FARMER REGISTRATION] ❌ Validation failed - missing fields:', missingFields);
             return res.status(400).json({
                 success: false,
-                message: 'All fields are required'
+                message: `Missing required fields: ${missingFields.join(', ')}`,
+                missingFields
             });
         }
 
-        // Check if farmer already exists
+        console.log('[FARMER REGISTRATION] ✓ Validation passed');
+        console.log('[FARMER REGISTRATION] Checking for existing user...');
+
+        // Check if farmer already exists (case-insensitive email check)
         const existingFarmer = await pool.query(
-            'SELECT * FROM farmers WHERE email = $1',
-            [email]
+            'SELECT * FROM farmers WHERE LOWER(email) = LOWER($1)',
+            [farmerEmail]
         );
 
         if (existingFarmer.rows.length > 0) {
+            console.log('[FARMER REGISTRATION] ❌ Email already exists:', farmerEmail);
             return res.status(400).json({
                 success: false,
                 message: 'Farmer with this email already exists'
             });
         }
 
+        console.log('[FARMER REGISTRATION] ✓ Email is unique');
+        console.log('[FARMER REGISTRATION] Hashing password...');
+        console.log('[FARMER REGISTRATION] Password length:', password?.length, 'characters');
+
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log('[FARMER REGISTRATION] ✓ Password hashed successfully');
+        console.log('[FARMER REGISTRATION] Hash starts with:', hashedPassword.substring(0, 10) + '...');
+        console.log('[FARMER REGISTRATION] Hash length:', hashedPassword.length, 'characters');
+
+        console.log('[FARMER REGISTRATION] Inserting into database...');
+        console.log('[FARMER REGISTRATION] SQL Query:', `INSERT INTO farmers (name, email, phone, location, password, is_approved, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW())`);
+        console.log('[FARMER REGISTRATION] Query params:', [farmerName, farmerEmail, farmerPhone, farmerLocation, '***HIDDEN***', true]);
 
         // Insert new farmer
         const result = await pool.query(
             `INSERT INTO farmers (name, email, phone, location, password, is_approved, created_at)
              VALUES ($1, $2, $3, $4, $5, $6, NOW())
              RETURNING id, name, email, phone, location, is_approved, created_at`,
-            [name, email, phone, location, hashedPassword, true]
+            [farmerName, farmerEmail, farmerPhone, farmerLocation, hashedPassword, true]
         );
 
         const farmer = result.rows[0];
 
-        console.log('✅ Farmer registered:', farmer.email);
+        console.log('[FARMER REGISTRATION] ✅ SUCCESS! Farmer inserted into database');
+        console.log('[FARMER REGISTRATION] Farmer ID:', farmer.id);
+        console.log('[FARMER REGISTRATION] Farmer Email:', farmer.email);
+        
+        // Send registration confirmation email and SMS (non-blocking - don't fail registration if they fail)
+        console.log('[FARMER REGISTRATION] Sending registration confirmation email and SMS...');
+        
+        // Send email (async, don't wait)
+        sendRegistrationEmail({
+            name: farmer.name,
+            email: farmer.email,
+            phone: farmer.phone,
+            location: farmer.location
+        }).then(emailResult => {
+            if (emailResult.success) {
+                console.log('[FARMER REGISTRATION] ✅ Email sent successfully:', emailResult.messageId);
+            } else {
+                console.log('[FARMER REGISTRATION] ⚠️ Email failed (non-blocking):', emailResult.error);
+            }
+        }).catch(err => {
+            console.log('[FARMER REGISTRATION] ⚠️ Email error (non-blocking):', err.message);
+        });
+        
+        // Send SMS (async, don't wait)
+        sendRegistrationSMS(farmer.phone, farmer.name).then(smsResult => {
+            if (smsResult.success) {
+                console.log('[FARMER REGISTRATION] ✅ SMS sent successfully');
+            } else {
+                console.log('[FARMER REGISTRATION] ⚠️ SMS failed (non-blocking):', smsResult.error);
+            }
+        }).catch(err => {
+            console.log('[FARMER REGISTRATION] ⚠️ SMS error (non-blocking):', err.message);
+        });
+        
+        console.log('[FARMER REGISTRATION] Sending success response...\n');
 
         res.status(201).json({
             success: true,
@@ -58,10 +150,15 @@ const registerFarmer = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('❌ Farmer registration error:', error);
+        console.error('[FARMER REGISTRATION] ❌ CRITICAL ERROR during registration');
+        console.error('[FARMER REGISTRATION] Error name:', error.name);
+        console.error('[FARMER REGISTRATION] Error message:', error.message);
+        console.error('[FARMER REGISTRATION] Error stack:', error.stack);
+        console.error('[FARMER REGISTRATION] Full error:', error);
+        
         res.status(500).json({
             success: false,
-            message: 'Error registering farmer',
+            message: 'Error registering farmer: ' + error.message,
             error: error.message
         });
     }
@@ -71,19 +168,39 @@ const registerFarmer = async (req, res) => {
  * Farmer Login (PostgreSQL)
  */
 const loginFarmer = async (req, res) => {
+    console.log('\n[FARMER LOGIN] 🔐 Login attempt');
+    console.log('[FARMER LOGIN] Request body:', JSON.stringify({
+        email: req.body.email,
+        password: req.body.password ? '***PROVIDED***' : '***MISSING***'
+    }));
+
     try {
         const { email, password } = req.body;
+        
+        // Validate input
+        if (!email || !password) {
+            console.log('[FARMER LOGIN] ❌ Missing email or password');
+            return res.status(400).json({
+                success: false,
+                message: 'Email and password are required'
+            });
+        }
+        
+        const normalizedEmail = email ? email.toLowerCase().trim() : email;
 
-        console.log('[FARMER LOGIN] 🔐 Login attempt for:', email);
+        console.log('[FARMER LOGIN] Normalized email:', normalizedEmail);
+        console.log('[FARMER LOGIN] Querying database...');
 
-        // Find farmer by email
+        // Find farmer by email (case-insensitive)
         const result = await pool.query(
-            'SELECT * FROM farmers WHERE email = $1',
-            [email]
+            'SELECT * FROM farmers WHERE LOWER(email) = LOWER($1)',
+            [normalizedEmail]
         );
 
+        console.log('[FARMER LOGIN] Query result count:', result.rows.length);
+
         if (result.rows.length === 0) {
-            console.log('[FARMER LOGIN] ❌ Farmer not found:', email);
+            console.log('[FARMER LOGIN] ❌ Farmer not found with email:', normalizedEmail);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
@@ -91,25 +208,38 @@ const loginFarmer = async (req, res) => {
         }
 
         const farmer = result.rows[0];
+        console.log('[FARMER LOGIN] ✓ Farmer found:', farmer.email, '(ID:', farmer.id + ')');
 
         // Check if farmer is approved
         if (!farmer.is_approved) {
+            console.log('[FARMER LOGIN] ❌ Account not approved');
             return res.status(403).json({
                 success: false,
                 message: 'Your account is pending approval'
             });
         }
 
+        console.log('[FARMER LOGIN] ✓ Account is approved');
+        console.log('[FARMER LOGIN] Verifying password...');
+        console.log('[FARMER LOGIN] Password provided:', password ? 'YES' : 'NO');
+        console.log('[FARMER LOGIN] Password length:', password?.length, 'characters');
+        console.log('[FARMER LOGIN] Stored hash starts with:', farmer.password?.substring(0, 10) + '...');
+        console.log('[FARMER LOGIN] Stored hash length:', farmer.password?.length, 'characters');
+
         // Verify password
         const isPasswordValid = await bcrypt.compare(password, farmer.password);
+        console.log('[FARMER LOGIN] Password comparison result:', isPasswordValid);
 
         if (!isPasswordValid) {
-            console.log('[FARMER LOGIN] ❌ Invalid password for:', email);
+            console.log('[FARMER LOGIN] ❌ Invalid password for:', normalizedEmail);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
             });
         }
+
+        console.log('[FARMER LOGIN] ✓ Password verified');
+        console.log('[FARMER LOGIN] Updating last login...');
 
         // Update last login
         await pool.query(
@@ -124,7 +254,8 @@ const loginFarmer = async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        console.log('[FARMER LOGIN] ✅ Login successful:', email);
+        console.log('[FARMER LOGIN] ✅ Login successful for:', normalizedEmail);
+        console.log('[FARMER LOGIN] Sending success response\n');
 
         res.json({
             success: true,
@@ -139,7 +270,8 @@ const loginFarmer = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('[FARMER LOGIN] ❌ Error:', error);
+        console.error('[FARMER LOGIN] ❌ CRITICAL ERROR:', error.message);
+        console.error('[FARMER LOGIN] Error stack:', error.stack);
         res.status(500).json({
             success: false,
             message: 'Login failed',
@@ -296,11 +428,127 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+/**
+ * Send OTP for registration (OPTIONAL FEATURE - First Time Only)
+ * This endpoint is optional and can be used for OTP-based registration flow
+ */
+const sendOTP = async (req, res) => {
+    try {
+        const { email, phone, name } = req.body;
+        
+        console.log('[SEND OTP] 📧 OTP request for:', email, phone);
+        
+        // Validate required fields
+        if (!email || !phone || !name) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email, phone, and name are required'
+            });
+        }
+        
+        // Check if user already exists
+        const existingFarmer = await pool.query(
+            'SELECT * FROM farmers WHERE LOWER(email) = LOWER($1) OR phone = $2',
+            [email.toLowerCase().trim(), phone.trim()]
+        );
+        
+        if (existingFarmer.rows.length > 0) {
+            console.log('[SEND OTP] ❌ User already exists');
+            return res.status(400).json({
+                success: false,
+                message: 'A farmer with this email or phone number already exists'
+            });
+        }
+        
+        // Generate OTP
+        const otp = generateOTP();
+        
+        // Store OTP (using email as identifier)
+        storeOTP(email.toLowerCase(), otp);
+        
+        // Send OTP via email and SMS (import these services)
+        const emailService = require('../services/email.service');
+        const smsService = require('../services/sms.service');
+        
+        const [emailResult, smsResult] = await Promise.allSettled([
+            emailService.sendOTPEmail(email, name, otp),
+            smsService.sendOTPSMS(phone, name, otp)
+        ]);
+        
+        console.log('[SEND OTP] ✅ OTP sent successfully');
+        
+        res.json({
+            success: true,
+            message: 'OTP sent to your email and phone number',
+            expiresIn: 300, // 5 minutes
+            emailSent: emailResult.status === 'fulfilled' && emailResult.value.success,
+            smsSent: smsResult.status === 'fulfilled' && smsResult.value.success
+        });
+        
+    } catch (error) {
+        console.error('[SEND OTP] ❌ Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error sending OTP',
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Verify OTP (OPTIONAL FEATURE)
+ * This endpoint is optional and can be used for OTP-based registration flow
+ */
+const verifyOTPEndpoint = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        
+        console.log('[VERIFY OTP] 🔐 Verification request for:', email);
+        
+        // Validate required fields
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email and OTP are required'
+            });
+        }
+        
+        // Verify OTP
+        const result = verifyOTP(email.toLowerCase(), otp.toString());
+        
+        if (result.success) {
+            console.log('[VERIFY OTP] ✅ OTP verified');
+            res.json({
+                success: true,
+                message: 'OTP verified successfully. You can now complete registration.',
+                verified: true
+            });
+        } else {
+            console.log('[VERIFY OTP] ❌ OTP verification failed');
+            res.status(400).json({
+                success: false,
+                message: result.message,
+                verified: false
+            });
+        }
+        
+    } catch (error) {
+        console.error('[VERIFY OTP] ❌ Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error verifying OTP',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     registerFarmer,
     loginFarmer,
     getAllFarmers,
     getFarmerProfile,
     updateFarmerProfile,
-    getDashboardStats
+    getDashboardStats,
+    sendOTP,
+    verifyOTPEndpoint
 };

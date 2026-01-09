@@ -117,10 +117,19 @@ const farmerApiRoutes = require('./routes/farmer.api.routes');
 const adminRoutes = require('./routes/admin.routes');
 const postgresRoutes = require('./routes/postgres.routes'); // PostgreSQL routes
 
-app.use('/api/farmers', farmerRoutes);
+console.log('\n📡 Mounting API routes:');
+console.log('   • /api/farmer/*        -> farmerApiRoutes');
+console.log('   • /api/admin/*         -> adminRoutes');
+console.log('   • /api/*               -> postgresRoutes (PRIMARY)');
+console.log('   ✓ POST /api/farmers/register (postgres)');
+console.log('   ✓ POST /api/farmers/login (postgres)');
+console.log('   ✓ POST /api/admin/login\n');
+
+// Comment out legacy routes to avoid conflicts
+// app.use('/api/farmers', farmerRoutes); // DISABLED - Using postgres routes instead
 app.use('/api/farmer', farmerApiRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api', postgresRoutes); // Add PostgreSQL routes
+app.use('/api', postgresRoutes); // PostgreSQL routes - PRIMARY
 
 // 404 Handler - Must be after all routes
 app.use(notFoundHandler);
@@ -142,8 +151,8 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`${'='.repeat(60)}`);
   console.log(`📡 Server URL: ${BASE_URL}`);
   console.log(`🌐 Frontend:   ${BASE_URL}/frontend/html/index.html`);
-  console.log(`👨‍🌾 Farmer:     ${BASE_URL}/frontend/html/register.html`);
-  console.log(`👨‍💼 Admin:      ${BASE_URL}/frontend/html/admin-login.html`);
+  console.log(`👨‍� Farmer:     ${BASE_URL}/frontend/html/register.html`);
+  console.log(`👨‍� Admin:      ${BASE_URL}/frontend/html/admin-login.html`);
   console.log(`💻 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`${'='.repeat(60)}\n`);
 });

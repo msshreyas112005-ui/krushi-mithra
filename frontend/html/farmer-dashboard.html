@@ -82,10 +82,11 @@
             <!-- Dashboard Grid -->
             <div class="dashboard-grid">
                 <!-- Daily Farmer Information -->
-                <section id="daily-info" class="dashboard-section dashboard-card daily-info active">
-                    <div class="card-header">
-                        <h3><span class="icon">📋</span> <span data-i18n="sections.dailyInfo">Daily Information</span></h3>
-                    </div>
+                <section id="daily-info" class="dashboard-section active">
+                    <div class="dashboard-card daily-info">
+                        <div class="card-header">
+                            <h3><span class="icon">📋</span> <span data-i18n="sections.dailyInfo">Daily Information</span></h3>
+                        </div>
                     <div class="card-content">
                         <div class="info-list">
                             <div class="info-item">
@@ -110,10 +111,12 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </section>
 
                 <!-- Weather Update -->
-                <section id="weather-info" class="dashboard-section dashboard-card weather-card">
+                <section id="weather-info" class="dashboard-section">
+                    <div class="dashboard-card weather-card">
                     <div class="card-header">
                         <h3><span class="icon">🌤️</span> <span data-i18n="sections.weatherInfo">Weather Information</span></h3>
                         <button class="refresh-btn" id="refreshWeather" data-i18n="buttons.refresh">↻ Refresh</button>
@@ -173,10 +176,12 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </section>
 
                 <!-- Market Prices -->
-                <section id="market-prices" class="dashboard-section dashboard-card market-prices">
+                <section id="market-prices" class="dashboard-section">
+                    <div class="dashboard-card market-prices">
                     <div class="card-header">
                         <h3><span class="icon">💰</span> Market Prices</h3>
                         <button class="view-all-btn" id="refreshPricesBtn">🔄 Refresh</button>
@@ -208,10 +213,12 @@
                             </table>
                         </div>
                     </div>
+                    </div>
                 </section>
 
                 <!-- Government Schemes -->
-                <section id="subsidies" class="dashboard-section dashboard-card schemes-card">
+                <section id="subsidies" class="dashboard-section">
+                    <div class="dashboard-card schemes-card">
                     <div class="card-header">
                         <h3><span class="icon">🏛️</span> <span data-i18n="sections.subsidies">Government Subsidies</span></h3>
                     </div>
@@ -220,10 +227,12 @@
                             <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
+                    </div>
                 </section>
 
                 <!-- Admin Notifications -->
-                <section id="notifications" class="dashboard-section dashboard-card notifications-card">
+                <section id="notifications" class="dashboard-section">
+                    <div class="dashboard-card notifications-card">
                     <div class="card-header">
                         <h3><span class="icon">🔔</span> <span data-i18n="sections.notifications">Notifications</span></h3>
                         <span class="badge" id="notificationCount">0</span>
@@ -233,9 +242,8 @@
                             <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
+                    </div>
                 </section>
-
-
             </div>
         </div>
     </main>

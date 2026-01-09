@@ -1,35 +1,58 @@
 // API Configuration - Uses config.js for environment-aware API URL
 // The API_URL is now loaded from config.js which auto-detects development vs production
 
-// DOM Elements
-const form = document.getElementById('registrationForm');
-const submitBtn = document.getElementById('submitBtn');
-const formMessage = document.getElementById('formMessage');
-const togglePasswordBtn = document.getElementById('togglePassword');
+// DOM Elements - Will be initialized after DOM loads
+let form, submitBtn, formMessage, togglePasswordBtn;
+let formFields, errorElements;
 
-// Form Fields
-const formFields = {
-    fullName: document.getElementById('fullName'),
-    email: document.getElementById('email'),
-    mobile: document.getElementById('mobile'),
-    password: document.getElementById('password'),
-    confirmPassword: document.getElementById('confirmPassword'),
-    location: document.getElementById('location'),
-    cropType: document.getElementById('cropType'),
-    language: document.getElementById('language')
-};
+// Initialize Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[REGISTER.JS] 🚀 Initializing registration form');
+    
+    // Initialize DOM elements
+    form = document.getElementById('registrationForm');
+    submitBtn = document.getElementById('submitBtn');
+    formMessage = document.getElementById('formMessage');
+    togglePasswordBtn = document.getElementById('togglePassword');
 
-// Error Message Elements
-const errorElements = {
-    fullName: document.getElementById('fullNameError'),
-    email: document.getElementById('emailError'),
-    mobile: document.getElementById('mobileError'),
-    password: document.getElementById('passwordError'),
-    confirmPassword: document.getElementById('confirmPasswordError'),
-    location: document.getElementById('locationError'),
-    cropType: document.getElementById('cropTypeError'),
-    language: document.getElementById('languageError')
-};
+    // Form Fields
+    formFields = {
+        fullName: document.getElementById('fullName'),
+        email: document.getElementById('email'),
+        mobile: document.getElementById('mobile'),
+        password: document.getElementById('password'),
+        confirmPassword: document.getElementById('confirmPassword'),
+        location: document.getElementById('location'),
+        cropType: document.getElementById('cropType'),
+        language: document.getElementById('language')
+    };
+
+    // Error Message Elements
+    errorElements = {
+        fullName: document.getElementById('fullNameError'),
+        email: document.getElementById('emailError'),
+        mobile: document.getElementById('mobileError'),
+        password: document.getElementById('passwordError'),
+        confirmPassword: document.getElementById('confirmPasswordError'),
+        location: document.getElementById('locationError'),
+        cropType: document.getElementById('cropTypeError'),
+        language: document.getElementById('languageError')
+    };
+
+    if (!form) {
+        console.error('[REGISTER.JS] ❌ Registration form not found!');
+        return;
+    }
+
+    console.log('[REGISTER.JS] ✓ Form element found');
+    console.log('[REGISTER.JS] ✓ All field elements found');
+    
+    initializeValidation();
+    setupPasswordToggle();
+    setupFormSubmission();
+    
+    console.log('[REGISTER.JS] ✅ Registration form initialized successfully');
+});
 
 // Validation Rules
 const validationRules = {
@@ -74,13 +97,6 @@ const validationRules = {
         message: 'Please select your preferred language'
     }
 };
-
-// Initialize Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    initializeValidation();
-    setupPasswordToggle();
-    setupFormSubmission();
-});
 
 // Initialize Real-time Validation
 function initializeValidation() {
@@ -222,17 +238,29 @@ function setupFormSubmission() {
             return;
         }
 
-        // Prepare form data
+        // Prepare form data - map to backend field names
         const formData = {
-            fullName: formFields.fullName.value.trim(),
+            name: formFields.fullName.value.trim(),
             email: formFields.email.value.trim().toLowerCase(),
-            mobile: formFields.mobile.value.trim(),
+            phone: formFields.mobile.value.trim(),
             password: formFields.password.value,
             location: formFields.location.value.trim(),
             cropType: formFields.cropType.value,
             language: formFields.language.value,
             registeredAt: new Date().toISOString()
         };
+
+        // Double-check that all required fields are present and not empty
+        const requiredFields = ['name', 'email', 'phone', 'password', 'location'];
+        const emptyFields = requiredFields.filter(field => !formData[field] || formData[field].trim() === '');
+        
+        if (emptyFields.length > 0) {
+            console.error('[FRONTEND REGISTRATION] ❌ Empty required fields:', emptyFields);
+            showMessage(`Please fill in all required fields: ${emptyFields.join(', ')}`, 'error');
+            return;
+        }
+
+        console.log('[FRONTEND REGISTRATION] ✓ All required fields validated');
 
         // Submit to backend
         await submitRegistration(formData);
@@ -241,14 +269,41 @@ function setupFormSubmission() {
 
 // Submit Registration to Backend
 async function submitRegistration(formData) {
+    console.log('\n[FRONTEND REGISTRATION] 📝 Starting registration process');
+    console.log('[FRONTEND REGISTRATION] ====================================');
+    console.log('[FRONTEND REGISTRATION] Form data validation:');
+    console.log('   • name:', formData.name ? `"${formData.name}" ✓` : '❌ MISSING');
+    console.log('   • email:', formData.email ? `"${formData.email}" ✓` : '❌ MISSING');
+    console.log('   • phone:', formData.phone ? `"${formData.phone}" ✓` : '❌ MISSING');
+    console.log('   • password:', formData.password ? '***PROVIDED*** ✓' : '❌ MISSING');
+    console.log('   • location:', formData.location ? `"${formData.location}" ✓` : '❌ MISSING');
+    console.log('   • cropType:', formData.cropType || '(optional)');
+    console.log('   • language:', formData.language || '(optional)');
+    console.log('[FRONTEND REGISTRATION] ====================================');
+    console.log('[FRONTEND REGISTRATION] Full payload:', JSON.stringify({
+        ...formData,
+        password: '***HIDDEN***'
+    }, null, 2));
+    console.log('[FRONTEND REGISTRATION] ====================================');
+
     try {
         // Show loading state
         submitBtn.disabled = true;
         submitBtn.classList.add('loading');
         hideMessage();
 
+        // Note: API_URL already includes '/api', so we just add '/farmers/register'
+        // API_URL = 'http://localhost:3000/api' (from config.js)
+        // Final URL = 'http://localhost:3000/api/farmers/register'
+        const apiUrl = `${API_URL}/farmers/register`;
+        console.log('[FRONTEND REGISTRATION] ====================================');
+        console.log('[FRONTEND REGISTRATION] API_URL base:', API_URL);
+        console.log('[FRONTEND REGISTRATION] Final URL:', apiUrl);
+        console.log('[FRONTEND REGISTRATION] ====================================');
+        console.log('[FRONTEND REGISTRATION] Sending POST request...');
+
         // Make API call
-        const response = await fetch(`${API_URL}/farmers/register`, {
+        const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -256,11 +311,17 @@ async function submitRegistration(formData) {
             body: JSON.stringify(formData)
         });
 
-        const result = await response.json();
+        console.log('[FRONTEND REGISTRATION] Response status:', response.status);
+        console.log('[FRONTEND REGISTRATION] Response status text:', response.statusText);
+        console.log('[FRONTEND REGISTRATION] Response ok:', response.ok);
 
-        if (response.ok) {
+        const result = await response.json();
+        console.log('[FRONTEND REGISTRATION] Response body:', JSON.stringify(result, null, 2));
+
+        if (response.ok && result.success) {
             // Success
-            showMessage('Registration successful! Redirecting to login...', 'success');
+            console.log('[FRONTEND REGISTRATION] ✅ Registration successful!');
+            showMessage(result.message || 'Registration successful! Redirecting to login...', 'success');
             form.reset();
             
             // Clear all success classes
@@ -269,33 +330,31 @@ async function submitRegistration(formData) {
             });
 
             // Redirect after 2 seconds
+            console.log('[FRONTEND REGISTRATION] Redirecting to login page in 2 seconds...');
             setTimeout(() => {
-                window.location.href = 'index.html';
+                window.location.href = 'farmer-login.html';
             }, 2000);
         } else {
-            // Error from server
-            showMessage(result.message || 'Registration failed. Please try again.', 'error');
+            // Error from server - show actual backend error message
+            console.error('[FRONTEND REGISTRATION] ❌ Server returned error:', result);
+            showMessage(result.message || result.error || 'Registration failed. Please try again.', 'error');
         }
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('[FRONTEND REGISTRATION] ❌ CRITICAL ERROR:', error);
+        console.error('[FRONTEND REGISTRATION] Error name:', error.name);
+        console.error('[FRONTEND REGISTRATION] Error message:', error.message);
+        console.error('[FRONTEND REGISTRATION] Error stack:', error.stack);
         
-        // Show fallback success message if server is not running
-        if (error.message.includes('fetch')) {
-            showMessage('Registration data validated successfully! (Note: Backend server not running)', 'success');
-            console.log('Form Data:', formData);
-            
-            // Reset form after showing success
-            setTimeout(() => {
-                form.reset();
-                Object.values(formFields).forEach(field => {
-                    field.classList.remove('success', 'error');
-                });
-            }, 2000);
+        // Show specific error messages
+        if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+            console.error('[FRONTEND REGISTRATION] Network error - cannot reach backend');
+            showMessage('❌ Cannot connect to server. Please check if the backend is running.', 'error');
         } else {
-            showMessage('An error occurred. Please try again later.', 'error');
+            showMessage('An error occurred: ' + error.message, 'error');
         }
     } finally {
         // Remove loading state
+        console.log('[FRONTEND REGISTRATION] Resetting form state\n');
         submitBtn.disabled = false;
         submitBtn.classList.remove('loading');
     }

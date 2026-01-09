@@ -10,17 +10,17 @@
 
 body {
     font-family: 'Poppins', 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
     overflow-x: hidden;
     word-wrap: break-word;
 }
 
-/* Header Navigation - Modern Clean Design */
+/* Header Navigation - Green & White Theme */
 .dashboard-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
     color: white;
     padding: 1rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(46, 125, 50, 0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -70,8 +70,9 @@ body {
 }
 
 .nav-link.active {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(27, 94, 32, 0.5);
     font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* User Section */
@@ -94,7 +95,7 @@ body {
 }
 
 .language-dropdown option {
-    background: #667eea;
+    background: #2e7d32;
     color: white;
 }
 
@@ -198,9 +199,10 @@ body {
     align-items: center;
     gap: 0.8rem;
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
     border-radius: 12px;
     color: white;
+    box-shadow: 0 3px 12px rgba(46, 125, 50, 0.3);
 }
 
 .stat-icon {
@@ -212,25 +214,25 @@ body {
     font-size: 1.05rem;
 }
 
-/* Dashboard Grid - Responsive Layout with Fixed Column Alignment */
+/* Dashboard Grid - Single Column Layout */
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
     width: 100%;
+    min-height: calc(100vh - 400px);
 }
 
-/* Section visibility control */
+/* Section visibility control - ONLY ONE SECTION VISIBLE AT A TIME */
 .dashboard-section {
-    display: none;
+    display: none !important;
     width: 100%;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
 
 .dashboard-section.active {
-    display: block;
+    display: flex !important;
+    flex-direction: column;
     opacity: 1;
     animation: fadeIn 0.3s ease-in-out;
 }
@@ -246,20 +248,29 @@ body {
     }
 }
 
-/* Ensure all cards have equal heights in their row */
+/* Dashboard cards within sections */
 .dashboard-card {
     background: white;
     border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(46, 125, 50, 0.15);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    min-height: 300px;
+    border: 1px solid rgba(46, 125, 50, 0.1);
 }
 
 .dashboard-card:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(46, 125, 50, 0.25);
+    transform: translateY(-2px);
+    border-color: rgba(46, 125, 50, 0.3);
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
 }
 
 .card-header {
@@ -332,9 +343,9 @@ body {
 .weather-location-selector {
     margin-bottom: 1.5rem;
     padding: 1.5rem;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
 }
 
 .location-inputs {
@@ -377,9 +388,9 @@ body {
 
 .location-select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #2e7d32;
     background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
 }
 
 .location-select:disabled {
@@ -389,7 +400,7 @@ body {
 
 .fetch-weather-btn {
     padding: 0.75rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -397,13 +408,13 @@ body {
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
     white-space: nowrap;
 }
 
 .fetch-weather-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.6);
 }
 
 .fetch-weather-btn:active {
@@ -419,7 +430,7 @@ body {
     align-items: center;
     gap: 2rem;
     padding: 1.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
     border-radius: 12px;
     color: white;
     margin-bottom: 1.5rem;
@@ -535,7 +546,7 @@ body {
 }
 
 .tab-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
     color: white;
 }
 
@@ -567,7 +578,7 @@ body {
 
 .price-value {
     font-weight: 700;
-    color: #667eea;
+    color: #2e7d32;
     font-size: 1.1rem;
 }
 
@@ -587,14 +598,14 @@ body {
     padding: 1.2rem;
     background: #f7fafc;
     border-radius: 12px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #2e7d32;
     transition: all 0.3s;
 }
 
 .scheme-item:hover {
     background: #edf2f7;
     transform: translateX(5px);
-    border-left-color: #764ba2;
+    border-left-color: #1b5e20;
 }
 
 .scheme-header {
@@ -693,7 +704,7 @@ body {
     padding: 1rem;
     background: #f7fafc;
     border-radius: 10px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #2e7d32;
     transition: all 0.3s;
 }
 
@@ -703,8 +714,8 @@ body {
 }
 
 .notification-item.unread {
-    background: #ebf4ff;
-    border-left-color: #4299e1;
+    background: #e8f5e9;
+    border-left-color: #43a047;
 }
 
 .notification-header {
@@ -777,11 +788,11 @@ body {
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+    border-color: #2e7d32;
     color: white;
     transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
 }
 
 .action-icon {
@@ -797,7 +808,7 @@ body {
 .refresh-btn,
 .view-all-btn {
     padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -809,7 +820,7 @@ body {
 .refresh-btn:hover,
 .view-all-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
 }
 
 /* Footer */
@@ -822,7 +833,7 @@ body {
 }
 
 .dashboard-footer a {
-    color: #667eea;
+    color: #2e7d32;
     text-decoration: none;
     font-weight: 600;
 }
@@ -876,12 +887,13 @@ body {
     }
 
     .dashboard-grid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 1.5rem;
     }
 
     .dashboard-card {
         padding: 1rem;
+        min-height: 250px;
     }
 
     .weather-main {
@@ -954,9 +966,6 @@ body {
 
     .dashboard-grid {
         gap: 1rem;
-    }
-}
-        grid-template-columns: 1fr;
     }
 }
 

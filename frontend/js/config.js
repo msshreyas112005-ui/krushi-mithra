@@ -46,6 +46,13 @@ const CONFIG = {
 // Export the API URL
 const API_URL = CONFIG.getApiUrl() + '/api';
 
+// Log environment and API configuration
+console.log('🔧 [CONFIG.JS] API Configuration:');
+console.log('   Environment:', CONFIG.isProduction() ? 'PRODUCTION' : 'DEVELOPMENT');
+console.log('   Base URL:', CONFIG.getApiUrl());
+console.log('   API_URL:', API_URL);
+console.log('   Sample endpoint: POST', API_URL + '/farmers/register');
+
 // Log environment info (only in development)
 if (!CONFIG.isProduction()) {
     console.log('🔧 Development Mode');

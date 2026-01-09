@@ -43,14 +43,14 @@ router.post('/register', async (req, res) => {
 
     // Insert new farmer into PostgreSQL with crop information
     const insertQuery = await pool.query(
-      `INSERT INTO farmers (name, email, phone, location, password, crop_type, language, is_approved, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, true, NOW())
-       RETURNING id, name, email, phone, location, crop_type, language, created_at`,
-      [fullName, email.toLowerCase(), mobile, location, hashedPassword, cropType, language || 'en']
+      `INSERT INTO farmers (name, email, phone, location, password, language, is_approved, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, true, NOW())
+       RETURNING id, name, email, phone, location, language, created_at`,
+      [fullName, email.toLowerCase(), mobile, location, hashedPassword, language || 'en']
     );
 
     const farmer = insertQuery.rows[0];
-    console.log('[FARMER REGISTER] ✅ Farmer registered:', farmer.email, 'Crop:', farmer.crop_type);
+    console.log('[FARMER REGISTER] ✅ Farmer registered:', farmer.email, 'Location:', farmer.location);
 
     // Send welcome email notification
     try {
@@ -80,6 +80,8 @@ router.post('/register', async (req, res) => {
 
   } catch (error) {
     console.error('[FARMER REGISTER] Error:', error);
+    console.error('[FARMER REGISTER] Error code:', error.code);
+    console.error('[FARMER REGISTER] Error message:', error.message);
     
     if (error.code === '23505') { // PostgreSQL unique violation
       return res.status(409).json({
@@ -88,10 +90,20 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // Check if it's a database connection error
+    if (error.code === 'ECONNREFUSED' || error.message.includes('connect')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection failed. Please contact support.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+
+    // Generic error with actual error message for debugging
     res.status(500).json({
       success: false,
-      message: 'Registration failed. Database connection required.',
-      error: error.message
+      message: 'Registration failed. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
