@@ -1,6 +1,18 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+// Log database configuration (without exposing full connection string)
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) {
+    console.error('❌ DATABASE_URL environment variable is not set!');
+    console.error('   Please check your Vercel environment variables.');
+} else {
+    const urlParts = dbUrl.match(/postgresql:\/\/([^:]+):([^@]+)@([^/]+)\//);
+    if (urlParts) {
+        console.log(`📊 Database configured: ${urlParts[3].split(':')[0]}`);
+    }
+}
+
 // Create PostgreSQL connection pool
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,

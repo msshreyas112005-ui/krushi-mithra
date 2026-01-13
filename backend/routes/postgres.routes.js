@@ -7,6 +7,31 @@ const notificationController = require('../controllers/notification.postgres.con
 const { verifyToken, verifyAdmin } = require('../middleware/auth.middleware');
 const jwt = require('jsonwebtoken');
 
+// ==================== ROOT ROUTE ====================
+
+/**
+ * @route   GET /api/
+ * @desc    API root - returns API information
+ * @access  Public
+ */
+router.get('/', (req, res) => {
+    res.json({
+        message: 'KRUSHI MITHRA API',
+        version: '1.0.0',
+        status: 'active',
+        endpoints: {
+            health: '/api/health',
+            farmers: {
+                register: 'POST /api/farmers/register',
+                login: 'POST /api/farmers/login'
+            },
+            admin: {
+                login: 'POST /api/admin/login'
+            }
+        }
+    });
+});
+
 // ==================== FARMER ROUTES ====================
 
 /**
