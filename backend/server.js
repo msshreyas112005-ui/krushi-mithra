@@ -70,31 +70,43 @@ app.use(express.static(path.join(__dirname, '../frontend'))); // Also serve from
 // Database Connection (PostgreSQL with Neon) - REQUIRED
 const { pool, initializeTables } = require('./db');
 
-// Initialize PostgreSQL connection and tables - EXIT IF FAILS
-(async () => {
-  try {
-    // Test connection
-    const client = await pool.connect();
-    client.release();
-    console.log('✅ PostgreSQL database connected successfully (Neon)');
-    
-    // Initialize tables
-    await initializeTables();
-    console.log('✅ All database tables initialized successfully!\n');
-    
-    console.log('💡 Running with PostgreSQL Database (Neon Cloud)');
-    console.log('   All data is persisted in the database');
-    console.log('   Real-time data storage and retrieval active\n');
-    
-  } catch (error) {
-    console.error('\n❌ CRITICAL ERROR: PostgreSQL connection failed!');
-    console.error('   Error:', error.message);
-    console.error('   Database connection is REQUIRED for this application.');
-    console.error('   Please check your DATABASE_URL in .env file.\n');
-    console.error('   Exiting server...\n');
-    process.exit(1); // Exit with error code
-  }
-})();
+// Initialize PostgreSQL connection and tables
+// In serverless (Vercel), connection is established on-demand per request
+const isVercelEnv = process.env.VERCEL === '1';
+
+if (!isVercelEnv) {
+  // Traditional server - test connection at startup
+  (async () => {
+    try {
+      // Test connection
+      const client = await pool.connect();
+      client.release();
+      console.log('✅ PostgreSQL database connected successfully (Neon)');
+      
+      // Initialize tables
+      await initializeTables();
+      console.log('✅ All database tables initialized successfully!\n');
+      
+      console.log('💡 Running with PostgreSQL Database (Neon Cloud)');
+      console.log('   All data is persisted in the database');
+      console.log('   Real-time data storage and retrieval active\n');
+      
+    } catch (error) {
+      console.error('\n❌ CRITICAL ERROR: PostgreSQL connection failed!');
+      console.error('   Error:', error.message);
+      console.error('   Database connection is REQUIRED for this application.');
+      console.error('   Please check your DATABASE_URL in .env file.\n');
+      console.error('   Exiting server...\n');
+      process.exit(1); // Exit with error code
+    }
+  })();
+} else {
+  // Vercel serverless - initialize tables on first request
+  console.log('🚀 Vercel serverless mode - database will connect on first request');
+  initializeTables().catch(err => {
+    console.error('⚠️  Table initialization warning:', err.message);
+  });
+}
 
 // Routes
 app.get('/', (req, res) => {
@@ -137,32 +149,40 @@ app.use(notFoundHandler);
 // Global Error Handler - Must be last
 app.use(errorHandler);
 
-// Initialize scheduled jobs
-const { initializeScheduledJobs, triggerManualUpdate } = require('./config/scheduler');
-
-// Start server immediately
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
-
-const server = app.listen(PORT, HOST, () => {
-  console.log(`\n${'='.repeat(60)}`);
-  console.log(`🌾 KRUSHI MITHRA Server Started`);
-  console.log(`${'='.repeat(60)}`);
-  console.log(`📡 Server URL: ${BASE_URL}`);
-  console.log(`🌐 Frontend:   ${BASE_URL}/frontend/html/index.html`);
-  console.log(`👨‍� Farmer:     ${BASE_URL}/frontend/html/register.html`);
-  console.log(`👨‍� Admin:      ${BASE_URL}/frontend/html/admin-login.html`);
-  console.log(`💻 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`${'='.repeat(60)}\n`);
-});
-
-// Initialize scheduled jobs
-try {
-  const { initializeScheduledJobs } = require('./config/scheduler');
-  initializeScheduledJobs();
-} catch (error) {
-  console.warn('⚠️  Scheduler initialization skipped:', error.message);
+// Initialize scheduled jobs (only in non-serverless environments)
+if (process.env.NODE_ENV !== 'production' || process.env.DISABLE_CRON !== 'true') {
+  try {
+    const { initializeScheduledJobs } = require('./config/scheduler');
+    initializeScheduledJobs();
+  } catch (error) {
+    console.warn('⚠️  Scheduler initialization skipped:', error.message);
+  }
 }
 
-module.exports = server;
+// Check if running in Vercel (serverless) or traditional server
+const isVercel = process.env.VERCEL === '1';
+
+if (!isVercel) {
+  // Traditional server mode (local development)
+  const PORT = process.env.PORT || 3000;
+  const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`\n${'='.repeat(60)}`);
+    console.log(`🌾 KRUSHI MITHRA Server Started`);
+    console.log(`${'='.repeat(60)}`);
+    console.log(`📡 Server URL: ${BASE_URL}`);
+    console.log(`🌐 Frontend:   ${BASE_URL}/frontend/html/index.html`);
+    console.log(`👨‍🌾 Farmer:     ${BASE_URL}/frontend/html/register.html`);
+    console.log(`👨‍💼 Admin:      ${BASE_URL}/frontend/html/admin-login.html`);
+    console.log(`💻 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`${'='.repeat(60)}\n`);
+  });
+
+  module.exports = server;
+} else {
+  // Vercel serverless mode - just export the app
+  console.log('🚀 Running in Vercel serverless mode');
+  module.exports = app;
+}
