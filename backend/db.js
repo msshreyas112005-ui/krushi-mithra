@@ -1,28 +1,41 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+
+// In Vercel, dotenv is not needed as env vars are already loaded
+// Only load dotenv in development
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
 // Log database configuration (without exposing full connection string)
 const dbUrl = process.env.DATABASE_URL;
+console.log('🔍 [DB.JS] Checking DATABASE_URL...');
+console.log('   Environment:', process.env.NODE_ENV || 'not set');
+console.log('   DATABASE_URL exists:', !!dbUrl);
+
 if (!dbUrl) {
     console.error('❌ DATABASE_URL environment variable is not set!');
     console.error('   Please check your Vercel environment variables.');
+    throw new Error('DATABASE_URL is required but not set');
 } else {
     const urlParts = dbUrl.match(/postgresql:\/\/([^:]+):([^@]+)@([^/]+)\//);
     if (urlParts) {
-        console.log(`📊 Database configured: ${urlParts[3].split(':')[0]}`);
+        console.log(`📊 Database host: ${urlParts[3].split(':')[0]}`);
     }
 }
 
-// Create PostgreSQL connection pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+// Create PostgreSQL connection pool with explicit configuration
+const poolConfig = {
+    connectionString: dbUrl,
     ssl: {
         rejectUnauthorized: false // Required for Neon and most cloud PostgreSQL providers
     },
     max: 20, // Maximum number of clients in the pool
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
-});
+};
+
+console.log('🔧 [DB.JS] Creating connection pool...');
+const pool = new Pool(poolConfig);
 
 // Test connection on initialization
 pool.on('connect', () => {
