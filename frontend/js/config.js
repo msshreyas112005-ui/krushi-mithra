@@ -18,7 +18,8 @@ const CONFIG = {
     // - Render: https://krushi-mithra-api.onrender.com
     // - Railway: https://krushi-mithra-production.up.railway.app
     // - Fly.io: https://krushi-mithra.fly.dev
-    PRODUCTION_API_URL: 'https://krushi-mithra-backend.onrender.com',
+    // Vercel deployment - API is on same domain
+    PRODUCTION_API_URL: '',  // Empty string means same domain
     
     // Development URL (localhost)
     DEVELOPMENT_API_URL: 'http://localhost:3000',
@@ -39,7 +40,11 @@ const CONFIG = {
     
     // Get the correct API URL based on environment
     getApiUrl: function() {
-        return this.isProduction() ? this.PRODUCTION_API_URL : this.DEVELOPMENT_API_URL;
+        if (this.isProduction()) {
+            // In production (Vercel), use same domain (no base URL needed)
+            return window.location.origin;
+        }
+        return this.DEVELOPMENT_API_URL;
     }
 };
 
