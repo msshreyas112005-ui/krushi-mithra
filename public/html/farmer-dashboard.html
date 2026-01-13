@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="Farmer Dashboard - Access your personalized agriculture data, market prices, weather forecasts, and government subsidies on KRUSHI MITHRA.">
+    <meta name="keywords" content="farmer dashboard, agriculture platform, market prices, weather updates, subsidies">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#4CAF50">
+    <title>Farmer Dashboard - KRUSHI MITHRA</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link rel="stylesheet" href="/frontend/css/farmer-dashboard.css">
+    <link rel="stylesheet" href="/frontend/css/weather-alerts.css">
+    <link rel="stylesheet" href="/frontend/css/mobile-responsive.css">
+    <script src="/frontend/js/config.js"></script>
+    <script src="/frontend/js/language-manager.js"></script>
+    <script src="/frontend/js/mobile-nav.js"></script>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🌾 KRUSHI MITHRA</h1>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="#daily-info" class="nav-link active" data-section="daily-info" data-i18n="sections.dailyInfo">Daily Information</a></li>
+                        <li><a href="#weather-info" class="nav-link" data-section="weather-info" data-i18n="sections.weatherInfo">Weather Information</a></li>
+                        <li><a href="#market-prices" class="nav-link" data-section="market-prices" data-i18n="sections.marketPrices">Market Prices</a></li>
+                        <li><a href="#subsidies" class="nav-link" data-section="subsidies" data-i18n="sections.subsidies">Government Subsidies</a></li>
+                        <li><a href="#notifications" class="nav-link" data-section="notifications" data-i18n="sections.notifications">Notifications</a></li>
+                    </ul>
+                </nav>
+                <div class="user-section">
+                    <div class="language-selector">
+                        <select id="languageSelect" class="language-dropdown">
+                            <option value="en">🌐 English</option>
+                            <option value="kn">🌐 ಕನ್ನಡ</option>
+                            <option value="hi">🌐 हिन्दी</option>
+                        </select>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-btn" id="userMenuBtn">
+                            <span class="user-avatar">👤</span>
+                            <span class="user-name" id="userName">Farmer</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="farmer-profile.html" data-i18n="header.myProfile">My Profile</a>
+                            <a href="#" id="logoutBtn" data-i18n="header.logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-content">
+                    <h2 class="welcome-title" id="welcomeMessage"><span data-i18n="welcome.title">Welcome back</span>, <span id="farmerName">Farmer</span>!</h2>
+                    <p class="welcome-subtitle" data-i18n="welcome.subtitle">Here's what's happening with your farm today</p>
+                </div>
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">📅</span>
+                        <span class="stat-value" id="currentDate">Dec 16, 2025</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📍</span>
+                        <span class="stat-value" id="farmerLocation">Loading...</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">🌾</span>
+                        <span class="stat-value" id="farmerCrop">Loading...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Daily Farmer Information -->
+                <section id="daily-info" class="dashboard-section active">
+                    <div class="dashboard-card daily-info">
+                        <div class="card-header">
+                            <h3><span class="icon">📋</span> <span data-i18n="sections.dailyInfo">Daily Information</span></h3>
+                        </div>
+                    <div class="card-content">
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="info-label">🌱 Planting Season:</span>
+                                <span class="info-value" id="plantingSeason">Monsoon (June-Sept)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">💧 Irrigation Today:</span>
+                                <span class="info-value" id="irrigationStatus">Recommended</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">🌾 Harvest Period:</span>
+                                <span class="info-value" id="harvestPeriod">15-20 days</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">🦟 Pest Alert:</span>
+                                <span class="info-value alert" id="pestAlert">Monitor for aphids</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">💊 Fertilizer:</span>
+                                <span class="info-value" id="fertilizerInfo">Apply NPK this week</span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- Weather Update -->
+                <section id="weather-info" class="dashboard-section">
+                    <div class="dashboard-card weather-card">
+                    <div class="card-header">
+                        <h3><span class="icon">🌤️</span> <span data-i18n="sections.weatherInfo">Weather Information</span></h3>
+                        <button class="refresh-btn" id="refreshWeather" data-i18n="buttons.refresh">↻ Refresh</button>
+                    </div>
+                    <div class="card-content">
+                        <!-- Location Selector -->
+                        <div class="weather-location-selector">
+                            <div class="location-inputs">
+                                <div class="input-group">
+                                    <label for="weatherState">📍 State:</label>
+                                    <select id="weatherState" class="location-select">
+                                        <option value="">Select State</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                        <option value="Kerala">Kerala</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                        <option value="Telangana">Telangana</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="weatherDistrict">🏘️ District:</label>
+                                    <select id="weatherDistrict" class="location-select">
+                                        <option value="">Select District</option>
+                                    </select>
+                                </div>
+                                <button class="fetch-weather-btn" id="fetchWeatherBtn">Get Weather</button>
+                            </div>
+                        </div>
+                        <div class="weather-current">
+                            <div class="weather-main">
+                                <span class="weather-icon" id="weatherIcon">🌤️</span>
+                                <div class="weather-temp">
+                                    <span class="temp-value" id="temperature">28°C</span>
+                                    <span class="temp-desc" id="weatherDesc">Partly Cloudy</span>
+                                </div>
+                            </div>
+                            <div class="weather-details">
+                                <div class="weather-detail-item">
+                                    <span class="label" data-i18n="weather.humidity">💧 Humidity:</span>
+                                    <span class="value" id="humidity">65%</span>
+                                </div>
+                                <div class="weather-detail-item">
+                                    <span class="label" data-i18n="weather.windSpeed">🌬️ Wind:</span>
+                                    <span class="value" id="windSpeed">12 km/h</span>
+                                </div>
+                                <div class="weather-detail-item">
+                                    <span class="label" data-i18n="weather.rainfall">🌧️ Rain:</span>
+                                    <span class="value" id="rainfall">20%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="weather-forecast">
+                            <h4>5-Day Forecast</h4>
+                            <div class="forecast-list" id="forecastList">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- Market Prices -->
+                <section id="market-prices" class="dashboard-section">
+                    <div class="dashboard-card market-prices">
+                    <div class="card-header">
+                        <h3><span class="icon">💰</span> Market Prices</h3>
+                        <button class="view-all-btn" id="refreshPricesBtn">🔄 Refresh</button>
+                    </div>
+                    <div class="card-content">
+                        <div class="market-tabs">
+                            <button class="tab-btn active" data-tab="all">All</button>
+                            <button class="tab-btn" data-tab="vegetables">Vegetables</button>
+                            <button class="tab-btn" data-tab="fruits">Fruits</button>
+                            <button class="tab-btn" data-tab="grains">Grains</button>
+                        </div>
+                        <div class="market-prices-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Commodity</th>
+                                        <th>Min Price (₹/Q)</th>
+                                        <th>Max Price (₹/Q)</th>
+                                        <th>Modal Price (₹/Q)</th>
+                                        <th>Market</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="priceTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading market prices...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- Government Schemes -->
+                <section id="subsidies" class="dashboard-section">
+                    <div class="dashboard-card schemes-card">
+                    <div class="card-header">
+                        <h3><span class="icon">🏛️</span> <span data-i18n="sections.subsidies">Government Subsidies</span></h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="schemes-list" id="schemesList">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- Admin Notifications -->
+                <section id="notifications" class="dashboard-section">
+                    <div class="dashboard-card notifications-card">
+                    <div class="card-header">
+                        <h3><span class="icon">🔔</span> <span data-i18n="sections.notifications">Notifications</span></h3>
+                        <span class="badge" id="notificationCount">0</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="notifications-list" id="notificationsList">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container">
+            <p>&copy; 2025 KRUSHI MITHRA. All rights reserved. | <a href="#help">Help Center</a> | <a href="#contact">Contact Support</a></p>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/farmer-dashboard.js"></script>
+    <script>
+        // Initialize language manager for dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🌐 Initializing farmer dashboard language support');
+            
+            if (window.krushiLang) {
+                // Language manager auto-initializes, just connect the selector
+                await new Promise(resolve => {
+                    if (window.krushiLang.isReady) {
+                        resolve();
+                    } else {
+                        setTimeout(resolve, 200);
+                    }
+                });
+                
+                const languageSelect = document.getElementById('languageSelect');
+                if (languageSelect) {
+                    languageSelect.value = window.krushiLang.currentLang || 'en';
+                    console.log('✅ Language selector connected on dashboard');
+                } else {
+                    console.error('❌ Language selector not found on dashboard');
+                }
+            } else {
+                console.error('❌ Language manager not found on dashboard');
+            }
+        });
+    </script>
+</body>
+</html>

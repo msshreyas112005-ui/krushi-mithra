@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Farmer Login - KRUSHI MITHRA</title>
+    <link rel="stylesheet" href="/frontend/css/mobile-responsive.css">
+    <script src="/frontend/js/language-manager.js"></script>
+    <script src="/frontend/js/mobile-nav.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Decorative background elements */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.4), transparent);
+            top: -200px;
+            left: -200px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.4), transparent);
+            bottom: -150px;
+            right: -150px;
+            animation: float 15s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        .login-wrapper {
+            display: flex;
+            max-width: 950px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-hero {
+            flex: 1;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-hero::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
+            right: -100px;
+        }
+
+        .hero-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .login-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .features-list {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            width: 25px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .login-form-container {
+            flex: 1;
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-header p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+        }
+
+        .language-selector select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .language-selector select:focus {
+            outline: none;
+            border-color: #56ab2f;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #95a5a6;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 3rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #56ab2f;
+            box-shadow: 0 0 0 4px rgba(86, 171, 47, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #bdc3c7;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(86, 171, 47, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 0.9rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .form-footer a {
+            color: #56ab2f;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .form-footer a:hover {
+            color: #3d7a1f;
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: #95a5a6;
+            font-size: 0.85rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            color: #2c3e50;
+            gap: 0.7rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+            }
+
+            .login-hero {
+                padding: 2rem 1.5rem;
+            }
+
+            .login-hero h1 {
+                font-size: 2rem;
+            }
+
+            .features-list {
+                display: none;
+            }
+
+            .login-form-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 1rem;
+                text-align: right;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .login-wrapper {
+                border-radius: 15px;
+            }
+
+            .login-form-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .form-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- Left Side - Hero Section -->
+        <div class="login-hero">
+            <div class="hero-icon">🌾</div>
+            <h1 data-i18n="home.logo">KRUSHI MITHRA</h1>
+            <p data-i18n="login.heroSubtitle">Empowering Karnataka Farmers with Technology</p>
+            <div class="features-list">
+                <div class="feature-item" data-i18n="login.feature1">Real-time Weather Updates</div>
+                <div class="feature-item" data-i18n="login.feature2">Market Price Information</div>
+                <div class="feature-item" data-i18n="login.feature3">Government Schemes</div>
+                <div class="feature-item" data-i18n="login.feature4">Multi-language Support</div>
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="login-form-container">
+            <div class="language-selector">
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="hi">हिन्दी</option>
+                </select>
+            </div>
+
+            <div class="form-header">
+                <h2 data-i18n="login.title">Farmer Login</h2>
+                <p data-i18n="login.subtitle">Welcome back! Please login to your account</p>
+            </div>
+
+            <div id="alert" class="alert"></div>
+            
+            <form id="loginForm" autocomplete="on">
+                <div class="form-group">
+                    <label for="email" data-i18n="login.email">Email Address</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📧</span>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="farmer@example.com" 
+                            data-i18n-placeholder="login.emailPlaceholder"
+                            required 
+                            autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" data-i18n="login.password">Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Enter your password" 
+                            data-i18n-placeholder="login.passwordPlaceholder"
+                            required 
+                            autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn" data-i18n="login.loginButton">
+                    Login
+                </button>
+            </form>
+
+            <div class="form-footer">
+                <div class="divider"><span>OR</span></div>
+                <p>
+                    <span data-i18n="login.noAccount">Don't have an account?</span> 
+                    <a href="register.html" data-i18n="login.registerHere">Register here</a>
+                </p>
+                <a href="index.html" class="back-link" data-i18n="login.backHome">
+                    ← Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('[FRONTEND LOGIN] DOM Content Loaded - Initializing login form');
+            
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const alert = document.getElementById('alert');
+
+            console.log('[FRONTEND LOGIN] Form elements:', {
+                loginForm: loginForm ? 'FOUND' : 'NULL',
+                loginBtn: loginBtn ? 'FOUND' : 'NULL',
+                alert: alert ? 'FOUND' : 'NULL'
+            });
+
+            if (!loginForm) {
+                console.error('[FRONTEND LOGIN] ❌ CRITICAL: Login form not found!');
+                return;
+            }
+
+            function showAlert(message, type) {
+                alert.className = `alert alert-${type} show`;
+                alert.textContent = message;
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                }, 5000);
+            }
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('[FRONTEND LOGIN] Form submit intercepted - default prevented');
+
+                const email = document.getElementById('email').value.trim().toLowerCase();
+                const password = document.getElementById('password').value;
+
+                console.log('\n[FRONTEND LOGIN] 🔐 Login attempt');
+                console.log('[FRONTEND LOGIN] ====================================');
+                console.log('[FRONTEND LOGIN] Email:', email);
+                console.log('[FRONTEND LOGIN] Password provided:', password ? 'YES' : 'NO');
+                console.log('[FRONTEND LOGIN] Password length:', password?.length || 0, 'characters');
+                console.log('[FRONTEND LOGIN] ====================================');
+
+                // Validate inputs
+                if (!email || !password) {
+                    showAlert('Please enter both email and password', 'error');
+                    return;
+                }
+
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Logging in...';
+
+                try {
+                    const apiUrl = '/api/farmers/login';
+                    console.log('[FRONTEND LOGIN] API URL:', apiUrl);
+                    console.log('[FRONTEND LOGIN] Sending POST request...');
+
+                    const payload = { email, password };
+                    console.log('[FRONTEND LOGIN] Payload:', JSON.stringify({
+                        email: payload.email,
+                        password: '***HIDDEN***'
+                    }));
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    console.log('[FRONTEND LOGIN] Response status:', response.status);
+                    console.log('[FRONTEND LOGIN] Response ok:', response.ok);
+
+                    const data = await response.json();
+                    console.log('[FRONTEND LOGIN] Response data:', JSON.stringify({
+                        ...data,
+                        token: data.token ? '***TOKEN***' : undefined
+                    }, null, 2));
+
+                    if (data.success) {
+                        console.log('[FRONTEND LOGIN] ✅ Login successful!');
+                        localStorage.setItem('farmerToken', data.token);
+                        localStorage.setItem('farmerData', JSON.stringify(data.farmer));
+                        
+                        showAlert('Login successful! Redirecting...', 'success');
+                        
+                        console.log('[FRONTEND LOGIN] Redirecting to dashboard...');
+                        setTimeout(() => {
+                            window.location.href = 'farmer-dashboard.html';
+                        }, 1000);
+                    } else {
+                        console.error('[FRONTEND LOGIN] ❌ Login failed:', data.message);
+                        showAlert(data.message || 'Login failed. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('[FRONTEND LOGIN] ❌ CRITICAL ERROR:', error);
+                    console.error('[FRONTEND LOGIN] Error message:', error.message);
+                    showAlert('Connection error. Please check your internet and try again.', 'error');
+                } finally {
+                    console.log('[FRONTEND LOGIN] Resetting form state\n');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                }
+            });
+
+            console.log('[FRONTEND LOGIN] ✅ Event listener attached to login form');
+
+            // Check if already logged in
+            if (localStorage.getItem('farmerToken')) {
+                console.log('[FRONTEND LOGIN] User already logged in, redirecting to dashboard');
+                window.location.href = 'farmer-dashboard.html';
+            }
+
+            // Initialize language manager
+            console.log('🌐 Initializing farmer login language support');
+            
+            if (window.krushiLang) {
+                window.krushiLang.initialize().then(() => {
+                    const languageSelect = document.getElementById('languageSelect');
+                    if (languageSelect) {
+                        languageSelect.value = window.krushiLang.currentLang || 'en';
+                        
+                        languageSelect.addEventListener('change', (e) => {
+                            const newLanguage = e.target.value;
+                            console.log('🔄 Changing language to:', newLanguage);
+                            window.krushiLang.changeLanguage(newLanguage);
+                        });
+                        
+                        console.log('✅ Language selector connected');
+                    }
+                });
+            } else {
+                console.error('❌ Language manager not found');
+            }
+        });
+    </script>
+</body>
+</html>

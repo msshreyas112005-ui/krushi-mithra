@@ -1,0 +1,526 @@
+/**
+ * KRUSHI MITHRA - Mobile Responsive Styles
+ * 
+ * This file contains all mobile-specific CSS to ensure the app works perfectly
+ * on mobile devices, tablets, and small screens.
+ * 
+ * Breakpoints:
+ * - Mobile: max-width: 768px
+ * - Small Mobile: max-width: 480px
+ * - Touch-friendly: min-height: 44px for all buttons
+ */
+
+/* ========================================
+   HAMBURGER MENU FOR MOBILE NAVIGATION
+   ======================================== */
+
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu span {
+    width: 28px;
+    height: 3px;
+    background-color: white;
+    margin: 3px 0;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.hamburger-menu.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-6px, 6px);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-6px, -6px);
+}
+
+/* ========================================
+   TABLET & MOBILE (max-width: 768px)
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Global Container Adjustments */
+    .container {
+        padding: 0 1rem !important;
+    }
+
+    /* ===== NAVIGATION HEADER ===== */
+    .navbar-container {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .hamburger-menu {
+        display: flex;
+        order: 3;
+    }
+
+    .logo {
+        font-size: 1.4rem !important;
+        order: 1;
+        flex: 1;
+    }
+
+    .language-selector {
+        order: 2;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        order: 4;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 1rem;
+    }
+
+    .nav-links.mobile-active {
+        display: flex !important;
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links a {
+        display: block;
+        width: 100%;
+        padding: 0.8rem 1rem !important;
+        text-align: center;
+        font-size: 1rem !important;
+    }
+
+    /* ===== FARMER DASHBOARD HEADER ===== */
+    .dashboard-header .header-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .dashboard-header .logo {
+        text-align: center;
+    }
+
+    .dashboard-header .nav-menu {
+        width: 100%;
+    }
+
+    .dashboard-header .nav-menu ul {
+        flex-direction: column;
+        width: 100%;
+        display: none;
+    }
+
+    .dashboard-header .nav-menu ul.mobile-active {
+        display: flex !important;
+    }
+
+    .dashboard-header .nav-link {
+        width: 100%;
+        text-align: center;
+        padding: 0.8rem !important;
+        font-size: 0.95rem !important;
+    }
+
+    .dashboard-header .user-section {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .dashboard-header .language-dropdown {
+        flex: 1;
+        padding: 0.6rem;
+    }
+
+    .dashboard-header .user-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero {
+        padding: 3rem 1rem !important;
+    }
+
+    .hero h2 {
+        font-size: 1.8rem !important;
+    }
+
+    .hero p {
+        font-size: 1rem !important;
+    }
+
+    /* ===== FEATURE CARDS ===== */
+    .feature-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        padding: 1.5rem !important;
+    }
+
+    /* ===== DASHBOARD SECTIONS ===== */
+    .welcome-section {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 1.5rem !important;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem !important;
+    }
+
+    .welcome-stats {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 0.8rem;
+    }
+
+    .stat-item {
+        width: 100% !important;
+        padding: 1rem !important;
+    }
+
+    /* ===== DASHBOARD GRID ===== */
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+
+    .dashboard-card {
+        padding: 1.2rem !important;
+        min-height: auto !important;
+    }
+
+    /* ===== WEATHER SECTION ===== */
+    .weather-main {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 1rem;
+    }
+
+    .weather-icon {
+        font-size: 3.5rem !important;
+    }
+
+    .temp-value {
+        font-size: 2.5rem !important;
+    }
+
+    .weather-details {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem;
+    }
+
+    .forecast-list {
+        grid-template-columns: 1fr !important;
+        gap: 0.8rem;
+    }
+
+    .forecast-item {
+        padding: 1rem !important;
+    }
+
+    /* ===== MARKET PRICES TABLE ===== */
+    .market-prices-table {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .market-prices-table table {
+        min-width: 600px;
+    }
+
+    .market-prices-table thead th,
+    .market-prices-table tbody td {
+        padding: 10px 8px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .market-tabs {
+        gap: 0.5rem;
+    }
+
+    .tab-btn {
+        padding: 6px 12px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* ===== SUBSIDIES & NOTIFICATIONS ===== */
+    .subsidy-card,
+    .notification-card {
+        padding: 1rem !important;
+    }
+
+    .subsidy-card h3,
+    .notification-card h3 {
+        font-size: 1.1rem !important;
+    }
+
+    /* ===== FORMS ===== */
+    .registration-form,
+    .login-form {
+        padding: 2rem 1.5rem !important;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .form-group label {
+        font-size: 0.95rem !important;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 1rem !important;
+        padding: 0.8rem !important;
+        min-height: 44px !important;
+    }
+
+    /* ===== BUTTONS - TOUCH FRIENDLY ===== */
+    button,
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .action-button {
+        min-height: 44px !important;
+        padding: 0.8rem 1.5rem !important;
+        font-size: 1rem !important;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    .submit-btn {
+        padding: 1rem !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* ===== ACTION GRIDS ===== */
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem;
+    }
+
+    .action-button {
+        padding: 0.8rem 0.5rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* ===== ADMIN DASHBOARD ===== */
+    .admin-sidebar {
+        position: fixed;
+        left: -280px;
+        transition: left 0.3s ease;
+        z-index: 1001;
+    }
+
+    .admin-sidebar.mobile-active {
+        left: 0 !important;
+    }
+
+    .admin-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .admin-cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* ===== MODAL DIALOGS ===== */
+    .modal-content {
+        width: 95% !important;
+        max-width: 450px;
+        margin: 1rem;
+        padding: 1.5rem !important;
+    }
+
+    /* ===== SECTION VISIBILITY (FARMER DASHBOARD) ===== */
+    .dashboard-section {
+        display: none;
+    }
+
+    .dashboard-section.active {
+        display: block !important;
+    }
+}
+
+/* ========================================
+   SMALL MOBILE (max-width: 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+    /* Extra small adjustments */
+    .container {
+        padding: 0 0.8rem !important;
+    }
+
+    .logo {
+        font-size: 1.2rem !important;
+    }
+
+    .hamburger-menu span {
+        width: 24px;
+    }
+
+    .hero h2 {
+        font-size: 1.5rem !important;
+    }
+
+    .hero p {
+        font-size: 0.9rem !important;
+    }
+
+    .welcome-title {
+        font-size: 1.3rem !important;
+    }
+
+    .temp-value {
+        font-size: 2rem !important;
+    }
+
+    .weather-icon {
+        font-size: 3rem !important;
+    }
+
+    .weather-details {
+        grid-template-columns: 1fr !important;
+    }
+
+    .forecast-list {
+        grid-template-columns: 1fr !important;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .action-button {
+        padding: 1rem !important;
+        font-size: 1rem !important;
+    }
+
+    .registration-header h2 {
+        font-size: 2rem !important;
+    }
+
+    .registration-header p {
+        font-size: 1rem !important;
+    }
+
+    .dashboard-main {
+        padding: 1rem 0 !important;
+    }
+
+    .dashboard-card {
+        padding: 1rem !important;
+    }
+
+    /* Stack language selector and user menu */
+    .dashboard-header .user-section {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .language-dropdown,
+    .user-btn {
+        width: 100% !important;
+    }
+}
+
+/* ========================================
+   LANDSCAPE MODE (max-height: 500px)
+   ======================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero {
+        padding: 2rem 1rem !important;
+    }
+
+    .registration-header {
+        padding: 1.5rem 2rem !important;
+    }
+
+    .registration-header h2 {
+        font-size: 2rem !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-header {
+        position: relative !important;
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY & TOUCH IMPROVEMENTS
+   ======================================== */
+
+/* Increase tap target size */
+@media (pointer: coarse) {
+    a, button, input, select, textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent horizontal scroll */
+body {
+    overflow-x: hidden;
+}
+
+/* Better touch feedback */
+button:active,
+.btn:active,
+a:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+/* ========================================
+   PRINT STYLES (BONUS)
+   ======================================== */
+
+@media print {
+    .navbar,
+    .hamburger-menu,
+    .floating-elements,
+    .language-selector,
+    .user-menu,
+    button {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .dashboard-card,
+    .feature-card {
+        page-break-inside: avoid;
+    }
+}

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#2196F3">
+    <title>Admin Dashboard - KRUSHI MITHRA</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin-dashboard.css">
+    <link rel="stylesheet" href="../css/mobile-responsive.css">
+    <script src="../js/config.js"></script>
+    <script src="../js/mobile-nav.js"></script>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🌾 KRUSHI MITHRA - Admin</h1>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="#dashboard" class="nav-link active" data-section="dashboard" data-i18n="header.dashboard">Dashboard</a></li>
+                        <li><a href="#farmers" class="nav-link" data-section="farmers" data-i18n="admin.farmers">Farmers</a></li>
+                        <li><a href="#market" class="nav-link" data-section="market" data-i18n="admin.marketPrices">Market Prices</a></li>
+                        <li><a href="#subsidies" class="nav-link" data-section="subsidies" data-i18n="admin.subsidies">Subsidies</a></li>
+                        <li><a href="#notifications" class="nav-link" data-section="notifications">📢 Notifications</a></li>
+                        <li class="language-nav-item">
+                            <!-- Language Selector in Navbar -->
+                            <select id="languageSelect" class="language-dropdown-nav">
+                                <option value="en">🌐 English</option>
+                                <option value="kn">🌐 ಕನ್ನಡ</option>
+                                <option value="hi">🌐 हिंदी</option>
+                            </select>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="user-section">
+                    <div class="user-menu">
+                        <button class="user-btn" id="userMenuBtn">
+                            <span class="user-avatar">👨‍💼</span>
+                            <span class="user-name" id="userName">Admin</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="#profile" data-i18n="header.profile">Profile</a>
+                            <a href="#" id="logoutBtn" data-i18n="header.logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- Stats Overview -->
+            <section class="stats-section">
+                <h2 class="section-title" data-i18n="admin.dashboardOverview">Dashboard Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalFarmers">0</div>
+                            <div class="stat-label" data-i18n="admin.totalFarmers">Total Farmers</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="marketPriceUpdates">0</div>
+                            <div class="stat-label">Market Price Updates</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Registered Farmers Information -->
+            <section class="farmers-section">
+                <div class="section-header">
+                    <h2 class="section-title">📋 Registered Farmers Information</h2>
+                    <button class="btn-refresh" id="refreshBtn">🔄 Refresh</button>
+                </div>
+                <div class="farmers-table-container">
+                    <table class="farmers-table" id="farmersTable">
+                        <thead>
+                            <tr>
+                                <th>Farmer Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Location</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="farmersTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">Loading registered farmers...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Market Price Management -->
+            <section class="market-section">
+                <div class="section-header">
+                    <h2 class="section-title">Market Price Management</h2>
+                    <button class="btn-primary" id="updatePricesBtn">Update Prices</button>
+                </div>
+                <div class="market-prices-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Commodity</th>
+                                <th>Min Price (₹/Quintal)</th>
+                                <th>Max Price (₹/Quintal)</th>
+                                <th>Modal Price (₹/Quintal)</th>
+                                <th>Market</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marketPricesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">Loading market prices...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Subsidy Management -->
+            <section class="subsidy-section" id="subsidySection">
+                <div class="section-header">
+                    <h2 class="section-title">Government Subsidy Management</h2>
+                    <button class="btn-primary" id="addSubsidyBtn">➕ Add Government Subsidy</button>
+                </div>
+                
+                <!-- Subsidy Filters -->
+                <div class="subsidy-filters">
+                    <select id="subsidyCategoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="seeds">Seeds</option>
+                        <option value="equipment">Equipment</option>
+                        <option value="fertilizer">Fertilizer</option>
+                        <option value="insurance">Insurance</option>
+                        <option value="credit">Credit</option>
+                        <option value="irrigation">Irrigation</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select id="subsidyStateFilter" class="filter-select">
+                        <option value="">All States</option>
+                        <option value="All India">All India</option>
+                        <option value="Karnataka">Karnataka</option>
+                    </select>
+                </div>
+
+                <!-- Subsidies List -->
+                <div class="subsidies-list" id="subsidiesList">
+                    <div class="loading">Loading subsidies...</div>
+                </div>
+            </section>
+
+            <!-- Subsidy Form Modal (Hidden) -->
+            <div class="modal" id="subsidyModal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="subsidyModalTitle">Add Government Subsidy</h3>
+                        <button class="close-btn" id="closeSubsidyModal">×</button>
+                    </div>
+                    <form id="subsidyForm" class="subsidy-form">
+                        <input type="hidden" id="subsidyId">
+                        <div class="form-group">
+                            <label for="subsidyTitle">Subsidy Title *</label>
+                            <input type="text" id="subsidyTitle" placeholder="e.g., PM-KISAN Scheme" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subsidyUrl">Government Subsidy URL *</label>
+                            <input type="url" id="subsidyUrl" placeholder="https://pmkisan.gov.in" required>
+                            <small style="color: #666; font-size: 0.85rem;">Official government website link for this subsidy scheme</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="subsidyDescription">Short Description *</label>
+                            <textarea id="subsidyDescription" rows="3" placeholder="Brief overview of the subsidy scheme" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="subsidyEligibility">Eligibility (Optional)</label>
+                            <textarea id="subsidyEligibility" rows="2" placeholder="Who can apply for this subsidy?"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="subsidyCategory">Category</label>
+                                <select id="subsidyCategory">
+                                    <option value="">Select Category</option>
+                                    <option value="seeds">Seeds</option>
+                                    <option value="equipment">Equipment</option>
+                                    <option value="fertilizer">Fertilizer</option>
+                                    <option value="insurance">Insurance</option>
+                                    <option value="credit">Credit</option>
+                                    <option value="irrigation">Irrigation</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="subsidyState">State</label>
+                                <input type="text" id="subsidyState" placeholder="e.g., Karnataka or All India">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="cancelSubsidyBtn">Cancel</button>
+                            <button type="submit" class="btn-primary">Save Subsidy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Send Notification -->
+            <section class="notification-section" id="notificationSection">
+                <div class="section-header">
+                    <h2 class="section-title">📢 Send Notification to Farmers</h2>
+                    <p class="section-subtitle">Send notifications to farmers' dashboard and email addresses</p>
+                </div>
+                
+                <form class="notification-form" id="notificationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="notificationTitle">Title *</label>
+                            <input type="text" id="notificationTitle" placeholder="e.g., Heavy Rainfall Alert" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationType">Type *</label>
+                            <select id="notificationType" required>
+                                <option value="info">Info 📘</option>
+                                <option value="warning">Warning ⚠️</option>
+                                <option value="success">Success ✅</option>
+                                <option value="alert">Alert 🚨</option>
+                                <option value="announcement">Announcement 📢</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notificationMessage">Message *</label>
+                        <textarea id="notificationMessage" rows="4" placeholder="Write your message here..." required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="notificationPriority">Priority *</label>
+                            <select id="notificationPriority" required>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="targetAudience">Target Audience *</label>
+                            <select id="targetAudience" required>
+                                <option value="all">All Farmers 👥</option>
+                                <option value="location">By Location 📍</option>
+                                <option value="crop">By Crop Type 🌾</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="locationGroup" style="display: none;">
+                        <label for="targetLocation">Target Location</label>
+                        <input type="text" id="targetLocation" placeholder="e.g., Karnataka, Mysore">
+                    </div>
+                    
+                    <div class="form-group" id="cropGroup" style="display: none;">
+                        <label for="targetCrop">Target Crop</label>
+                        <input type="text" id="targetCrop" placeholder="e.g., Rice, Vegetables">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="notificationIcon">Icon (Optional)</label>
+                            <input type="text" id="notificationIcon" placeholder="e.g., 🌧️, 💰, 📈" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationExpiry">Expiry Date (Optional)</label>
+                            <input type="date" id="notificationExpiry">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="sendEmailNotification" checked>
+                            <span>📧 Also send email to all farmers</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="reset" class="btn-secondary">Clear</button>
+                        <button type="submit" class="btn-primary">📤 Send Notification & Email</button>
+                    </div>
+                </form>
+                
+                <!-- Recent Notifications -->
+                <div class="recent-notifications" id="recentNotifications" style="display: none;">
+                    <h3>Recent Notifications</h3>
+                    <div class="notifications-timeline" id="notificationsTimeline">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+        </div>
+    </main>
+
+    <script src="../js/language-manager.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
+</body>
+</html>
