@@ -1,0 +1,66 @@
+# 🔐 Vercel Environment Variables Template
+# Copy these values to Vercel Dashboard → Settings → Environment Variables
+
+# ==============================================
+# DATABASE CONFIGURATION (REQUIRED)
+# ==============================================
+DATABASE_URL=postgresql://neondb_owner:npg_RZpaxCSsoD15@ep-super-breeze-a1bnvnew-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+
+# ==============================================
+# APPLICATION CONFIGURATION
+# ==============================================
+NODE_ENV=production
+JWT_SECRET=krushi_mithra_secret_key_2025_secure_token
+
+# ==============================================
+# WEATHER API CONFIGURATION
+# ==============================================
+OPENWEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
+WEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
+
+# ==============================================
+# ADMIN CREDENTIALS
+# ==============================================
+ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_PASSWORD=Admin@12345
+
+# ==============================================
+# EMAIL CONFIGURATION
+# ==============================================
+EMAIL_USER=krishimithra2026@gmail.com
+EMAIL_APP_PASSWORD=umbhpecgsispzpmw
+EMAIL_PASSWORD=umbhpecgsispzpmw
+SUPPORT_EMAIL=support@krushimithra.com
+
+# ==============================================
+# OPTIONAL - Auto-configured by Vercel
+# ==============================================
+# BASE_URL will be automatically set to your Vercel deployment URL
+# FRONTEND_URL will be automatically set to your Vercel deployment URL
+# PORT is automatically managed by Vercel
+
+# ==============================================
+# HOW TO ADD TO VERCEL:
+# ==============================================
+# Method 1: Via Vercel Dashboard
+#   1. Go to: https://vercel.com/dashboard
+#   2. Select your project
+#   3. Go to: Settings → Environment Variables
+#   4. Add each variable one by one
+#   5. Select "Production", "Preview", and "Development"
+#   6. Click "Save"
+#
+# Method 2: Via Vercel CLI
+#   vercel env add DATABASE_URL
+#   vercel env add NODE_ENV
+#   vercel env add JWT_SECRET
+#   ... (repeat for each variable)
+#
+# ==============================================
+# IMPORTANT NOTES:
+# ==============================================
+# ✅ All environment variables are REQUIRED
+# ✅ Never commit .env file to Git
+# ✅ Keep credentials secure
+# ✅ Use different credentials for production
+# ✅ Redeploy after adding/updating variables

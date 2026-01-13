@@ -1,13 +1,29 @@
 {
   "name": "krushi-mithra",
   "version": "1.0.0",
+  "description": "Krushi Mithra - Farmers Agriculture Management System",
+  "main": "backend/server.js",
   "scripts": {
     "start": "cd backend && npm start",
     "dev": "cd backend && npm run dev",
-    "install-all": "npm install && cd backend && npm install"
+    "install-all": "npm install && cd backend && npm install",
+    "vercel-build": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "jsonwebtoken": "^9.0.3"
-  }
+  },
+  "keywords": [
+    "agriculture",
+    "farming",
+    "krushi",
+    "farmers",
+    "management"
+  ],
+  "author": "",
+  "license": "ISC"
 }
