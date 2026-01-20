@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Validation Middleware
  * Contains validation functions for various request inputs
  */

@@ -1,13 +1,13 @@
-{
+﻿{
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api" },
-    { "source": "/", "destination": "/index.html" }
+    { "source": "/api/:path*", "destination": "/api" }
   ],
   "redirects": [
-    { "source": "/frontend/html/:path*", "destination": "/html/:path*" },
-    { "source": "/frontend/css/:path*", "destination": "/css/:path*" },
-    { "source": "/frontend/js/:path*", "destination": "/js/:path*" },
-    { "source": "/frontend/languages/:path*", "destination": "/languages/:path*" }
+    { "source": "/", "destination": "/index.html", "permanent": false },
+    { "source": "/frontend/html/:path*", "destination": "/html/:path*", "permanent": false },
+    { "source": "/frontend/css/:path*", "destination": "/css/:path*", "permanent": false },
+    { "source": "/frontend/js/:path*", "destination": "/js/:path*", "permanent": false },
+    { "source": "/frontend/languages/:path*", "destination": "/languages/:path*", "permanent": false }
   ],
   "headers": [
     {

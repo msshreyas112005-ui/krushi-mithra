@@ -1,4 +1,4 @@
-# Weather API Setup Guide
+﻿# Weather API Setup Guide
 
 ## How to Get OpenWeatherMap API Key
 
@@ -28,7 +28,7 @@ The application uses **OpenWeatherMap API** to provide real-time, location-based
 2. You'll see a default API key already created
 3. Copy the API key (looks like: `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6`)
 4. Or create a new API key:
-   - Enter a name for your key (e.g., "Krushi Mithra")
+   - Enter a name for your key (e.g., "KRISHI MITHRA")
    - Click **"Generate"**
    - Copy the newly generated key
 
@@ -80,7 +80,7 @@ The **FREE plan** includes:
 - ✅ UV Index
 - ✅ Air Pollution data
 
-This is more than enough for the Krushi Mithra application!
+This is more than enough for the KRISHI MITHRA application!
 
 ## Features Enabled with Real API
 

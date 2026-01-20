@@ -1,13 +1,13 @@
-# 🌾 KRUSHI MITHRA - Agriculture Platform for Karnataka
+﻿# 🌾 KRISHI MITHRA - Agriculture Platform for Karnataka
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success)](https://krushi-mithra.vercel.app)
-[![Backend](https://img.shields.io/badge/Backend-Render-blue)](https://krushi-mithra-backend.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success)](https://krishi-mithra.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Render-blue)](https://krishi-mithra-backend.onrender.com)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Mobile](https://img.shields.io/badge/Mobile-Responsive-brightgreen)](MOBILE_PRODUCTION_READY_GUIDE.md)
 
 **Complete agriculture platform for Karnataka farmers with real-time market prices, weather updates, government subsidies, and farming resources.**
 
-> 🌐 **Live App**: [krushi-mithra.vercel.app](https://krushi-mithra.vercel.app)  
+> 🌐 **Live App**: [krishi-mithra.vercel.app](https://krishi-mithra.vercel.app)  
 > 📱 **100% Mobile Friendly** | **PWA Enabled** | **Multi-Language** (English, Hindi, Kannada)  
 > ✅ **Production Ready** | **Touch-Optimized** | **Responsive Design**
 
@@ -15,7 +15,7 @@
 
 ## 🎉 NEW: MOBILE-RESPONSIVE & PRODUCTION-READY
 
-**Latest Update (January 2026)**: KRUSHI MITHRA is now fully mobile-responsive and production-ready!
+**Latest Update (January 2026)**: KRISHI MITHRA is now fully mobile-responsive and production-ready!
 
 ### ✅ What's New
 - 📱 **Hamburger Menu** - Mobile navigation with smooth animations
@@ -58,12 +58,12 @@
 
 **The app is already live! Just visit:**
 
-- 🌐 **Homepage**: https://krushi-mithra.vercel.app
-- 👨‍🌾 **Farmer Registration**: https://krushi-mithra.vercel.app/html/register.html
-- 👨‍💼 **Admin Portal**: https://krushi-mithra.vercel.app/html/admin-login.html
+- 🌐 **Homepage**: https://krishi-mithra.vercel.app
+- 👨‍🌾 **Farmer Registration**: https://krishi-mithra.vercel.app/html/register.html
+- 👨‍💼 **Admin Portal**: https://krishi-mithra.vercel.app/html/admin-login.html
 
 **Default Admin Credentials:**
-- Email: `admin@krushimithra.com`
+- Email: `admin@krishimithra.com`
 - Password: `Admin@12345`
 
 ### Local Development
@@ -72,8 +72,8 @@ If you want to run locally:
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/krushi-mithra.git
-cd krushi-mithra
+git clone https://github.com/YOUR_USERNAME/krishi-mithra.git
+cd krishi-mithra
 
 # Install backend dependencies
 cd backend
@@ -187,7 +187,7 @@ Want to deploy your own instance? Follow these guides:
 
 ## 📱 Progressive Web App (PWA)
 
-Install KRUSHI MITHRA on your mobile device:
+Install KRISHI MITHRA on your mobile device:
 
 **Android:**
 1. Open site in Chrome
@@ -210,7 +210,7 @@ Install KRUSHI MITHRA on your mobile device:
 ## 🗂️ Project Structure
 
 ```
-krushi_mithra/
+KRISHI_MITHRA/
 ├── backend/
 │   ├── server.js              # Express server
 │   ├── config/
@@ -294,13 +294,13 @@ Full API documentation: [`backend/API_DOCUMENTATION.md`](backend/API_DOCUMENTATI
 
 ```bash
 # Health check
-curl https://krushi-mithra-backend.onrender.com/api/health
+curl https://krishi-mithra-backend.onrender.com/api/health
 
 # Get market prices
-curl https://krushi-mithra-backend.onrender.com/api/market-prices
+curl https://krishi-mithra-backend.onrender.com/api/market-prices
 
 # Register farmer
-curl -X POST https://krushi-mithra-backend.onrender.com/api/farmers/register \
+curl -X POST https://krishi-mithra-backend.onrender.com/api/farmers/register \
   -H "Content-Type: application/json" \
   -d '{"name":"Test Farmer","email":"test@example.com","password":"Test@123","phone":"9876543210"}'
 ```
@@ -391,8 +391,8 @@ Developed with ❤️ for Karnataka farmers
 
 ## 📞 Support
 
-- 📧 Email: admin@krushimithra.com
-- 🐛 Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/krushi-mithra/issues)
+- 📧 Email: admin@krishimithra.com
+- 🐛 Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/krishi-mithra/issues)
 - 📖 Docs: See documentation files in repo
 
 ---
@@ -414,4 +414,4 @@ If you find this project useful, please give it a star on GitHub!
 
 **Made with 💚 for a better agricultural future**
 
-🌾 **KRUSHI MITHRA** - Empowering farmers with technology
+🌾 **KRISHI MITHRA** - Empowering farmers with technology

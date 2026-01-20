@@ -1,4 +1,4 @@
-# 🎯 Vercel Deployment - Step by Step Commands
+﻿# 🎯 Vercel Deployment - Step by Step Commands
 
 This file contains the exact commands to run in order.
 
@@ -36,14 +36,14 @@ git commit -m "Ready for Vercel deployment"
 
 1. **Create repository on GitHub:**
    - Go to: https://github.com/new
-   - Repository name: `krushi-mithra`
+   - Repository name: `krishi-mithra`
    - Keep it Private or Public
    - Don't initialize with README
    - Click "Create repository"
 
 2. **Connect local repo to GitHub:**
    ```bash
-   git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+   git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
    git branch -M main
    git push -u origin main
    ```
@@ -70,7 +70,7 @@ git push origin main
 ### 3.2 Import Project
 1. Click "Add New" → "Project"
 2. Click "Import Git Repository"
-3. Find "krushi-mithra" repository
+3. Find "krishi-mithra" repository
 4. Click "Import"
 
 ### 3.3 Configure Project
@@ -86,7 +86,7 @@ git push origin main
 ### 3.4 Wait for Initial Deployment
 - This will fail or show warnings
 - That's OK! We'll add environment variables next
-- Note your project URL (e.g., `krushi-mithra-abc123.vercel.app`)
+- Note your project URL (e.g., `krishi-mithra-abc123.vercel.app`)
 
 ---
 
@@ -123,7 +123,7 @@ Value: production
 **Variable 3:**
 ```
 Name: JWT_SECRET
-Value: krushi_mithra_secret_key_2025_secure_token
+Value: KRISHI_MITHRA_secret_key_2025_secure_token
 ```
 
 **Variable 4:**
@@ -141,7 +141,7 @@ Value: 2dc416bde8a045c05a52551eebc4d477
 **Variable 6:**
 ```
 Name: ADMIN_EMAIL
-Value: admin@krushimithra.com
+Value: admin@krishimithra.com
 ```
 
 **Variable 7:**
@@ -171,7 +171,7 @@ Value: umbhpecgsispzpmw
 **Variable 11:**
 ```
 Name: SUPPORT_EMAIL
-Value: support@krushimithra.com
+Value: support@krishimithra.com
 ```
 
 **✅ Total: 11 environment variables added**
@@ -216,7 +216,7 @@ https://your-project-name.vercel.app/api/health
 https://your-project-name.vercel.app/
 ```
 
-**✅ Expected:** Homepage loads with Krushi Mithra branding
+**✅ Expected:** Homepage loads with KRISHI MITHRA branding
 
 ### 6.4 Test Admin Login
 ```
@@ -224,7 +224,7 @@ https://your-project-name.vercel.app/frontend/html/admin-login.html
 ```
 
 **✅ Try logging in:**
-- Email: `admin@krushimithra.com`
+- Email: `admin@krishimithra.com`
 - Password: `Admin@12345`
 
 ### 6.5 Test Farmer Registration
@@ -330,7 +330,7 @@ After completing all steps:
 
 ## 🎉 Congratulations!
 
-Your Krushi Mithra application is now:
+Your KRISHI MITHRA application is now:
 ✅ Live on Vercel
 ✅ Connected to Neon database
 ✅ Accessible from anywhere

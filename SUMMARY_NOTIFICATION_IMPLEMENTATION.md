@@ -1,8 +1,8 @@
-# ✅ NOTIFICATION SYSTEM - IMPLEMENTATION COMPLETE
+﻿# ✅ NOTIFICATION SYSTEM - IMPLEMENTATION COMPLETE
 
 ## 🎉 Summary
 
-The email notification system for KRUSHI MITHRA has been successfully implemented with full functionality for sending notifications from Admin Dashboard to all registered farmers.
+The email notification system for KRISHI MITHRA has been successfully implemented with full functionality for sending notifications from Admin Dashboard to all registered farmers.
 
 ---
 
@@ -243,7 +243,7 @@ The email notification system for KRUSHI MITHRA has been successfully implemente
 
 1. Login to Admin Dashboard:
    - URL: http://localhost:3000/frontend/html/admin-dashboard.html
-   - Email: admin@krushimithra.com
+   - Email: admin@krishimithra.com
    - Password: Admin@12345
 
 2. Fill Notification Form:

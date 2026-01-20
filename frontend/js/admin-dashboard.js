@@ -1,4 +1,4 @@
-// API Configuration - Uses config.js for environment-aware API URL
+﻿// API Configuration - Uses config.js for environment-aware API URL
 // The API_URL is now loaded from config.js which auto-detects development vs production
 
 // Initialization flag to prevent duplicate setup
@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     notificationForm = document.getElementById('notificationForm');
     
     // Initialize language manager first
-    if (window.krushiLang && !window.krushiLang.isReady) {
-        window.krushiLang.initialize().then(() => {
+    if (window.krishiLang && !window.krishiLang.isReady) {
+        window.krishiLang.initialize().then(() => {
             console.log('✅ Language system ready in admin dashboard');
         }).catch(err => {
             console.warn('⚠️ Language system initialization failed:', err);

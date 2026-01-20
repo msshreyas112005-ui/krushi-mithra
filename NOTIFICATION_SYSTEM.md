@@ -1,4 +1,4 @@
-# 📧 Email Notification System - KRUSHI MITHRA
+﻿# 📧 Email Notification System - KRISHI MITHRA
 
 ## Overview
 Complete notification system with email functionality for sending alerts, announcements, and important updates to registered farmers.
@@ -68,7 +68,7 @@ Complete notification system with email functionality for sending alerts, announ
 
 1. **Login to Admin Dashboard:**
    - URL: http://localhost:3000/frontend/html/admin-dashboard.html
-   - Email: admin@krushimithra.com
+   - Email: admin@krishimithra.com
    - Password: Admin@12345
 
 2. **Navigate to Notification Section:**
@@ -216,7 +216,7 @@ frontend/
 ## 🎨 Email Template
 
 The email notification includes:
-- **Header**: KRUSHI MITHRA branding with green gradient
+- **Header**: KRISHI MITHRA branding with green gradient
 - **Priority Badge**: Color-coded priority indicator
 - **Icon**: Large emoji icon for visual recognition
 - **Title**: Bold notification title

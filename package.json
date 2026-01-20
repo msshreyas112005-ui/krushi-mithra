@@ -1,7 +1,7 @@
-{
-  "name": "krushi-mithra",
+﻿{
+  "name": "krishi-mithra",
   "version": "1.0.0",
-  "description": "Krushi Mithra - Farmers Agriculture Management System",
+  "description": "KRISHI MITHRA - Farmers Agriculture Management System",
   "main": "backend/server.js",
   "scripts": {
     "start": "cd backend && npm start",
@@ -20,7 +20,7 @@
   "keywords": [
     "agriculture",
     "farming",
-    "krushi",
+    "KRISHI",
     "farmers",
     "management"
   ],

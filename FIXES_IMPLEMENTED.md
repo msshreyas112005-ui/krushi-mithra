@@ -1,4 +1,4 @@
-# FIXES IMPLEMENTED - Language, Database & Weather
+﻿# FIXES IMPLEMENTED - Language, Database & Weather
 
 ## Overview
 This document details the fixes implemented to resolve three major issues:
@@ -359,7 +359,7 @@ Create `backend/.env` with:
 
 ```bash
 # Database (optional)
-MONGODB_URI=mongodb://localhost:27017/krushi-mithra
+MONGODB_URI=mongodb://localhost:27017/krishi-mithra
 USE_JSON_STORAGE=true
 
 # Authentication
@@ -370,7 +370,7 @@ OPENWEATHER_API_KEY=your_openweather_api_key
 WEATHER_API_KEY=your_openweather_api_key
 
 # Admin Credentials
-ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_EMAIL=admin@krishimithra.com
 ADMIN_PASSWORD=Admin@123
 ```
 

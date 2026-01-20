@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SMS Service (Mock Implementation)
  * Replace with real SMS service like Twilio, AWS SNS, or any Indian SMS provider
  * 
@@ -15,7 +15,7 @@
 async function sendRegistrationSMS(phone, name) {
     try {
         // Mock SMS implementation - logs to console
-        const message = `Dear ${name}, Welcome to Krushi Mithra! Your registration is successful. Login now to access market prices, weather updates & subsidies. - Krushi Mithra`;
+        const message = `Dear ${name}, Welcome to KRISHI MITHRA! Your registration is successful. Login now to access market prices, weather updates & subsidies. - KRISHI MITHRA`;
         
         console.log('📱 SMS SENT (MOCK):');
         console.log('   To:', phone);
@@ -28,7 +28,7 @@ async function sendRegistrationSMS(phone, name) {
             apiKey: process.env.SMS_API_KEY,
             to: phone,
             message: message,
-            senderId: 'KRUSHI'
+            senderId: 'KRISHI'
         });
         */
         
@@ -50,7 +50,7 @@ async function sendRegistrationSMS(phone, name) {
 async function sendOTPSMS(phone, name, otp) {
     try {
         // Mock SMS implementation - logs to console
-        const message = `Dear ${name}, Your OTP for Krushi Mithra registration is: ${otp}. Valid for 5 minutes. Do not share with anyone. - Krushi Mithra`;
+        const message = `Dear ${name}, Your OTP for KRISHI MITHRA registration is: ${otp}. Valid for 5 minutes. Do not share with anyone. - KRISHI MITHRA`;
         
         console.log('📱 OTP SMS SENT (MOCK):');
         console.log('   To:', phone);
@@ -64,7 +64,7 @@ async function sendOTPSMS(phone, name, otp) {
             apiKey: process.env.SMS_API_KEY,
             to: phone,
             message: message,
-            senderId: 'KRUSHI'
+            senderId: 'KRISHI'
         });
         */
         

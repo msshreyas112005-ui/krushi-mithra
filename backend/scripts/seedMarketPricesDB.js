@@ -1,4 +1,4 @@
-const { pool } = require('../db');
+﻿const { pool } = require('../db');
 
 /**
  * Seed Market Prices - Add sample Karnataka market prices

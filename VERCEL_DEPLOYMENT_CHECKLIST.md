@@ -1,6 +1,6 @@
-# ✅ Vercel Deployment Checklist
+﻿# ✅ Vercel Deployment Checklist
 
-Use this checklist to ensure successful deployment of Krushi Mithra to Vercel.
+Use this checklist to ensure successful deployment of KRISHI MITHRA to Vercel.
 
 ---
 
@@ -36,8 +36,8 @@ Use this checklist to ensure successful deployment of Krushi Mithra to Vercel.
 # 2. In your project folder:
 git init
 git add .
-git commit -m "Initial commit - Krushi Mithra"
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+git commit -m "Initial commit - KRISHI MITHRA"
+git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
 git branch -M main
 git push -u origin main
 ```
@@ -69,21 +69,21 @@ Copy each variable from `vercel-env-template.txt`:
 
 #### Application
 - [ ] `NODE_ENV` = `production`
-- [ ] `JWT_SECRET` = `krushi_mithra_secret_key_2025_secure_token`
+- [ ] `JWT_SECRET` = `KRISHI_MITHRA_secret_key_2025_secure_token`
 
 #### Weather API
 - [ ] `OPENWEATHER_API_KEY` = `2dc416bde8a045c05a52551eebc4d477`
 - [ ] `WEATHER_API_KEY` = `2dc416bde8a045c05a52551eebc4d477`
 
 #### Admin
-- [ ] `ADMIN_EMAIL` = `admin@krushimithra.com`
+- [ ] `ADMIN_EMAIL` = `admin@krishimithra.com`
 - [ ] `ADMIN_PASSWORD` = `Admin@12345`
 
 #### Email
 - [ ] `EMAIL_USER` = `krishimithra2026@gmail.com`
 - [ ] `EMAIL_APP_PASSWORD` = `umbhpecgsispzpmw`
 - [ ] `EMAIL_PASSWORD` = `umbhpecgsispzpmw`
-- [ ] `SUPPORT_EMAIL` = `support@krushimithra.com`
+- [ ] `SUPPORT_EMAIL` = `support@krishimithra.com`
 
 **For each variable:**
 - Select: Production, Preview, Development (all three)
@@ -128,7 +128,7 @@ Replace `your-project.vercel.app` with your actual Vercel URL:
 #### 5. Test Admin
 - [ ] Login with admin credentials
 - [ ] Admin@12345 (password)
-- [ ] admin@krushimithra.com (email)
+- [ ] admin@krishimithra.com (email)
 - [ ] Dashboard loads
 - [ ] Can view farmers
 

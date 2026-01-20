@@ -1,4 +1,4 @@
-# 🚀 KRUSHI MITHRA - Deployment Quick Reference Card
+﻿# 🚀 KRISHI MITHRA - Deployment Quick Reference Card
 
 **Print this or keep it handy during deployment!**
 
@@ -24,10 +24,10 @@ OpenWeatherMap: https://openweathermap.org/api
 NODE_ENV=production
 PORT=10000
 DATABASE_URL=postgresql://neondb_owner:npg_RZpaxCSsoD15@ep-super-breeze-a1bnvnew-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-JWT_SECRET=krushi_mithra_secret_key_2025_secure_token
+JWT_SECRET=KRISHI_MITHRA_secret_key_2025_secure_token
 OPENWEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
 WEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
-ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_EMAIL=admin@krishimithra.com
 ADMIN_PASSWORD=Admin@12345
 EMAIL_USER=YOUR_EMAIL@gmail.com
 EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
@@ -47,11 +47,11 @@ FRONTEND_URL=https://YOUR-FRONTEND.vercel.app
 
 ### ⏱️ 0-5 min: GitHub Setup
 ```powershell
-cd C:\Users\mahal\OneDrive\Desktop\krushi_mithra
+cd C:\Users\mahal\OneDrive\Desktop\KRISHI_MITHRA
 git init
 git add .
 git commit -m "Production ready"
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
 git push -u origin main
 ```
 
@@ -59,7 +59,7 @@ git push -u origin main
 1. Go to render.com → New Web Service
 2. Connect GitHub repo
 3. Settings:
-   - Name: `krushi-mithra-backend`
+   - Name: `krishi-mithra-backend`
    - Root: `backend`
    - Build: `npm install`
    - Start: `npm start`
@@ -81,7 +81,7 @@ git push
 
 ### ⏱️ 20-25 min: Frontend (Vercel)
 1. Go to vercel.com → New Project
-2. Import `krushi-mithra` repo
+2. Import `krishi-mithra` repo
 3. Settings:
    - Framework: Other
    - Output: `frontend`
@@ -133,7 +133,7 @@ After deployment, verify:
 ## 🔧 Render Configuration
 
 **Web Service Settings:**
-- Name: `krushi-mithra-backend`
+- Name: `krishi-mithra-backend`
 - Region: Oregon or Singapore
 - Branch: `main`
 - Root Directory: `backend`
@@ -164,7 +164,7 @@ After deployment:
 
 **For Farmers:**
 ```
-🌐 KRUSHI MITHRA
+🌐 KRISHI MITHRA
 Visit: https://YOUR-APP.vercel.app
 Register: https://YOUR-APP.vercel.app/html/register.html
 
@@ -179,7 +179,7 @@ Register: https://YOUR-APP.vercel.app/html/register.html
 ```
 🔐 Admin Portal
 Login: https://YOUR-APP.vercel.app/html/admin-login.html
-Email: admin@krushimithra.com
+Email: admin@krishimithra.com
 Password: Admin@12345
 ```
 

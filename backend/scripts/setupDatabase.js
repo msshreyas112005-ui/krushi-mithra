@@ -1,4 +1,4 @@
-const { pool, initializeTables } = require('../db');
+﻿const { pool, initializeTables } = require('../db');
 
 async function setupDatabase() {
     try {

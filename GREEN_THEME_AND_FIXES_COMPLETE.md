@@ -1,7 +1,7 @@
-# ✅ GREEN THEME & REGISTRATION FIXES - COMPLETE
+﻿# ✅ GREEN THEME & REGISTRATION FIXES - COMPLETE
 
 ## 📋 Summary
-Successfully completed comprehensive UI theme conversion and backend registration fixes for Krushi Mithra farmer dashboard.
+Successfully completed comprehensive UI theme conversion and backend registration fixes for KRISHI MITHRA farmer dashboard.
 
 ---
 
@@ -307,7 +307,7 @@ POST /api/farmers/login - 200 - 385ms
 ### Testing Credentials
 - **Test Farmer 1**: ssagar28612@gmail.com (password stored)
 - **Test Farmer 2**: ma2220an@gmail.com (password stored)
-- **Admin**: admin@krushimithra.com / admin123
+- **Admin**: admin@krishimithra.com / admin123
 
 ---
 

@@ -1,4 +1,4 @@
-# 🚀 KRUSHI MITRA - Quick Start Guide
+﻿# 🚀 KRISHI MITRA - Quick Start Guide
 
 ## ✅ All Features Implemented and Fixed!
 
@@ -70,7 +70,7 @@ Server will start on: **http://localhost:3000**
 
 ### Step 4: Login as Admin
 ```
-Email:    admin@krushimithra.com
+Email:    admin@krishimithra.com
 Password: Admin@123
 ```
 
@@ -88,7 +88,7 @@ Password: Admin@123
 ### Option 1: Neon PostgreSQL (Recommended - Free)
 
 1. **Sign up at Neon:** https://neon.tech
-2. **Create project:** "krushi-mitra"
+2. **Create project:** "KRISHI-mitra"
 3. **Copy connection string**
 4. **Create `.env` file:**
    ```bash
@@ -292,7 +292,7 @@ Rice, Wheat, Ragi, Jowar, Maize, Bajra
 
 ### Admin:
 ```
-Email:    admin@krushimithra.com
+Email:    admin@krishimithra.com
 Password: Admin@123
 ```
 

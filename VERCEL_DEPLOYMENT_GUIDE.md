@@ -1,6 +1,6 @@
-# 🚀 Vercel Deployment Guide - Krushi Mithra
+﻿# 🚀 Vercel Deployment Guide - KRISHI MITHRA
 
-Complete guide to deploy your Krushi Mithra application to Vercel with Neon PostgreSQL database.
+Complete guide to deploy your KRISHI MITHRA application to Vercel with Neon PostgreSQL database.
 
 ## 📋 Prerequisites
 
@@ -32,14 +32,14 @@ backend/node_modules/
 ```bash
 git init
 git add .
-git commit -m "Initial commit - Krushi Mithra"
+git commit -m "Initial commit - KRISHI MITHRA"
 ```
 
 ### 1.3 Push to GitHub
 
 ```bash
 # Create a new repository on GitHub first, then:
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
 git branch -M main
 git push -u origin main
 ```
@@ -76,19 +76,19 @@ git push -u origin main
    
    NODE_ENV=production
    
-   JWT_SECRET=krushi_mithra_secret_key_2025_secure_token
+   JWT_SECRET=KRISHI_MITHRA_secret_key_2025_secure_token
    
    OPENWEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
    WEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
    
-   ADMIN_EMAIL=admin@krushimithra.com
+   ADMIN_EMAIL=admin@krishimithra.com
    ADMIN_PASSWORD=Admin@12345
    
    EMAIL_USER=krishimithra2026@gmail.com
    EMAIL_APP_PASSWORD=umbhpecgsispzpmw
    EMAIL_PASSWORD=umbhpecgsispzpmw
    
-   SUPPORT_EMAIL=support@krushimithra.com
+   SUPPORT_EMAIL=support@krishimithra.com
    ```
 
 5. **Deploy**
@@ -117,7 +117,7 @@ git push -u origin main
    - Set up and deploy? Yes
    - Which scope? (Select your account)
    - Link to existing project? No
-   - What's your project's name? krushi-mithra
+   - What's your project's name? krishi-mithra
    - In which directory is your code located? ./
    - Want to override settings? No
 
@@ -130,7 +130,7 @@ git push -u origin main
    # Enter: production
    
    vercel env add JWT_SECRET
-   # Enter: krushi_mithra_secret_key_2025_secure_token
+   # Enter: KRISHI_MITHRA_secret_key_2025_secure_token
    
    vercel env add OPENWEATHER_API_KEY
    # Enter your API key
@@ -147,7 +147,7 @@ git push -u origin main
 
 ## 🌐 Step 3: Update BASE_URL
 
-After deployment, you'll get a URL like: `https://krushi-mithra.vercel.app`
+After deployment, you'll get a URL like: `https://krishi-mithra.vercel.app`
 
 ### Update Environment Variable
 
@@ -219,7 +219,7 @@ curl -X POST https://your-project.vercel.app/api/farmers/login \
    - Your Project → Settings → Domains
 
 2. **Add Domain**
-   - Enter your domain: `krushimithra.com`
+   - Enter your domain: `krishimithra.com`
    - Click "Add"
 
 3. **Configure DNS**
@@ -236,8 +236,8 @@ curl -X POST https://your-project.vercel.app/api/farmers/login \
 
 4. **Update Environment Variables**
    ```
-   BASE_URL=https://krushimithra.com
-   FRONTEND_URL=https://krushimithra.com
+   BASE_URL=https://krishimithra.com
+   FRONTEND_URL=https://krishimithra.com
    ```
 
 ---
@@ -464,7 +464,7 @@ vercel open
 
 ## 🎊 Congratulations!
 
-Your Krushi Mithra application is now live on Vercel! 🎉
+Your KRISHI MITHRA application is now live on Vercel! 🎉
 
 **Next Steps:**
 1. Test all features thoroughly

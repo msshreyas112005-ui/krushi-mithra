@@ -1,4 +1,4 @@
-// Role-Based Access Control (RBAC) Middleware
+﻿// Role-Based Access Control (RBAC) Middleware
 // This middleware ensures proper role-based access to routes
 
 /**

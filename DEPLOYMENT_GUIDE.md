@@ -1,6 +1,6 @@
-# 🚀 KRUSHI MITHRA - Production Deployment Guide
+﻿# 🚀 KRISHI MITHRA - Production Deployment Guide
 
-This guide will help you deploy KRUSHI MITHRA to the web so anyone can access it from their laptop or mobile device.
+This guide will help you deploy KRISHI MITHRA to the web so anyone can access it from their laptop or mobile device.
 
 ## 📋 Table of Contents
 
@@ -32,7 +32,7 @@ Before deploying, ensure you have:
 
 ```bash
 # Navigate to project root
-cd C:\Users\mahal\OneDrive\Desktop\krushi_mithra
+cd C:\Users\mahal\OneDrive\Desktop\KRISHI_MITHRA
 
 # Initialize git
 git init
@@ -41,13 +41,13 @@ git init
 git add .
 
 # Commit
-git commit -m "Prepare KRUSHI MITHRA for production deployment"
+git commit -m "Prepare KRISHI MITHRA for production deployment"
 ```
 
 ### 1.2 Create GitHub Repository
 
 1. Go to https://github.com/new
-2. Repository name: `krushi-mithra`
+2. Repository name: `krishi-mithra`
 3. Description: "Complete agriculture platform for Karnataka farmers"
 4. Set as **Public** (for free hosting)
 5. **DO NOT** initialize with README
@@ -57,7 +57,7 @@ git commit -m "Prepare KRUSHI MITHRA for production deployment"
 
 ```bash
 # Add remote
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
 
 # Push to GitHub
 git branch -M main
@@ -79,9 +79,9 @@ git push -u origin main
 ### 2.2 Create New Web Service
 
 1. Click **"New +"** → **"Web Service"**
-2. Connect your `krushi-mithra` repository
+2. Connect your `krishi-mithra` repository
 3. Configure:
-   - **Name**: `krushi-mithra-backend`
+   - **Name**: `krishi-mithra-backend`
    - **Region**: Choose nearest (e.g., Singapore/Oregon)
    - **Branch**: `main`
    - **Root Directory**: `backend`
@@ -98,15 +98,15 @@ Click **"Advanced"** → **"Add Environment Variable"**. Add these:
 NODE_ENV=production
 PORT=10000
 DATABASE_URL=postgresql://neondb_owner:npg_RZpaxCSsoD15@ep-super-breeze-a1bnvnew-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-JWT_SECRET=krushi_mithra_secret_key_2025_secure_token
+JWT_SECRET=KRISHI_MITHRA_secret_key_2025_secure_token
 OPENWEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
 WEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
-ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_EMAIL=admin@krishimithra.com
 ADMIN_PASSWORD=Admin@12345
 EMAIL_USER=your.email@gmail.com
 EMAIL_PASSWORD=your_gmail_app_password
-BASE_URL=https://krushi-mithra-backend.onrender.com
-FRONTEND_URL=https://krushi-mithra.vercel.app
+BASE_URL=https://krishi-mithra-backend.onrender.com
+FRONTEND_URL=https://krishi-mithra.vercel.app
 ```
 
 **Important Notes:**
@@ -119,8 +119,8 @@ FRONTEND_URL=https://krushi-mithra.vercel.app
 
 1. Click **"Create Web Service"**
 2. Wait 3-5 minutes for deployment
-3. Your backend URL: `https://krushi-mithra-backend.onrender.com`
-4. Test health check: Visit `https://krushi-mithra-backend.onrender.com/api/health`
+3. Your backend URL: `https://krishi-mithra-backend.onrender.com`
+4. Test health check: Visit `https://krishi-mithra-backend.onrender.com/api/health`
 
 **Expected Response:**
 ```json
@@ -155,7 +155,7 @@ Now that you have the backend URL:
 ### 3.2 Import Project
 
 1. Click **"Add New..."** → **"Project"**
-2. Import `krushi-mithra` repository
+2. Import `krishi-mithra` repository
 3. Configure:
    - **Framework Preset**: Other
    - **Root Directory**: Leave as `.` (root)
@@ -169,7 +169,7 @@ Before deploying, update the production API URL:
 1. Open `frontend/js/config.js`
 2. Update line 19:
    ```javascript
-   PRODUCTION_API_URL: 'https://krushi-mithra-backend.onrender.com',
+   PRODUCTION_API_URL: 'https://krishi-mithra-backend.onrender.com',
    ```
 3. Commit and push:
    ```bash
@@ -182,7 +182,7 @@ Before deploying, update the production API URL:
 
 1. Click **"Deploy"**
 2. Wait 1-2 minutes
-3. Your frontend URL: `https://krushi-mithra.vercel.app` (or similar)
+3. Your frontend URL: `https://krishi-mithra.vercel.app` (or similar)
 
 ### 3.5 Update Backend CORS
 
@@ -191,7 +191,7 @@ Now update the backend to allow your frontend:
 1. Go to Render dashboard → Backend service → **Environment**
 2. Update `FRONTEND_URL`:
    ```
-   FRONTEND_URL=https://krushi-mithra.vercel.app
+   FRONTEND_URL=https://krishi-mithra.vercel.app
    ```
 3. Save changes (auto-redeploys)
 
@@ -209,7 +209,7 @@ If you prefer Netlify over Vercel:
 ### 3A.2 Create New Site
 
 1. Click **"Add new site"** → **"Import an existing project"**
-2. Connect GitHub → Select `krushi-mithra`
+2. Connect GitHub → Select `krishi-mithra`
 3. Configure:
    - **Branch**: `main`
    - **Base directory**: Leave empty
@@ -220,7 +220,7 @@ If you prefer Netlify over Vercel:
 
 1. Click **"Deploy site"**
 2. Wait 1-2 minutes
-3. Your URL: `https://krushi-mithra.netlify.app`
+3. Your URL: `https://krishi-mithra.netlify.app`
 
 The `netlify.toml` file is already configured to:
 - Serve frontend files
@@ -271,13 +271,13 @@ Test API endpoints:
 
 ```bash
 # Health check
-curl https://krushi-mithra-backend.onrender.com/api/health
+curl https://krishi-mithra-backend.onrender.com/api/health
 
 # Get market prices (should work without auth)
-curl https://krushi-mithra-backend.onrender.com/api/market-prices
+curl https://krishi-mithra-backend.onrender.com/api/market-prices
 
 # Test farmer registration
-curl -X POST https://krushi-mithra-backend.onrender.com/api/farmers/register \
+curl -X POST https://krishi-mithra-backend.onrender.com/api/farmers/register \
   -H "Content-Type: application/json" \
   -d '{"name":"Test Farmer","email":"test@example.com","password":"Test@123","phone":"9876543210","location":"Bangalore","primaryCrop":"rice"}'
 ```
@@ -358,9 +358,9 @@ git push
 
 Your app is now live! Share these URLs:
 
-- **Main Website**: `https://krushi-mithra.vercel.app`
-- **Farmer Registration**: `https://krushi-mithra.vercel.app/html/register.html`
-- **Admin Portal**: `https://krushi-mithra.vercel.app/html/admin-login.html`
+- **Main Website**: `https://krishi-mithra.vercel.app`
+- **Farmer Registration**: `https://krishi-mithra.vercel.app/html/register.html`
+- **Admin Portal**: `https://krishi-mithra.vercel.app/html/admin-login.html`
 
 ---
 
@@ -452,7 +452,7 @@ Free tier sleeps after 15 minutes of inactivity. Options:
 
 Consider these upgrades:
 
-1. **Custom Domain**: Buy domain (e.g., `krushimithra.com`)
+1. **Custom Domain**: Buy domain (e.g., `krishimithra.com`)
 2. **SSL Certificate**: Auto-included with Vercel/Render
 3. **CDN**: Use Cloudflare for faster global access
 4. **Analytics**: Add Google Analytics
@@ -474,7 +474,7 @@ If you encounter issues:
 
 ## 🎉 You're Live!
 
-Congratulations! Your KRUSHI MITHRA platform is now accessible worldwide. Farmers can:
+Congratulations! Your KRISHI MITHRA platform is now accessible worldwide. Farmers can:
 
 - Register and create accounts
 - View real-time market prices
@@ -492,9 +492,9 @@ Congratulations! Your KRUSHI MITHRA platform is now accessible worldwide. Farmer
 Update these in your documentation:
 
 ```
-Backend API: https://krushi-mithra-backend.onrender.com
-Frontend: https://krushi-mithra.vercel.app
-GitHub Repo: https://github.com/YOUR_USERNAME/krushi-mithra
+Backend API: https://krishi-mithra-backend.onrender.com
+Frontend: https://krishi-mithra.vercel.app
+GitHub Repo: https://github.com/YOUR_USERNAME/krishi-mithra
 ```
 
 **Last Updated**: January 7, 2026

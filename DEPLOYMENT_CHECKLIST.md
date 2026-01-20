@@ -1,6 +1,6 @@
-# ⚡ KRUSHI MITHRA - Quick Deployment Checklist
+﻿# ⚡ KRISHI MITHRA - Quick Deployment Checklist
 
-Use this checklist to deploy KRUSHI MITHRA in 30 minutes.
+Use this checklist to deploy KRISHI MITHRA in 30 minutes.
 
 ## 📋 Pre-Deployment (5 minutes)
 
@@ -15,14 +15,14 @@ Use this checklist to deploy KRUSHI MITHRA in 30 minutes.
 
 ```powershell
 # In project root
-cd C:\Users\mahal\OneDrive\Desktop\krushi_mithra
+cd C:\Users\mahal\OneDrive\Desktop\KRISHI_MITHRA
 
 git init
 git add .
 git commit -m "Production deployment ready"
 
 # Create repo on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
 git push -u origin main
 ```
 
@@ -35,10 +35,10 @@ git push -u origin main
 1. **Create Web Service**
    - Go to https://render.com/dashboard
    - Click "New +" → "Web Service"
-   - Connect your `krushi-mithra` repository
+   - Connect your `krishi-mithra` repository
 
 2. **Configure Service**
-   - Name: `krushi-mithra-backend`
+   - Name: `krishi-mithra-backend`
    - Root Directory: `backend`
    - Build Command: `npm install`
    - Start Command: `npm start`
@@ -52,15 +52,15 @@ git push -u origin main
    NODE_ENV=production
    PORT=10000
    DATABASE_URL=postgresql://neondb_owner:npg_RZpaxCSsoD15@ep-super-breeze-a1bnvnew-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-   JWT_SECRET=krushi_mithra_secret_key_2025_secure_token
+   JWT_SECRET=KRISHI_MITHRA_secret_key_2025_secure_token
    OPENWEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
    WEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
-   ADMIN_EMAIL=admin@krushimithra.com
+   ADMIN_EMAIL=admin@krishimithra.com
    ADMIN_PASSWORD=Admin@12345
    EMAIL_USER=YOUR_EMAIL@gmail.com
    EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
-   BASE_URL=https://krushi-mithra-backend.onrender.com
-   FRONTEND_URL=https://krushi-mithra.vercel.app
+   BASE_URL=https://krishi-mithra-backend.onrender.com
+   FRONTEND_URL=https://krishi-mithra.vercel.app
    ```
 
 4. **Deploy**
@@ -103,7 +103,7 @@ git push -u origin main
 1. **Import Project**
    - Go to https://vercel.com/dashboard
    - Click "Add New..." → "Project"
-   - Import your `krushi-mithra` repository
+   - Import your `krishi-mithra` repository
 
 2. **Configure**
    - Framework: **Other**

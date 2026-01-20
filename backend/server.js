@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
@@ -170,7 +170,7 @@ if (!isVercel) {
 
   const server = app.listen(PORT, HOST, () => {
     console.log(`\n${'='.repeat(60)}`);
-    console.log(`🌾 KRUSHI MITHRA Server Started`);
+    console.log(`🌾 KRISHI MITHRA Server Started`);
     console.log(`${'='.repeat(60)}`);
     console.log(`📡 Server URL: ${BASE_URL}`);
     console.log(`🌐 Frontend:   ${BASE_URL}/frontend/html/index.html`);

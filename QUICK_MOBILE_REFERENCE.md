@@ -1,4 +1,4 @@
-# 🚀 KRUSHI MITHRA - QUICK MOBILE TESTING REFERENCE
+﻿# 🚀 KRISHI MITHRA - QUICK MOBILE TESTING REFERENCE
 
 ## ⚡ INSTANT START GUIDE
 
@@ -61,7 +61,7 @@ http://YOUR_IP:3000
 ### Admin Login
 ```
 URL: /html/admin-login.html
-Email: admin@krushimithra.com
+Email: admin@krishimithra.com
 Password: Admin@12345
 ```
 
@@ -139,7 +139,7 @@ PORT=3000
 DATABASE_URL=your_neon_postgres_url
 JWT_SECRET=your_secret_key
 OPENWEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
-ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_EMAIL=admin@krishimithra.com
 ADMIN_PASSWORD=Admin@12345
 ```
 
@@ -231,7 +231,7 @@ console.log(window.API_URL);
 console.log(window.innerWidth <= 768);
 
 // Test section navigation
-window.KrushiMithra.mobile.showSection('weather-info');
+window.krishimithra.mobile.showSection('weather-info');
 ```
 
 ### Performance
@@ -384,7 +384,7 @@ localStorage.clear(); sessionStorage.clear(); location.reload();
 
 ---
 
-**KRUSHI MITHRA - Production Ready! 🌾📱**
+**KRISHI MITHRA - Production Ready! 🌾📱**
 
 For detailed information, see:
 - `MOBILE_PRODUCTION_READY_GUIDE.md` - Complete mobile testing guide

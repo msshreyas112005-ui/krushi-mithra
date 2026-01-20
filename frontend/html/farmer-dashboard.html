@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="description" content="Farmer Dashboard - Access your personalized agriculture data, market prices, weather forecasts, and government subsidies on KRUSHI MITHRA.">
+    <meta name="description" content="Farmer Dashboard - Access your personalized agriculture data, market prices, weather forecasts, and government subsidies on KRISHI MITHRA.">
     <meta name="keywords" content="farmer dashboard, agriculture platform, market prices, weather updates, subsidies">
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#4CAF50">
-    <title>Farmer Dashboard - KRUSHI MITHRA</title>
+    <title>Farmer Dashboard - KRISHI MITHRA</title>
     <link rel="stylesheet" href="/frontend/css/style.css">
     <link rel="stylesheet" href="/frontend/css/farmer-dashboard.css">
     <link rel="stylesheet" href="/frontend/css/weather-alerts.css">
@@ -22,7 +22,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
-                    <h1 class="logo">🌾 KRUSHI MITHRA</h1>
+                    <h1 class="logo">🌾 KRISHI MITHRA</h1>
                 </div>
                 <nav class="nav-menu">
                     <ul>
@@ -253,7 +253,7 @@
     <!-- Footer -->
     <footer class="dashboard-footer">
         <div class="container">
-            <p>&copy; 2025 KRUSHI MITHRA. All rights reserved. | <a href="#help">Help Center</a> | <a href="#contact">Contact Support</a></p>
+            <p>&copy; 2025 KRISHI MITHRA. All rights reserved. | <a href="#help">Help Center</a> | <a href="#contact">Contact Support</a></p>
         </div>
     </footer>
 
@@ -263,10 +263,10 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🌐 Initializing farmer dashboard language support');
             
-            if (window.krushiLang) {
+            if (window.krishiLang) {
                 // Language manager auto-initializes, just connect the selector
                 await new Promise(resolve => {
-                    if (window.krushiLang.isReady) {
+                    if (window.krishiLang.isReady) {
                         resolve();
                     } else {
                         setTimeout(resolve, 200);
@@ -275,7 +275,7 @@
                 
                 const languageSelect = document.getElementById('languageSelect');
                 if (languageSelect) {
-                    languageSelect.value = window.krushiLang.currentLang || 'en';
+                    languageSelect.value = window.krishiLang.currentLang || 'en';
                     console.log('✅ Language selector connected on dashboard');
                 } else {
                     console.error('❌ Language selector not found on dashboard');

@@ -1,4 +1,4 @@
-// API Configuration - Uses config.js for environment-aware API URL
+﻿// API Configuration - Uses config.js for environment-aware API URL
 // The API_URL is now loaded from config.js which auto-detects development vs production
 
 // DOM Elements

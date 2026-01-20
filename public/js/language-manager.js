@@ -1,9 +1,9 @@
-/**
- * KRUSHI MITHRA - Simple Language Manager
+﻿/**
+ * KRISHI MITHRA - Simple Language Manager
  * Fresh implementation - English, Kannada, Hindi
  */
 
-class KrushiLanguageManager {
+class krishiLanguageManager {
     constructor() {
         this.currentLang = 'en';
         this.translations = {};
@@ -14,7 +14,7 @@ class KrushiLanguageManager {
         console.log('🌐 Initializing Language System...');
         
         // Load saved preference
-        const saved = localStorage.getItem('krushi_language');
+        const saved = localStorage.getItem('krishi_language');
         if (saved) {
             this.currentLang = saved;
         }
@@ -92,7 +92,7 @@ class KrushiLanguageManager {
         }
 
         this.currentLang = lang;
-        localStorage.setItem('krushi_language', lang);
+        localStorage.setItem('krishi_language', lang);
         
         this.applyLanguage(lang);
         
@@ -208,28 +208,28 @@ class KrushiLanguageManager {
 }
 
 // Create global instance
-window.krushiLang = new KrushiLanguageManager();
+window.krishiLang = new krishiLanguageManager();
 
 // Auto-initialize ONLY if not already initialized by page scripts
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         // Small delay to let page scripts run first
         setTimeout(async () => {
-            if (!window.krushiLang.isReady) {
+            if (!window.krishiLang.isReady) {
                 console.log('🔄 Auto-initializing language manager');
-                await window.krushiLang.initialize();
+                await window.krishiLang.initialize();
             }
         }, 100);
     });
 } else {
     // Document already loaded - only init if not ready
     setTimeout(async () => {
-        if (!window.krushiLang.isReady) {
+        if (!window.krishiLang.isReady) {
             console.log('🔄 Auto-initializing language manager (immediate)');
-            await window.krushiLang.initialize();
+            await window.krishiLang.initialize();
         }
     }, 100);
 }
 
 // Keep old reference for compatibility
-window.languageManager = window.krushiLang;
+window.languageManager = window.krishiLang;

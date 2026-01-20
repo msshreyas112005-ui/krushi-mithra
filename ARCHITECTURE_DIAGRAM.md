@@ -1,4 +1,4 @@
-# 🏗️ KRUSHI MITHRA - Production Architecture
+﻿# 🏗️ KRISHI MITHRA - Production Architecture
 
 ## 📊 System Architecture Diagram
 
@@ -153,7 +153,7 @@ Steps:
 │                        GITHUB                              │
 │               (Source Code Repository)                     │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Repository: krushi-mithra                           │  │
+│  │  Repository: krishi-mithra                           │  │
 │  │  Branch: main                                        │  │
 │  │  ┌────────────┐  ┌────────────┐  ┌──────────────┐  │  │
 │  │  │  Backend   │  │  Frontend  │  │    Configs   │  │  │

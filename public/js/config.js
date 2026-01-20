@@ -1,5 +1,5 @@
-/**
- * API Configuration for KRUSHI MITHRA
+﻿/**
+ * API Configuration for KRISHI MITHRA
  * 
  * This file automatically detects the environment and sets the correct API URL.
  * 
@@ -15,9 +15,9 @@
 const CONFIG = {
     // Update this with your actual production backend URL after deployment
     // Examples:
-    // - Render: https://krushi-mithra-api.onrender.com
-    // - Railway: https://krushi-mithra-production.up.railway.app
-    // - Fly.io: https://krushi-mithra.fly.dev
+    // - Render: https://krishi-mithra-api.onrender.com
+    // - Railway: https://krishi-mithra-production.up.railway.app
+    // - Fly.io: https://krishi-mithra.fly.dev
     // Vercel deployment - API is on same domain
     PRODUCTION_API_URL: '',  // Empty string means same domain
     

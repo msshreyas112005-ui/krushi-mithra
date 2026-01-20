@@ -1,4 +1,4 @@
-# 🚀 KRUSHI MITHRA - Complete Setup & Deployment Guide
+﻿# 🚀 KRISHI MITHRA - Complete Setup & Deployment Guide
 
 ## 📋 Table of Contents
 1. [Project Overview](#project-overview)
@@ -15,7 +15,7 @@
 
 ## 📌 Project Overview
 
-**KRUSHI MITHRA** is a multilingual agricultural platform for Karnataka farmers with:
+**KRISHI MITHRA** is a multilingual agricultural platform for Karnataka farmers with:
 - 🌐 3 languages (English, ಕನ್ನಡ, हिंदी)
 - 👨‍🌾 Farmer registration and dashboard
 - 👨‍💼 Admin management panel
@@ -41,7 +41,7 @@
 **Your server is running successfully!**
 
 ```
-🌾 KRUSHI MITHRA Server Started
+🌾 KRISHI MITHRA Server Started
 📡 Server URL: http://localhost:3000
 🌐 Frontend: http://localhost:3000/frontend/html/index.html
 👨‍🌾 Farmer: http://localhost:3000/frontend/html/register.html
@@ -59,7 +59,7 @@
 
 ### Demo Admin Credentials
 ```
-Email: admin@krushimithra.com
+Email: admin@krishimithra.com
 Password: admin123
 ```
 
@@ -121,10 +121,10 @@ mongosh
 2. **Create/Update `.env` file**:
    ```bash
    # Database Configuration
-   MONGODB_URI=mongodb://localhost:27017/krushimithra
+   MONGODB_URI=mongodb://localhost:27017/krishimithra
    
    # OR for MongoDB Atlas (Cloud)
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/krushimithra
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/krishimithra
    ```
 
 3. **Restart Server**:
@@ -144,7 +144,7 @@ mongosh
 4. **Whitelist IP**: Add `0.0.0.0/0` to allow all IPs (or your specific IP)
 5. **Add to `.env`**:
    ```
-   MONGODB_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/krushimithra
+   MONGODB_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/krishimithra
    ```
 
 ---
@@ -156,18 +156,18 @@ mongosh
 #### Quick Setup
 
 1. **Sign Up**: https://neon.tech (Free - 3GB storage)
-2. **Create Database**: Name it `krushimithra`
+2. **Create Database**: Name it `krishimithra`
 3. **Get Connection String**:
    ```
-   postgresql://username:password@hostname/krushimithra?sslmode=require
+   postgresql://username:password@hostname/krishimithra?sslmode=require
    ```
 
 4. **Add to `.env`**:
    ```bash
    # PostgreSQL Configuration
-   POSTGRES_URL=postgresql://username:password@hostname/krushimithra?sslmode=require
+   POSTGRES_URL=postgresql://username:password@hostname/krishimithra?sslmode=require
    POSTGRES_HOST=your-host.neon.tech
-   POSTGRES_DATABASE=krushimithra
+   POSTGRES_DATABASE=krishimithra
    POSTGRES_USER=your-username
    POSTGRES_PASSWORD=your-password
    USE_POSTGRES=true
@@ -188,7 +188,7 @@ mongosh
 
 1. **Go to GitHub**: https://github.com/new
 2. **Repository Settings**:
-   - **Name**: `krushi-mitra` (or your choice)
+   - **Name**: `KRISHI-mitra` (or your choice)
    - **Description**: `Karnataka Farmers Agricultural Platform - Multilingual`
    - **Visibility**: Public or Private
    - **DO NOT** initialize with README, .gitignore, or license (we have them)
@@ -202,7 +202,7 @@ mongosh
 **Important**: Before pushing, create `.gitignore` to exclude sensitive files:
 
 ```bash
-cd "c:\Users\surya\Desktop\code\krushi mitra"
+cd "c:\Users\surya\Desktop\code\KRISHI mitra"
 New-Item -ItemType File -Name ".gitignore"
 ```
 
@@ -264,7 +264,7 @@ build/
 
 ```powershell
 # Navigate to your project
-cd "c:\Users\surya\Desktop\code\krushi mitra"
+cd "c:\Users\surya\Desktop\code\KRISHI mitra"
 
 # Initialize Git
 git init
@@ -276,7 +276,7 @@ git add .
 git status
 
 # Create first commit
-git commit -m "Initial commit: KRUSHI MITHRA - Karnataka Farmers Platform
+git commit -m "Initial commit: KRISHI MITHRA - Karnataka Farmers Platform
 
 Features:
 - Multilingual support (English, Kannada, Hindi)
@@ -297,7 +297,7 @@ Features:
 ```powershell
 # Add GitHub repository as remote
 # Replace YOUR_USERNAME and YOUR_REPO_NAME with your actual GitHub details
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mitra.git
+git remote add origin https://github.com/YOUR_USERNAME/KRISHI-mitra.git
 
 # Verify remote
 git remote -v
@@ -309,7 +309,7 @@ git push -u origin main
 
 **Example**:
 ```powershell
-git remote add origin https://github.com/suryapratap/krushi-mitra.git
+git remote add origin https://github.com/suryapratap/KRISHI-mitra.git
 git push -u origin main
 ```
 
@@ -350,10 +350,10 @@ git commit -m "Implemented admin notification broadcast feature"
 
 ```powershell
 # Clone your repository
-git clone https://github.com/YOUR_USERNAME/krushi-mitra.git
+git clone https://github.com/YOUR_USERNAME/KRISHI-mitra.git
 
 # Navigate to project
-cd krushi-mitra
+cd KRISHI-mitra
 
 # Install dependencies
 cd backend
@@ -374,7 +374,7 @@ Create `.env` file in `backend/` folder:
 
 ```bash
 # ============================================================
-# KRUSHI MITHRA - Environment Configuration
+# KRISHI MITHRA - Environment Configuration
 # ============================================================
 
 # Server Configuration
@@ -389,16 +389,16 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-12345
 # ============================================================
 
 # Option 1: MongoDB (Local)
-MONGODB_URI=mongodb://localhost:27017/krushimithra
+MONGODB_URI=mongodb://localhost:27017/krishimithra
 
 # Option 1b: MongoDB Atlas (Cloud)
-# MONGODB_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/krushimithra
+# MONGODB_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/krishimithra
 
 # Option 2: PostgreSQL (Neon Cloud)
 # USE_POSTGRES=true
-# POSTGRES_URL=postgresql://username:password@hostname/krushimithra?sslmode=require
+# POSTGRES_URL=postgresql://username:password@hostname/krishimithra?sslmode=require
 # POSTGRES_HOST=your-host.neon.tech
-# POSTGRES_DATABASE=krushimithra
+# POSTGRES_DATABASE=krishimithra
 # POSTGRES_USER=your-username
 # POSTGRES_PASSWORD=your-password
 
@@ -425,7 +425,7 @@ MONGODB_URI=mongodb://localhost:27017/krushimithra
 # ============================================================
 # ADMIN CREDENTIALS (For first admin account)
 # ============================================================
-ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_EMAIL=admin@krishimithra.com
 ADMIN_PASSWORD=admin123
 
 # ============================================================
@@ -446,7 +446,7 @@ ENABLE_SMS_NOTIFICATIONS=false
 | `MONGODB_URI` | MongoDB connection | For MongoDB | None |
 | `POSTGRES_URL` | PostgreSQL connection | For PostgreSQL | None |
 | `OPENWEATHER_API_KEY` | Weather data | No | Demo mode |
-| `ADMIN_EMAIL` | Admin account | No | admin@krushimithra.com |
+| `ADMIN_EMAIL` | Admin account | No | admin@krishimithra.com |
 | `ADMIN_PASSWORD` | Admin password | No | admin123 |
 
 ---
@@ -457,7 +457,7 @@ ENABLE_SMS_NOTIFICATIONS=false
 
 **Backend**:
 ```powershell
-cd "c:\Users\surya\Desktop\code\krushi mitra\backend"
+cd "c:\Users\surya\Desktop\code\KRISHI mitra\backend"
 npm start
 ```
 
@@ -480,14 +480,14 @@ npm start
 3. **Start with PM2** (process manager):
    ```bash
    npm install -g pm2
-   pm2 start server.js --name krushi-mitra
+   pm2 start server.js --name KRISHI-mitra
    pm2 startup
    pm2 save
    ```
 
 4. **View Logs**:
    ```bash
-   pm2 logs krushi-mitra
+   pm2 logs KRISHI-mitra
    pm2 status
    ```
 
@@ -508,7 +508,7 @@ npm start
 **All Pages**:
 - Test on: Home, Register, Login, Dashboard
 - Verify language persists after page reload
-- Check browser localStorage: `krushi_language`
+- Check browser localStorage: `krishi_language`
 
 ---
 
@@ -550,7 +550,7 @@ Get-Content "backend\data\users.json" | ConvertFrom-Json | ConvertTo-Json -Depth
 **Login**:
 ```
 URL: http://localhost:3000/frontend/html/admin-login.html
-Email: admin@krushimithra.com
+Email: admin@krishimithra.com
 Password: admin123
 ```
 
@@ -633,7 +633,7 @@ Invoke-WebRequest -Uri "http://localhost:3000/api/farmer/market-prices?category=
 3. Click "New +" → "Web Service"
 4. Connect GitHub repository
 5. Settings:
-   - **Name**: krushi-mitra
+   - **Name**: KRISHI-mitra
    - **Environment**: Node
    - **Build Command**: `cd backend && npm install`
    - **Start Command**: `cd backend && npm start`
@@ -671,7 +671,7 @@ Invoke-WebRequest -Uri "http://localhost:3000/api/farmer/market-prices?category=
 2. Commands:
    ```bash
    heroku login
-   heroku create krushi-mitra
+   heroku create KRISHI-mitra
    git push heroku main
    heroku config:set JWT_SECRET=your-secret
    ```
@@ -805,7 +805,7 @@ frontend/
 
 ```powershell
 # Start Server
-cd "c:\Users\surya\Desktop\code\krushi mitra\backend"
+cd "c:\Users\surya\Desktop\code\KRISHI mitra\backend"
 npm start
 
 # Stop Server
@@ -815,10 +815,10 @@ npm start
 Get-Process | Where-Object {$_.ProcessName -eq 'node'} | Stop-Process -Force
 
 # View Server Logs (if using PM2)
-pm2 logs krushi-mitra
+pm2 logs KRISHI-mitra
 
 # Restart Server (PM2)
-pm2 restart krushi-mitra
+pm2 restart KRISHI-mitra
 
 # Git Commands
 git status                    # Check changes
@@ -835,7 +835,7 @@ netstat -ano | findstr :3000
 # MongoDB Commands
 mongosh                       # Open MongoDB shell
 show dbs                      # List databases
-use krushimithra             # Switch to database
+use krishimithra             # Switch to database
 db.users.find()              # View users
 
 # Environment Check
@@ -930,11 +930,11 @@ You now have a complete guide to:
 - ✅ Deploying to production
 - ✅ Troubleshooting issues
 
-**Your KRUSHI MITHRA platform is ready to help Karnataka farmers!** 🌾
+**Your KRISHI MITHRA platform is ready to help Karnataka farmers!** 🌾
 
 ---
 
 **Created**: January 4, 2026
 **Server Status**: ✅ Running on http://localhost:3000
 **Version**: 2.0 - Production Ready
-**Author**: KRUSHI MITHRA Development Team
+**Author**: KRISHI MITHRA Development Team

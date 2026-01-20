@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="description" content="Register as a farmer on KRUSHI MITHRA - Get access to real-time market prices, weather updates, and government subsidies for Karnataka farmers.">
-    <meta name="keywords" content="farmer registration, agriculture signup, krushi mithra registration, farming platform, Karnataka farmers">
-    <meta name="author" content="KRUSHI MITHRA">
+    <meta name="description" content="Register as a farmer on KRISHI MITHRA - Get access to real-time market prices, weather updates, and government subsidies for Karnataka farmers.">
+    <meta name="keywords" content="farmer registration, agriculture signup, KRISHI MITHRA registration, farming platform, Karnataka farmers">
+    <meta name="author" content="KRISHI MITHRA">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#4CAF50">
-    <title>Farmer Registration - KRUSHI MITHRA</title>
+    <title>Farmer Registration - KRISHI MITHRA</title>
     <link rel="stylesheet" href="/frontend/css/style.css">
     <link rel="stylesheet" href="/frontend/css/register.css">
     <link rel="stylesheet" href="/frontend/css/mobile-responsive.css">
@@ -28,11 +28,11 @@
     <header>
         <nav class="navbar">
             <div class="container navbar-container">
-                <h1 class="logo" data-i18n="home.logo">🌾 KRUSHI MITHRA 🚜</h1>
+                <h1 class="logo" data-i18n="home.logo">🌾 KRISHI MITHRA 🚜</h1>
                 <ul class="nav-links">
-                    <li><a href="index.html" data-i18n="header.home">🏠 Home</a></li>
-                    <li><a href="register.html" class="active" data-i18n="register.title">📝 Register</a></li>
-                    <li><a href="farmer-login.html" data-i18n="login.title">🔑 Login</a></li>
+                    <li><a href="/index.html" data-i18n="header.home">🏠 Home</a></li>
+                    <li><a href="/html/register.html" class="active" data-i18n="register.title">📝 Register</a></li>
+                    <li><a href="/html/farmer-login.html" data-i18n="login.title">🔑 Login</a></li>
                 </ul>
                 <div class="language-selector">
                     <select id="languageSelect" class="language-dropdown">
@@ -50,7 +50,7 @@
             <div class="registration-container">
                 <div class="registration-header">
                     <h2 data-i18n="register.heading">🌾 Farmer Registration 👨‍🌾</h2>
-                    <p data-i18n="register.subtitle">Join the KRUSHI MITHRA community today! 🚜</p>
+                    <p data-i18n="register.subtitle">Join the KRISHI MITHRA community today! 🚜</p>
                 </div>
 
                 <form id="registrationForm" class="registration-form" novalidate>
@@ -211,7 +211,7 @@
 
                     <!-- Login Link -->
                     <div class="form-footer">
-                        <p><span data-i18n="register.alreadyAccount">Already have an account?</span> <a href="farmer-login.html" data-i18n="register.loginLink">🔑 Login here</a></p>
+                        <p><span data-i18n="register.alreadyAccount">Already have an account?</span> <a href="/html/farmer-login.html" data-i18n="register.loginLink">🔑 Login here</a></p>", "oldString": "                        <p><span data-i18n="register.alreadyAccount">Already have an account?</span> <a href="farmer-login.html" data-i18n="register.loginLink">🔑 Login here</a></p>"}]
                     </div>
                 </form>
             </div>
@@ -220,7 +220,7 @@
 
     <footer>
         <div class="container">
-            <p data-i18n="footer.copyright">&copy; 2025 KRUSHI MITHRA. All rights reserved.</p>
+            <p data-i18n="footer.copyright">&copy; 2025 KRISHI MITHRA. All rights reserved.</p>
         </div>
     </footer>
 
@@ -230,17 +230,17 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🌐 Initializing registration page language support');
             
-            if (window.krushiLang) {
-                await window.krushiLang.initialize();
+            if (window.krishiLang) {
+                await window.krishiLang.initialize();
                 
                 const languageSelect = document.getElementById('languageSelect');
                 if (languageSelect) {
-                    languageSelect.value = window.krushiLang.currentLang || 'en';
+                    languageSelect.value = window.krishiLang.currentLang || 'en';
                     
                     languageSelect.addEventListener('change', (e) => {
                         const newLanguage = e.target.value;
                         console.log('🔄 Changing language to:', newLanguage);
-                        window.krushiLang.changeLanguage(newLanguage);
+                        window.krishiLang.changeLanguage(newLanguage);
                     });
                     
                     console.log('✅ Language selector connected');

@@ -1,4 +1,4 @@
-# Netlify configuration for KRUSHI MITHRA Frontend
+﻿# Netlify configuration for KRISHI MITHRA Frontend
 
 [build]
   # Directory where the build artifacts are located
@@ -10,7 +10,7 @@
 # Redirect all API calls to the backend
 [[redirects]]
   from = "/api/*"
-  to = "https://krushi-mithra-backend.onrender.com/api/:splat"
+  to = "https://krishi-mithra-backend.onrender.com/api/:splat"
   status = 200
   force = true
 

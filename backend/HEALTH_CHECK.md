@@ -1,4 +1,4 @@
-# Health check endpoint for deployment platforms
+﻿# Health check endpoint for deployment platforms
 GET /api/health
 
 response:

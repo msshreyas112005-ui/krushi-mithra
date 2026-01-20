@@ -1,4 +1,4 @@
-{
+﻿{
   "header": {
     "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
     "profile": "ಪ್ರೊಫೈಲ್",
@@ -89,7 +89,7 @@
   "register": {
     "title": "📝 ನೋಂದಣಿ",
     "heading": "🌾 ರೈತ ನೋಂದಣಿ 👨‍🌾",
-    "subtitle": "ಇಂದೇ KRUSHI MITHRA ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ! 🚜",
+    "subtitle": "ಇಂದೇ KRISHI MITHRA ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ! 🚜",
     "fullName": "👤 ಪೂರ್ಣ ಹೆಸರು",
     "email": "📧 ಇಮೇಲ್ ವಿಲಾಸ",
     "emailPlaceholder": "example@email.com",
@@ -113,7 +113,7 @@
   },
   "login": {
     "title": "🌾 ರೈತ ಲಾಗಿನ್",
-    "subtitle": "KRUSHI MITHRA ಗೆ ಮರಳಿ ಸ್ವಾಗತ",
+    "subtitle": "KRISHI MITHRA ಗೆ ಮರಳಿ ಸ್ವಾಗತ",
     "heroSubtitle": "ಕರ್ನಾಟಕ ರೈತರಿಗೆ ತಂತ್ರಜ್ಞಾನದೊಂದಿಗೆ ಸಬಲೀಕರಣ",
     "feature1": "ನೈಜ-ಸಮಯ ಹವಾಮಾನ ನವೀಕರಣಗಳು",
     "feature2": "ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ಮಾಹಿತಿ",
@@ -181,13 +181,13 @@
     "registerError": "ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ"
   },
   "home": {
-    "heroTitle": "KRUSHI MITHRA ಗೆ ಸ್ವಾಗತ",
+    "heroTitle": "KRISHI MITHRA ಗೆ ಸ್ವಾಗತ",
     "heroSubtitle": "ಕರ್ನಾಟಕ ರೈತರಿಗೆ ನಿಮ್ಮ ಸಂಪೂರ್ಣ ಕೃಷಿ ವೇದಿಕೆ",
     "farmerLogin": "👨‍🌾 ರೈತರಿಗೆ ಲಾಗಿನ್",
     "adminLogin": "👨‍💼 ನಿರ್ವಾಹಕ ಲಾಗಿನ್",
-    "newUser": "KRUSHI MITHRA ಗೆ ಹೊಸತತೇ?",
+    "newUser": "KRISHI MITHRA ಗೆ ಹೊಸತತೇ?",
     "registerNew": "ಹೊಸ ನೋಂದಣಿ",
-    "logo": "🌾 KRUSHI MITHRA",
+    "logo": "🌾 KRISHI MITHRA",
     "getStarted": "ಪ್ರಾರಂಭಿಸಿ",
     "learnMore": "ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ",
     "servicesTitle": "ನಮ್ಮ ಸೇವೆಗಳು",
@@ -232,7 +232,7 @@
   "register": {
     "title": "ನೋಂದಣಿ",
     "heading": "🌾 ರೈತರ ನೋಂದಣಿ 👨‍🌾",
-    "subtitle": "ಇಂದೇ KRUSHI MITHRA ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ! 🚜",
+    "subtitle": "ಇಂದೇ KRISHI MITHRA ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ! 🚜",
     "fullName": "👤 ಪೂರ್ಣ ಹೆಸರು"
   },
   "footer": {

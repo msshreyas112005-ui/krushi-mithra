@@ -1,4 +1,4 @@
-# Production Environment Variables Template
+﻿# Production Environment Variables Template
 # Copy this to your deployment platform's environment variables section
 
 # ==============================================
@@ -19,16 +19,16 @@ DATABASE_URL=postgresql://neondb_owner:npg_RZpaxCSsoD15@ep-super-breeze-a1bnvnew
 # ==============================================
 # Generate a secure random string for production
 # PowerShell: -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 64 | ForEach-Object {[char]$_})
-JWT_SECRET=krushi_mithra_secret_key_2025_secure_token
+JWT_SECRET=KRISHI_MITHRA_secret_key_2025_secure_token
 
 # ==============================================
 # APPLICATION URLS
 # ==============================================
 # Update these after deployment
-# Backend URL (e.g., https://krushi-mithra-backend.onrender.com)
+# Backend URL (e.g., https://krishi-mithra-backend.onrender.com)
 BASE_URL=https://your-backend-url.onrender.com
 
-# Frontend URL (e.g., https://krushi-mithra.vercel.app)
+# Frontend URL (e.g., https://krishi-mithra.vercel.app)
 FRONTEND_URL=https://your-frontend-url.vercel.app
 
 # ==============================================
@@ -50,7 +50,7 @@ WEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
 
 EMAIL_USER=your.email@gmail.com
 EMAIL_PASSWORD=your_16_character_app_password
-EMAIL_FROM=KRUSHI MITHRA <your.email@gmail.com>
+EMAIL_FROM=KRISHI MITHRA <your.email@gmail.com>
 EMAIL_SERVICE=gmail
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
@@ -60,7 +60,7 @@ EMAIL_SECURE=false
 # ADMIN CREDENTIALS
 # ==============================================
 # Default admin account (auto-created on first startup)
-ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_EMAIL=admin@krishimithra.com
 ADMIN_PASSWORD=Admin@12345
 
 # ==============================================

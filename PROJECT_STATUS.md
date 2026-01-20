@@ -1,4 +1,4 @@
-# KRUSHI MITHRA - Project Completion Status
+﻿# KRISHI MITHRA - Project Completion Status
 
 ## 📊 Project Completion: ~85%
 

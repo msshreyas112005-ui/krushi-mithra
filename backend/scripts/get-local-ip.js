@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 /**
  * Get Local IP Address Helper Script
@@ -8,7 +8,7 @@
 const os = require('os');
 
 console.log('\n🌐 ========================================');
-console.log('🌐 KRUSHI MITHRA - Local IP Finder');
+console.log('🌐 KRISHI MITHRA - Local IP Finder');
 console.log('🌐 ========================================\n');
 
 function getLocalIPs() {

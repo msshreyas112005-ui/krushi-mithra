@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -49,7 +49,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 data-i18n="home.logo">🌾 KRUSHI MITHRA</h1>
+        <h1 data-i18n="home.logo">🌾 KRISHI MITHRA</h1>
         
         <div>
             <label>Select Language:</label>
@@ -61,18 +61,18 @@
         </div>
 
         <div class="test-item">
-            <h2 data-i18n="home.heroTitle">Welcome to KRUSHI MITHRA</h2>
+            <h2 data-i18n="home.heroTitle">Welcome to KRISHI MITHRA</h2>
             <p data-i18n="home.heroSubtitle">Your Complete Agriculture Platform for Karnataka Farmers</p>
         </div>
 
         <div class="test-item">
             <h3 data-i18n="login.title">Farmer Login</h3>
-            <p data-i18n="login.subtitle">Welcome back to KRUSHI MITHRA</p>
+            <p data-i18n="login.subtitle">Welcome back to KRISHI MITHRA</p>
         </div>
 
         <div class="test-item">
             <h3 data-i18n="register.heading">Farmer Registration</h3>
-            <p data-i18n="register.subtitle">Join the KRUSHI MITHRA community today!</p>
+            <p data-i18n="register.subtitle">Join the KRISHI MITHRA community today!</p>
         </div>
 
         <div class="console-output" id="consoleOutput">
@@ -120,29 +120,29 @@
             console.log('=== LANGUAGE TEST STARTED ===');
             console.log('Page loaded, initializing language manager...');
             
-            if (window.krushiLang) {
-                console.log('✅ window.krushiLang found');
-                console.log('Current language:', window.krushiLang.currentLang);
+            if (window.krishiLang) {
+                console.log('✅ window.krishiLang found');
+                console.log('Current language:', window.krishiLang.currentLang);
                 
-                await window.krushiLang.initialize();
+                await window.krishiLang.initialize();
                 console.log('Initialization complete');
                 
                 const languageSelect = document.getElementById('languageSelect');
                 if (languageSelect) {
-                    languageSelect.value = window.krushiLang.currentLang || 'en';
+                    languageSelect.value = window.krishiLang.currentLang || 'en';
                     console.log('Language selector set to:', languageSelect.value);
                     
                     languageSelect.addEventListener('change', (e) => {
                         const newLanguage = e.target.value;
                         console.log('=== LANGUAGE CHANGE REQUESTED ===');
-                        console.log('Changing from', window.krushiLang.currentLang, 'to', newLanguage);
-                        window.krushiLang.changeLanguage(newLanguage);
+                        console.log('Changing from', window.krishiLang.currentLang, 'to', newLanguage);
+                        window.krishiLang.changeLanguage(newLanguage);
                     });
                     
                     console.log('✅ Language selector connected');
                 }
             } else {
-                console.error('❌ window.krushiLang NOT FOUND!');
+                console.error('❌ window.krishiLang NOT FOUND!');
             }
         });
     </script>

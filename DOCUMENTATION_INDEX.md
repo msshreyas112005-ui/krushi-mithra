@@ -1,4 +1,4 @@
-# 📚 KRUSHI MITHRA - Documentation Index
+﻿# 📚 KRISHI MITHRA - Documentation Index
 
 **Complete guide to all documentation files for deployment and development**
 
@@ -335,7 +335,7 @@
 ```
 ┌─────────────────────────────────────────────┐
 │           Start Here                        │
-│  "I want to deploy KRUSHI MITHRA"          │
+│  "I want to deploy KRISHI MITHRA"          │
 └──────────────┬──────────────────────────────┘
                │
                ▼
@@ -554,4 +554,4 @@ With this documentation index, you can:
 
 **Happy deploying! 🌾**
 
-*Documentation Index - Your gateway to KRUSHI MITHRA deployment*
+*Documentation Index - Your gateway to KRISHI MITHRA deployment*

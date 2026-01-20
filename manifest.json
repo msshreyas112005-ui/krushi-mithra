@@ -1,6 +1,6 @@
-{
-  "name": "KRUSHI MITHRA - Agriculture Platform",
-  "short_name": "KRUSHI MITHRA",
+﻿{
+  "name": "KRISHI MITHRA - Agriculture Platform",
+  "short_name": "KRISHI MITHRA",
   "description": "Complete agriculture platform for Karnataka farmers with market prices, weather updates, and government subsidies",
   "start_url": "/frontend/html/index.html",
   "display": "standalone",

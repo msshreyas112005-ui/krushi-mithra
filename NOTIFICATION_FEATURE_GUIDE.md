@@ -1,4 +1,4 @@
-# 📢 Admin Notification Feature - Complete Guide
+﻿# 📢 Admin Notification Feature - Complete Guide
 
 ## Overview
 The admin panel now includes a complete notification system that allows administrators to send notifications to farmers both in the application **and via email**.
@@ -41,7 +41,7 @@ The admin panel now includes a complete notification system that allows administ
   - Full message content
   - Priority level
   - Professional formatting
-  - KRUSHI MITHRA branding
+  - KRISHI MITHRA branding
 
 ### 4. **In-App Notification**
 - Notifications appear in farmers' dashboard notification tab
@@ -147,7 +147,7 @@ Send Email: ✅ Checked
 - **Service**: Gmail
 - **Configuration**: Located in `backend/services/notification.service.js`
 - **Email Template**: Professional HTML format with:
-  - KRUSHI MITHRA logo
+  - KRISHI MITHRA logo
   - Formatted message content
   - Priority badge
   - Contact information
@@ -181,7 +181,7 @@ EMAIL_PASS=your-app-password
 - Farmers receive professional email at their registered email address
 - Email subject: Notification title
 - Email body: Full message with formatting
-- Includes link to KRUSHI MITHRA platform
+- Includes link to KRISHI MITHRA platform
 
 ---
 

@@ -1,4 +1,4 @@
-const { Pool } = require('pg');
+﻿const { Pool } = require('pg');
 
 // In Vercel, dotenv is not needed as env vars are already loaded
 // Only load dotenv in development
@@ -31,7 +31,7 @@ const poolConfig = {
     },
     max: 20, // Maximum number of clients in the pool
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
+    connectionTimeoutMillis: 30000, // Increased to 30 seconds for slower connections
 };
 
 console.log('🔧 [DB.JS] Creating connection pool...');

@@ -1,4 +1,4 @@
-# Notification Persistence & UI Layout Fixes - Complete Summary
+﻿# Notification Persistence & UI Layout Fixes - Complete Summary
 
 ## Overview
 Fixed critical issues with notification system not saving to PostgreSQL database and farmer dashboard UI layout problems. The system now uses PostgreSQL as the single source of truth for all notifications.
@@ -328,7 +328,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 ### 1. Test Admin Notification Creation
 1. Open browser and navigate to: `http://localhost:3000/frontend/html/admin-login.html`
 2. Login with admin credentials:
-   - Email: `admin@krushimithra.com`
+   - Email: `admin@krishimithra.com`
    - Password: `admin123`
 3. Click on "Notifications" in the navigation menu
 4. Fill in the notification form:

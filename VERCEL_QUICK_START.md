@@ -1,4 +1,4 @@
-# 🚀 VERCEL DEPLOYMENT - QUICK START
+﻿# 🚀 VERCEL DEPLOYMENT - QUICK START
 
 ## ⚡ 3-Minute Deploy
 
@@ -7,7 +7,7 @@
 git init
 git add .
 git commit -m "Initial commit"
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
 git branch -M main
 git push -u origin main
 ```
@@ -26,15 +26,15 @@ Go to: Settings → Environment Variables
 ```
 DATABASE_URL=postgresql://neondb_owner:npg_RZpaxCSsoD15@ep-super-breeze-a1bnvnew-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 NODE_ENV=production
-JWT_SECRET=krushi_mithra_secret_key_2025_secure_token
+JWT_SECRET=KRISHI_MITHRA_secret_key_2025_secure_token
 OPENWEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
 WEATHER_API_KEY=2dc416bde8a045c05a52551eebc4d477
-ADMIN_EMAIL=admin@krushimithra.com
+ADMIN_EMAIL=admin@krishimithra.com
 ADMIN_PASSWORD=Admin@12345
 EMAIL_USER=krishimithra2026@gmail.com
 EMAIL_APP_PASSWORD=umbhpecgsispzpmw
 EMAIL_PASSWORD=umbhpecgsispzpmw
-SUPPORT_EMAIL=support@krushimithra.com
+SUPPORT_EMAIL=support@krishimithra.com
 ```
 
 Then: Deployments → Redeploy
@@ -48,7 +48,7 @@ Then: Deployments → Redeploy
 
 **Login:**
 - Admin: https://your-project.vercel.app/frontend/html/admin-login.html
-  - Email: admin@krushimithra.com
+  - Email: admin@krishimithra.com
   - Password: Admin@12345
 
 - Farmer: https://your-project.vercel.app/frontend/html/register.html

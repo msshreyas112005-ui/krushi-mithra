@@ -1,4 +1,4 @@
-// API Configuration - Uses config.js for environment-aware API URL
+﻿// API Configuration - Uses config.js for environment-aware API URL
 // The API_URL is now loaded from config.js which auto-detects development vs production
 
 // DOM Elements
@@ -641,7 +641,7 @@ function updateSchemesUI(schemes) {
         return;
     }
     
-    const viewSchemeText = window.krushiLang ? window.krushiLang.translate('subsidy.viewScheme') : 'View Official Scheme';
+    const viewSchemeText = window.krishiLang ? window.krishiLang.translate('subsidy.viewScheme') : 'View Official Scheme';
     
     schemesList.innerHTML = schemes.map(scheme => `
         <div class="scheme-item">
@@ -1048,8 +1048,8 @@ function setupEventListeners() {
             console.log('🔄 Language changed to:', selectedLanguage);
             
             // Update using new language manager
-            if (window.krushiLang && window.krushiLang.isReady) {
-                window.krushiLang.changeLanguage(selectedLanguage);
+            if (window.krishiLang && window.krishiLang.isReady) {
+                window.krishiLang.changeLanguage(selectedLanguage);
             }
             
             // Save to backend

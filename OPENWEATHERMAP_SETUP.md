@@ -1,8 +1,8 @@
-# OpenWeatherMap API Setup Guide
+﻿# OpenWeatherMap API Setup Guide
 
 ## 🌦️ Getting Your FREE API Key
 
-The KRUSHI MITHRA platform uses OpenWeatherMap API to provide real-time weather updates to farmers. Follow these simple steps to get your free API key:
+The KRISHI MITHRA platform uses OpenWeatherMap API to provide real-time weather updates to farmers. Follow these simple steps to get your free API key:
 
 ## Step-by-Step Instructions
 

@@ -1,4 +1,4 @@
-# 🚀 DEPLOY TO VERCEL - ONE PAGE GUIDE
+﻿# 🚀 DEPLOY TO VERCEL - ONE PAGE GUIDE
 
 ## Prerequisites (5 minutes)
 1. Create GitHub account: https://github.com/join
@@ -17,10 +17,10 @@ git init
 git add .
 
 # Commit
-git commit -m "Initial commit - Krushi Mithra"
+git commit -m "Initial commit - KRISHI MITHRA"
 
 # Create repo on GitHub.com first, then:
-git remote add origin https://github.com/YOUR_USERNAME/krushi-mithra.git
+git remote add origin https://github.com/YOUR_USERNAME/krishi-mithra.git
 git branch -M main
 git push -u origin main
 ```
@@ -31,7 +31,7 @@ git push -u origin main
 
 1. Visit: https://vercel.com/new
 2. Click "Import Git Repository"
-3. Select "krushi-mithra"
+3. Select "krishi-mithra"
 4. Click "Import"
 5. Keep all settings default
 6. Click "Deploy" (will take 2-3 min)
@@ -58,7 +58,7 @@ Name: NODE_ENV
 Value: production
 
 Name: JWT_SECRET
-Value: krushi_mithra_secret_key_2025_secure_token
+Value: KRISHI_MITHRA_secret_key_2025_secure_token
 
 Name: OPENWEATHER_API_KEY
 Value: 2dc416bde8a045c05a52551eebc4d477
@@ -67,7 +67,7 @@ Name: WEATHER_API_KEY
 Value: 2dc416bde8a045c05a52551eebc4d477
 
 Name: ADMIN_EMAIL
-Value: admin@krushimithra.com
+Value: admin@krishimithra.com
 
 Name: ADMIN_PASSWORD
 Value: Admin@12345
@@ -82,7 +82,7 @@ Name: EMAIL_PASSWORD
 Value: umbhpecgsispzpmw
 
 Name: SUPPORT_EMAIL
-Value: support@krushimithra.com
+Value: support@krishimithra.com
 ```
 
 ---
@@ -109,7 +109,7 @@ Test these URLs:
    ✅ Should load homepage
 
 3. Admin: `https://your-project-name.vercel.app/frontend/html/admin-login.html`
-   ✅ Login with: admin@krushimithra.com / Admin@12345
+   ✅ Login with: admin@krishimithra.com / Admin@12345
 
 4. Farmer: `https://your-project-name.vercel.app/frontend/html/register.html`
    ✅ Try registering

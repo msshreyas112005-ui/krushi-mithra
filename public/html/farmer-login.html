@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Farmer Login - KRUSHI MITHRA</title>
+    <title>Farmer Login - KRISHI MITHRA</title>
     <link rel="stylesheet" href="/frontend/css/mobile-responsive.css">
     <script src="/frontend/js/language-manager.js"></script>
     <script src="/frontend/js/mobile-nav.js"></script>
@@ -424,7 +424,7 @@
         <!-- Left Side - Hero Section -->
         <div class="login-hero">
             <div class="hero-icon">🌾</div>
-            <h1 data-i18n="home.logo">KRUSHI MITHRA</h1>
+            <h1 data-i18n="home.logo">KRISHI MITHRA</h1>
             <p data-i18n="login.heroSubtitle">Empowering Karnataka Farmers with Technology</p>
             <div class="features-list">
                 <div class="feature-item" data-i18n="login.feature1">Real-time Weather Updates</div>
@@ -491,9 +491,9 @@
                 <div class="divider"><span>OR</span></div>
                 <p>
                     <span data-i18n="login.noAccount">Don't have an account?</span> 
-                    <a href="register.html" data-i18n="login.registerHere">Register here</a>
+                    <a href="/html/register.html" data-i18n="login.registerHere">Register here</a>
                 </p>
-                <a href="index.html" class="back-link" data-i18n="login.backHome">
+                <a href="/index.html" class="back-link" data-i18n="login.backHome">
                     ← Back to Home
                 </a>
             </div>
@@ -616,16 +616,16 @@
             // Initialize language manager
             console.log('🌐 Initializing farmer login language support');
             
-            if (window.krushiLang) {
-                window.krushiLang.initialize().then(() => {
+            if (window.krishiLang) {
+                window.krishiLang.initialize().then(() => {
                     const languageSelect = document.getElementById('languageSelect');
                     if (languageSelect) {
-                        languageSelect.value = window.krushiLang.currentLang || 'en';
+                        languageSelect.value = window.krishiLang.currentLang || 'en';
                         
                         languageSelect.addEventListener('change', (e) => {
                             const newLanguage = e.target.value;
                             console.log('🔄 Changing language to:', newLanguage);
-                            window.krushiLang.changeLanguage(newLanguage);
+                            window.krishiLang.changeLanguage(newLanguage);
                         });
                         
                         console.log('✅ Language selector connected');

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DEPRECATED: This controller is no longer used.
  * All admin functionality has been moved to routes/admin.routes.js
  * This file is kept for reference only.
@@ -27,10 +27,10 @@ const login = async (req, res) => {
 
     if (useJsonStorage) {
       // Simple admin check for demo mode
-      if (email === 'admin@krushimithra.com' && password === 'Admin@123') {
+      if (email === 'admin@krishimithra.com' && password === 'Admin@123') {
         admin = {
           _id: 'admin-1',
-          email: 'admin@krushimithra.com',
+          email: 'admin@krishimithra.com',
           fullName: 'Super Admin',
           role: 'superadmin'
         };

@@ -1,4 +1,4 @@
-const helmet = require('helmet');
+﻿const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 
@@ -88,8 +88,8 @@ const corsOptions = {
     if (process.env.NODE_ENV === 'production') {
       // Add your production frontend URLs here
       allowedOrigins.push(
-        'https://krushi-mithra.vercel.app',
-        'https://krushi-mithra.netlify.app'
+        'https://krishi-mithra.vercel.app',
+        'https://krishi-mithra.netlify.app'
       );
     }
     

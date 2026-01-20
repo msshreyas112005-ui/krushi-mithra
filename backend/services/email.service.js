@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+﻿const nodemailer = require('nodemailer');
 
 /**
  * Email Service using Nodemailer with Gmail
@@ -32,9 +32,9 @@ async function sendRegistrationEmail(farmerData) {
         const transporter = initializeTransporter();
         
         const mailOptions = {
-            from: `"Krushi Mithra" <${process.env.EMAIL_USER}>`,
+            from: `"KRISHI MITHRA" <${process.env.EMAIL_USER}>`,
             to: farmerData.email,
-            subject: 'Registration Successful – Krushi Mithra',
+            subject: 'Registration Successful – KRISHI MITHRA',
             html: `
                 <!DOCTYPE html>
                 <html>
@@ -51,12 +51,12 @@ async function sendRegistrationEmail(farmerData) {
                 <body>
                     <div class="container">
                         <div class="header">
-                            <h1>🌾 Welcome to Krushi Mithra!</h1>
+                            <h1>🌾 Welcome to KRISHI MITHRA!</h1>
                         </div>
                         <div class="content">
                             <h2>Registration Successful</h2>
                             <p>Dear ${farmerData.name},</p>
-                            <p>Thank you for registering with Krushi Mithra - Your Agricultural Companion!</p>
+                            <p>Thank you for registering with KRISHI MITHRA - Your Agricultural Companion!</p>
                             
                             <h3>Your Registration Details:</h3>
                             <ul>
@@ -77,10 +77,10 @@ async function sendRegistrationEmail(farmerData) {
                             
                             <a href="${process.env.FRONTEND_URL || 'http://localhost:5500'}/frontend/html/farmer-login.html" class="button">Login to Dashboard</a>
                             
-                            <p>If you have any questions, please contact us at ${process.env.SUPPORT_EMAIL || 'support@krushimithra.com'}</p>
+                            <p>If you have any questions, please contact us at ${process.env.SUPPORT_EMAIL || 'support@krishimithra.com'}</p>
                         </div>
                         <div class="footer">
-                            <p>© ${new Date().getFullYear()} Krushi Mithra. All rights reserved.</p>
+                            <p>© ${new Date().getFullYear()} KRISHI MITHRA. All rights reserved.</p>
                             <p>This is an automated email. Please do not reply.</p>
                         </div>
                     </div>
@@ -108,9 +108,9 @@ async function sendOTPEmail(email, name, otp) {
         const transporter = initializeTransporter();
         
         const mailOptions = {
-            from: `"Krushi Mithra" <${process.env.EMAIL_USER}>`,
+            from: `"KRISHI MITHRA" <${process.env.EMAIL_USER}>`,
             to: email,
-            subject: 'Your OTP for Registration – Krushi Mithra',
+            subject: 'Your OTP for Registration – KRISHI MITHRA',
             html: `
                 <!DOCTYPE html>
                 <html>
@@ -133,7 +133,7 @@ async function sendOTPEmail(email, name, otp) {
                         </div>
                         <div class="content">
                             <p>Dear ${name},</p>
-                            <p>Your One-Time Password (OTP) for Krushi Mithra registration is:</p>
+                            <p>Your One-Time Password (OTP) for KRISHI MITHRA registration is:</p>
                             
                             <div class="otp-box">
                                 <div class="otp-code">${otp}</div>
@@ -144,14 +144,14 @@ async function sendOTPEmail(email, name, otp) {
                                 <ul style="margin: 10px 0; padding-left: 20px;">
                                     <li>This OTP is valid for 5 minutes only</li>
                                     <li>Do not share this OTP with anyone</li>
-                                    <li>Krushi Mithra will never ask for your OTP</li>
+                                    <li>KRISHI MITHRA will never ask for your OTP</li>
                                 </ul>
                             </div>
                             
                             <p>If you didn't request this OTP, please ignore this email.</p>
                         </div>
                         <div class="footer">
-                            <p>© ${new Date().getFullYear()} Krushi Mithra. All rights reserved.</p>
+                            <p>© ${new Date().getFullYear()} KRISHI MITHRA. All rights reserved.</p>
                             <p>This is an automated email. Please do not reply.</p>
                         </div>
                     </div>

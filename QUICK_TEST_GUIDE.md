@@ -1,4 +1,4 @@
-# 🚀 QUICK TEST GUIDE - Krushi Mithra
+﻿# 🚀 QUICK TEST GUIDE - KRISHI MITHRA
 
 ## ✅ ALL FIXES IMPLEMENTED - READY TO TEST
 
@@ -9,7 +9,7 @@
 ### Login to Admin Dashboard
 1. **URL:** http://localhost:3000/frontend/html/admin-login.html
 2. **Credentials:**
-   - Email: `admin@krushimithra.com`
+   - Email: `admin@krishimithra.com`
    - Password: `Admin@12345`
 3. **Expected:** Login successful, redirects to dashboard
 4. **Check Console:** Should see "Token generated with role: admin"
@@ -87,7 +87,7 @@
 
 ### Check Email
 1. Open your email inbox
-2. **Expected:** Email from Krushi Mithra with:
+2. **Expected:** Email from KRISHI MITHRA with:
    - Welcome message
    - Your registration details
    - Login button

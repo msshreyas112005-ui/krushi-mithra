@@ -1,4 +1,4 @@
-# New Language System - Simple & Working
+﻿# New Language System - Simple & Working
 
 ## ✅ Fresh Implementation
 
@@ -87,22 +87,22 @@ Use dot notation for nested keys in JSON:
 ## 🔧 Global Access
 
 The language manager is available globally as:
-- `window.krushiLang` (new name)
+- `window.krishiLang` (new name)
 - `window.languageManager` (old name for compatibility)
 
 ### Available Methods:
 ```javascript
 // Get translation for a key
-window.krushiLang.translate('welcome.title');
+window.krishiLang.translate('welcome.title');
 
 // Change language programmatically
-window.krushiLang.changeLanguage('kannada');
+window.krishiLang.changeLanguage('kannada');
 
 // Get current language
-console.log(window.krushiLang.currentLang); // 'english', 'kannada', or 'hindi'
+console.log(window.krishiLang.currentLang); // 'english', 'kannada', or 'hindi'
 
 // Check if ready
-console.log(window.krushiLang.isReady); // true/false
+console.log(window.krishiLang.isReady); // true/false
 ```
 
 ## 📂 Language Files
@@ -204,7 +204,7 @@ All these pages now have working language switching:
 | Error Handling | Basic | Comprehensive |
 | Console Logs | Minimal | Clear and helpful |
 | Code Size | ~270 lines | ~200 lines |
-| Compatibility | `languageManager` | Both `krushiLang` & `languageManager` |
+| Compatibility | `languageManager` | Both `krishiLang` & `languageManager` |
 
 ## 🚀 Next Steps
 

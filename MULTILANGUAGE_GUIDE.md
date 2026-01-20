@@ -1,7 +1,7 @@
-# KRUSHI MITHRA - Multi-Language System Guide
+﻿# KRISHI MITHRA - Multi-Language System Guide
 
 ## Overview
-KRUSHI MITHRA now supports three languages:
+KRISHI MITHRA now supports three languages:
 - **English** (en)
 - **Hindi** (हिन्दी - hi)
 - **Kannada** (ಕನ್ನಡ - kn)

@@ -1,4 +1,4 @@
-const cron = require('node-cron');
+﻿const cron = require('node-cron');
 const MarketPriceService = require('../services/marketPrice.service');
 
 // Schedule market price updates

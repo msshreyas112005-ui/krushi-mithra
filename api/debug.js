@@ -1,4 +1,4 @@
-// Debug endpoint to check environment variables (for troubleshooting only)
+﻿// Debug endpoint to check environment variables (for troubleshooting only)
 module.exports = (req, res) => {
     const hasDbUrl = !!process.env.DATABASE_URL;
     const dbUrlPrefix = process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + '...' : 'NOT SET';

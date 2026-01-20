@@ -1,4 +1,4 @@
-# COMPLETE AUTHENTICATION & NOTIFICATION FIX SUMMARY
+﻿# COMPLETE AUTHENTICATION & NOTIFICATION FIX SUMMARY
 
 ## ✅ ALL FIXES IMPLEMENTED
 
@@ -56,7 +56,7 @@ Added `verifyAdmin` middleware to all admin-only endpoints:
 # 1. Login as admin
 curl -X POST http://localhost:3000/api/admin/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@krushimithra.com","password":"Admin@12345"}'
+  -d '{"email":"admin@krishimithra.com","password":"Admin@12345"}'
 
 # Response includes token:
 # { "success": true, "token": "eyJhbGc...", "admin": {...} }
@@ -221,7 +221,7 @@ console.log(data.subsidies); // Array of active subsidies
 EMAIL_USER=krishimithra2026@gmail.com
 EMAIL_APP_PASSWORD=umbhpecgsispzpmw
 FRONTEND_URL=http://localhost:5500
-SUPPORT_EMAIL=support@krushimithra.com
+SUPPORT_EMAIL=support@krishimithra.com
 ```
 
 ### SMS Service Implementation
@@ -262,7 +262,7 @@ SUPPORT_EMAIL=support@krushimithra.com
 ✅ Registration email sent: <messageId>
 📱 SMS SENT (MOCK):
    To: 9876543210
-   Message: Dear Farmer, Welcome to Krushi Mithra!...
+   Message: Dear Farmer, Welcome to KRISHI MITHRA!...
 ```
 
 ---
@@ -438,7 +438,7 @@ node server.js
 
 ### 2. Test Admin Login
 1. Open: http://localhost:3000/frontend/html/admin-login.html
-2. Login: admin@krushimithra.com / Admin@12345
+2. Login: admin@krishimithra.com / Admin@12345
 3. Check console: Should see "✅ Login successful - Token generated with role: admin"
 
 ### 3. Test Admin Notifications
@@ -588,7 +588,7 @@ await axios.post('https://api.msg91.com/api/v5/flow/', {
     authkey: process.env.MSG91_API_KEY,
     mobiles: phone,
     message: message,
-    sender: 'KRUSHI'
+    sender: 'KRISHI'
 });
 ```
 
@@ -618,7 +618,7 @@ If you encounter any issues:
 5. Test with provided curl commands
 
 ### Contact
-- Email: support@krushimithra.com
+- Email: support@krishimithra.com
 - Documentation: This file
 
 ---

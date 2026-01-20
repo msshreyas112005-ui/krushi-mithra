@@ -1,4 +1,4 @@
-# Data Synchronization Fix Summary
+﻿# Data Synchronization Fix Summary
 
 ## Date: January 5, 2026
 
@@ -235,7 +235,7 @@ GET /api/admin/farmers?status=approved - 200 - 12ms
 ---
 
 ## Admin Credentials
-- **Email:** admin@krushimithra.com
+- **Email:** admin@krishimithra.com
 - **Password:** Admin@12345
 
 ## Server Access

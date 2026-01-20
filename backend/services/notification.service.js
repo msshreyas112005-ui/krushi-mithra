@@ -1,9 +1,9 @@
-const nodemailer = require('nodemailer');
+﻿const nodemailer = require('nodemailer');
 const fs = require('fs').promises;
 const path = require('path');
 
 /**
- * Email Notification Service for KRUSHI MITHRA
+ * Email Notification Service for KRISHI MITHRA
  * Sends notifications to farmers via email
  */
 
@@ -60,7 +60,7 @@ class NotificationService {
             
             // Email options
             const mailOptions = {
-                from: `"KRUSHI MITHRA" <${process.env.EMAIL_USER}>`,
+                from: `"KRISHI MITHRA" <${process.env.EMAIL_USER}>`,
                 to: farmerEmails.join(','), // Send to multiple recipients
                 subject: `${this.getPriorityEmoji(priority)} ${title}`,
                 html: htmlContent,
@@ -218,7 +218,7 @@ class NotificationService {
 <body>
     <div class="email-container">
         <div class="email-header">
-            <h1>🌾 KRUSHI MITHRA</h1>
+            <h1>🌾 KRISHI MITHRA</h1>
             <p>Karnataka Farmer Information System</p>
             <span class="notification-badge">${priority} Priority</span>
         </div>
@@ -245,7 +245,7 @@ class NotificationService {
         </div>
         
         <div class="email-footer">
-            <p><strong>KRUSHI MITHRA</strong> - Empowering Karnataka Farmers</p>
+            <p><strong>KRISHI MITHRA</strong> - Empowering Karnataka Farmers</p>
             <p>Government of Karnataka | Department of Agriculture</p>
             <p>
                 <a href="#">Privacy Policy</a> | 
@@ -253,7 +253,7 @@ class NotificationService {
                 <a href="#">Help Center</a>
             </p>
             <p style="margin-top: 15px; font-size: 11px; opacity: 0.8;">
-                You are receiving this email because you are a registered farmer on KRUSHI MITHRA platform.
+                You are receiving this email because you are a registered farmer on KRISHI MITHRA platform.
             </p>
         </div>
     </div>
@@ -477,12 +477,12 @@ class NotificationService {
 <body>
     <div class="email-container">
         <div class="email-header">
-            <h1>🌾 KRUSHI MITHRA 🚜</h1>
+            <h1>🌾 KRISHI MITHRA 🚜</h1>
             <p>Your Partner in Modern Farming</p>
         </div>
         <div class="email-body">
             <h2>Welcome, ${name}! 🎉</h2>
-            <p class="welcome-text">Thank you for registering with KRUSHI MITHRA - your trusted agricultural companion.</p>
+            <p class="welcome-text">Thank you for registering with KRISHI MITHRA - your trusted agricultural companion.</p>
             
             <div class="info-box">
                 <h3>✅ Registration Successful!</h3>
@@ -512,7 +512,7 @@ class NotificationService {
             </p>
         </div>
         <div class="footer">
-            <p>© 2026 KRUSHI MITHRA. All rights reserved.</p>
+            <p>© 2026 KRISHI MITHRA. All rights reserved.</p>
             <p>Empowering Farmers with Technology 🌱</p>
         </div>
     </div>
@@ -521,11 +521,11 @@ class NotificationService {
             `;
 
             const mailOptions = {
-                from: `"KRUSHI MITHRA" <${process.env.EMAIL_USER}>`,
+                from: `"KRISHI MITHRA" <${process.env.EMAIL_USER}>`,
                 to: email,
-                subject: '🌾 Welcome to KRUSHI MITHRA - Registration Successful!',
+                subject: '🌾 Welcome to KRISHI MITHRA - Registration Successful!',
                 html: htmlContent,
-                text: `Welcome to KRUSHI MITHRA, ${name}! Your registration was successful. You can now login to access market prices, weather forecasts, subsidies, and more.`
+                text: `Welcome to KRISHI MITHRA, ${name}! Your registration was successful. You can now login to access market prices, weather forecasts, subsidies, and more.`
             };
 
             const info = await this.transporter.sendMail(mailOptions);

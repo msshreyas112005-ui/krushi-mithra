@@ -1,4 +1,4 @@
-# 🚀 KRUSHI MITHRA - Production Deployment Preparation Summary
+﻿# 🚀 KRISHI MITHRA - Production Deployment Preparation Summary
 
 **Date**: January 7, 2026  
 **Status**: ✅ Ready for Production Deployment
@@ -31,8 +31,8 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 **Allowed Origins:**
 - `http://localhost:3000` (development)
-- `https://krushi-mithra.vercel.app` (production)
-- `https://krushi-mithra.netlify.app` (alternative)
+- `https://krishi-mithra.vercel.app` (production)
+- `https://krishi-mithra.netlify.app` (alternative)
 - Dynamic URLs from environment variables
 
 #### Health Check Endpoint
@@ -127,9 +127,9 @@ const API_URL = 'http://localhost:3000/api';
 
 **Example (index.html):**
 ```html
-<meta name="description" content="KRUSHI MITHRA - Complete agriculture platform...">
+<meta name="description" content="KRISHI MITHRA - Complete agriculture platform...">
 <meta name="theme-color" content="#4CAF50">
-<meta property="og:title" content="KRUSHI MITHRA - Agriculture Platform">
+<meta property="og:title" content="KRISHI MITHRA - Agriculture Platform">
 ```
 
 ---
@@ -169,7 +169,7 @@ const API_URL = 'http://localhost:3000/api';
 ```yaml
 services:
   - type: web
-    name: krushi-mithra-backend
+    name: krishi-mithra-backend
     runtime: node
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
@@ -182,7 +182,7 @@ services:
   
 [[redirects]]
   from = "/api/*"
-  to = "https://krushi-mithra-backend.onrender.com/api/:splat"
+  to = "https://krishi-mithra-backend.onrender.com/api/:splat"
 ```
 
 #### Created `railway.toml` (Railway Deployment)
@@ -438,7 +438,7 @@ PRODUCTION_API_URL: 'https://your-backend.onrender.com'
 
 ## ✨ Summary
 
-**KRUSHI MITHRA is now 100% ready for production deployment!**
+**KRISHI MITHRA is now 100% ready for production deployment!**
 
 ### What's Working:
 ✅ Backend production-ready  
@@ -469,7 +469,7 @@ PRODUCTION_API_URL: 'https://your-backend.onrender.com'
 
 ## 🎉 Ready to Go Live!
 
-Your KRUSHI MITHRA platform is production-ready. Follow `DEPLOYMENT_CHECKLIST.md` to deploy in 30 minutes.
+Your KRISHI MITHRA platform is production-ready. Follow `DEPLOYMENT_CHECKLIST.md` to deploy in 30 minutes.
 
 **Questions?** Check `DEPLOYMENT_GUIDE.md` for detailed instructions and troubleshooting.
 

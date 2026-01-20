@@ -1,4 +1,4 @@
-# 🧪 Testing Guide: Green Theme & Registration Fixes
+﻿# 🧪 Testing Guide: Green Theme & Registration Fixes
 
 ## Quick Test Checklist
 
@@ -187,7 +187,7 @@ npm start
 1. **Check Backend Running**:
    ```powershell
    # Should see:
-   🌾 KRUSHI MITHRA Server Started
+   🌾 KRISHI MITHRA Server Started
    📡 Server URL: http://localhost:3000
    ```
 

@@ -1,6 +1,6 @@
-# API Integration Guide - KRUSHI MITHRA
+﻿# API Integration Guide - KRISHI MITHRA
 
-This guide explains how to integrate real Indian market prices and weather data APIs into the KRUSHI MITHRA platform.
+This guide explains how to integrate real Indian market prices and weather data APIs into the KRISHI MITHRA platform.
 
 ## 🌦️ Weather API Setup (OpenWeatherMap)
 
@@ -271,7 +271,7 @@ Before deploying to production:
 
 ## 🎉 Success!
 
-Your KRUSHI MITHRA platform now has:
+Your KRISHI MITHRA platform now has:
 - ✅ Real Indian market prices from government sources
 - ✅ Real-time weather data for Karnataka locations
 - ✅ Multi-language support (English, Kannada, Hindi)

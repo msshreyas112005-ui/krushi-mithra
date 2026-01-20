@@ -1,7 +1,7 @@
-# 🚀 Neon PostgreSQL Database Setup Guide
+﻿# 🚀 Neon PostgreSQL Database Setup Guide
 
 ## Overview
-This guide will help you set up Neon PostgreSQL database for KRUSHI MITHRA application, replacing the current MongoDB/JSON storage with a scalable, serverless PostgreSQL database.
+This guide will help you set up Neon PostgreSQL database for KRISHI MITHRA application, replacing the current MongoDB/JSON storage with a scalable, serverless PostgreSQL database.
 
 ---
 
@@ -22,7 +22,7 @@ This guide will help you set up Neon PostgreSQL database for KRUSHI MITHRA appli
 
 1. **Create Project**
    - Click "New Project"
-   - Project Name: `krushi-mitra`
+   - Project Name: `KRISHI-mitra`
    - Region: Choose closest to Karnataka, India (Singapore or Mumbai if available)
    - PostgreSQL Version: 15 (recommended)
    - Click "Create Project"
@@ -51,7 +51,7 @@ This guide will help you set up Neon PostgreSQL database for KRUSHI MITHRA appli
    DATABASE_URL=postgresql://your-neon-connection-string-here
    
    # Use DATABASE_URL instead of MONGODB_URI
-   # MONGODB_URI=mongodb://localhost:27017/krushi-mithra  # DEPRECATED
+   # MONGODB_URI=mongodb://localhost:27017/krishi-mithra  # DEPRECATED
    
    # JWT and other configs remain same
    JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
@@ -317,7 +317,7 @@ async function seedDatabase() {
       INSERT INTO users (email, password, full_name, role)
       VALUES ($1, $2, $3, $4)
       ON CONFLICT (email) DO NOTHING
-    `, ['admin@krushimithra.com', hashedPassword, 'Main Administrator', 'admin']);
+    `, ['admin@krishimithra.com', hashedPassword, 'Main Administrator', 'admin']);
     
     console.log('✅ Admin user created');
     
@@ -435,4 +435,4 @@ After setup:
 
 **Setup Complete!** 🎉
 
-Your KRUSHI MITHRA app is now powered by Neon PostgreSQL - a modern, scalable, serverless database solution.
+Your KRISHI MITHRA app is now powered by Neon PostgreSQL - a modern, scalable, serverless database solution.

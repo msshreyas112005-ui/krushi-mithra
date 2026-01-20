@@ -1,4 +1,4 @@
-# 🧪 Testing the Notification System
+﻿# 🧪 Testing the Notification System
 
 ## Quick Test Steps
 
@@ -10,7 +10,7 @@
 
 1. **Open Admin Dashboard:**
    - URL: http://localhost:3000/frontend/html/admin-dashboard.html
-   - Login: admin@krushimithra.com / Admin@12345
+   - Login: admin@krishimithra.com / Admin@12345
 
 2. **Send Test Notification:**
    - Scroll to "Send Notification" section
@@ -93,7 +93,7 @@
    - Check email inbox for farmers
    - Should receive professional HTML email
    - Email should have:
-     - KRUSHI MITHRA header
+     - KRISHI MITHRA header
      - Priority badge
      - Icon
      - Formatted message

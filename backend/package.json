@@ -1,7 +1,7 @@
-{
-  "name": "krushi-mithra-backend",
+﻿{
+  "name": "krishi-mithra-backend",
   "version": "1.0.0",
-  "description": "Backend server for KRUSHI MITHRA application",
+  "description": "Backend server for KRISHI MITHRA application",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,7 +13,7 @@
   "keywords": [
     "agriculture",
     "farming",
-    "krushi"
+    "KRISHI"
   ],
   "author": "",
   "license": "ISC",

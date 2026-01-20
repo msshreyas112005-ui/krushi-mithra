@@ -1,4 +1,4 @@
-# Data Migration to Neon PostgreSQL - Complete
+﻿# Data Migration to Neon PostgreSQL - Complete
 
 ## ✅ Migration Summary
 
@@ -217,7 +217,7 @@ CREATE TABLE notifications (
 ## 🚀 Server Running
 
 ```
-🌾 KRUSHI MITHRA Server Started
+🌾 KRISHI MITHRA Server Started
 📡 Server URL: http://localhost:3000
 🌐 Frontend:   http://localhost:3000/frontend/html/index.html
 👨‍🌾 Farmer:     http://localhost:3000/frontend/html/register.html
@@ -234,7 +234,7 @@ CREATE TABLE notifications (
 ## ✅ Verification Steps
 
 1. **Check Farmers:**
-   - Login as admin: admin@krushimithra.com / Admin@12345
+   - Login as admin: admin@krishimithra.com / Admin@12345
    - View registered farmers - should show 4 farmers
 
 2. **Check Market Prices:**

@@ -1,4 +1,4 @@
-# KRUSHI MITHRA - Quick Start After Fixes
+﻿# KRISHI MITHRA - Quick Start After Fixes
 
 ## ✅ All Issues Fixed!
 
@@ -42,7 +42,7 @@
 
 3. **Admin can view:**
    - Go to: http://localhost:3000/frontend/html/admin-login.html
-   - Login: admin@krushimithra.com / Admin@123
+   - Login: admin@krishimithra.com / Admin@123
    - View all registered farmers
 
 ---
@@ -105,7 +105,7 @@
 ### Test Admin View
 ```bash
 1. Open: http://localhost:3000/frontend/html/admin-login.html
-2. Login: admin@krushimithra.com / Admin@123
+2. Login: admin@krishimithra.com / Admin@123
 3. Go to farmers section
 ✅ Should see all registered farmers
 ```
@@ -173,7 +173,7 @@
 
 ### Default Admin Login:
 ```
-Email: admin@krushimithra.com
+Email: admin@krishimithra.com
 Password: Admin@123
 ```
 
@@ -217,7 +217,7 @@ Location: Bangalore
 - Check console for "[WEATHER API]" logs
 
 ### Admin can't login?
-- Use: admin@krushimithra.com / Admin@123
+- Use: admin@krishimithra.com / Admin@123
 - Check `.env` for ADMIN_EMAIL and ADMIN_PASSWORD
 - Verify server is running
 

@@ -1,5 +1,5 @@
-/**
- * KRUSHI MITHRA - Mobile Navigation Handler
+﻿/**
+ * KRISHI MITHRA - Mobile Navigation Handler
  * 
  * This script handles the hamburger menu functionality for mobile devices.
  * It provides smooth transitions and proper state management.
@@ -247,8 +247,8 @@
     document.addEventListener('DOMContentLoaded', initializeSectionNavigation);
 
     // Make functions available globally for debugging
-    window.KrushiMithra = window.KrushiMithra || {};
-    window.KrushiMithra.mobile = {
+    window.krishimithra = window.krishimithra || {};
+    window.krishimithra.mobile = {
         openMenu: function() {
             const hamburger = document.querySelector('.hamburger-menu');
             const navLinks = document.querySelector('.nav-links') || 

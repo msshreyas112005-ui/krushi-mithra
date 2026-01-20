@@ -1,4 +1,4 @@
-// Quick test for OpenWeatherMap API
+﻿// Quick test for OpenWeatherMap API
 const http = require('http');
 
 const API_KEY = '2dc416bde8a045c05a52551eebc4d477';

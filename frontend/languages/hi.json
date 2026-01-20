@@ -1,4 +1,4 @@
-{
+﻿{
   "header": {
     "dashboard": "डैशबोर्ड",
     "profile": "प्रोफ़ाइल",
@@ -89,7 +89,7 @@
   "register": {
     "title": "📝 पंजीकरण",
     "heading": "🌾 किसान पंजीकरण 👨‍🌾",
-    "subtitle": "आज ही KRUSHI MITHRA समुदाय में शामिल हों! 🚜",
+    "subtitle": "आज ही KRISHI MITHRA समुदाय में शामिल हों! 🚜",
     "fullName": "👤 पूरा नाम",
     "email": "📧 ईमेल पता",
     "emailPlaceholder": "example@email.com",
@@ -113,7 +113,7 @@
   },
   "login": {
     "title": "🌾 किसान लॉगिन",
-    "subtitle": "KRUSHI MITHRA में वापस स्वागत है",
+    "subtitle": "KRISHI MITHRA में वापस स्वागत है",
     "heroSubtitle": "कर्नाटक किसानों को प्रौद्योगिकी के साथ सशक्त बनाना",
     "feature1": "वास्तविक समय मौसम अपडेट",
     "feature2": "बाजार मूल्य जानकारी",
@@ -181,13 +181,13 @@
     "registerError": "पंजीकरण विफल। कृपया पुनः प्रयास करें"
   },
   "home": {
-    "heroTitle": "KRUSHI MITHRA में स्वागत है",
+    "heroTitle": "KRISHI MITHRA में स्वागत है",
     "heroSubtitle": "कर्नाटक किसानों के लिए आपका संपूर्ण कृषि मंच",
     "farmerLogin": "👨‍🌾 किसान लॉगिन",
     "adminLogin": "👨‍💼 प्रशासक लॉगिन",
-    "newUser": "KRUSHI MITHRA में नए?",
+    "newUser": "KRISHI MITHRA में नए?",
     "registerNew": "नए पंजीकरण",
-    "logo": "🌾 KRUSHI MITHRA",
+    "logo": "🌾 KRISHI MITHRA",
     "getStarted": "शुरू करें",
     "learnMore": "अधिक जानें",
     "servicesTitle": "हमारी सेवाएं",
@@ -226,13 +226,13 @@
     "stat1": "सक्रिय किसान",
     "stat2": "कवर किए गए जिले",
     "stat3": "समर्थित भाषाएं",
-    "aboutTitle": "KRUSHI MITHRA के बारे में",
-    "aboutText": "KRUSHI MITHRA एक व्यापक डिजिटल प्लेटफ़ॉर्म है जो कर्नाटक भर में किसानों को वास्तविक समय की जानकारी, बाजार विवरण, और सरकारी समर्थन कई भाषाओं में प्रदान करने के लिए डिड़ाइन किया गया है."
+    "aboutTitle": "KRISHI MITHRA के बारे में",
+    "aboutText": "KRISHI MITHRA एक व्यापक डिजिटल प्लेटफ़ॉर्म है जो कर्नाटक भर में किसानों को वास्तविक समय की जानकारी, बाजार विवरण, और सरकारी समर्थन कई भाषाओं में प्रदान करने के लिए डिड़ाइन किया गया है."
   },
   "register": {
     "title": "पंजीकरण",
     "heading": "🌾 किसान पंजीकरण 👨‍🌾",
-    "subtitle": "आज ही KRUSHI MITHRA समुदाय में शामिल हों! 🚜",
+    "subtitle": "आज ही KRISHI MITHRA समुदाय में शामिल हों! 🚜",
     "fullName": "👤 पूरा नाम"
   },
   "footer": {

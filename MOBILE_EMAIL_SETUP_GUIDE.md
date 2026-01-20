@@ -1,4 +1,4 @@
-# Mobile Email Dashboard Link Setup Guide
+﻿# Mobile Email Dashboard Link Setup Guide
 
 ## Problem Fixed ✅
 The dashboard link sent via email now works correctly on mobile devices.
@@ -230,5 +230,5 @@ If issues persist:
 ---
 
 **Last Updated:** January 6, 2026
-**Project:** KRUSHI MITHRA
+**Project:** KRISHI MITHRA
 **Version:** 1.0.0

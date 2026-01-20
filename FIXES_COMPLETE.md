@@ -1,4 +1,4 @@
-# 🎉 ALL CRITICAL ISSUES FIXED - KRUSHI MITHRA
+﻿# 🎉 ALL CRITICAL ISSUES FIXED - KRISHI MITHRA
 
 ## ✅ COMPLETION STATUS: 100%
 
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS farmers (
 ## 🎯 VALIDATION CHECKLIST
 
 ### Test Admin Dashboard:
-- [x] Login as admin (admin@krushimithra.com / Admin@12345)
+- [x] Login as admin (admin@krishimithra.com / Admin@12345)
 - [x] Click "Add Subsidy"
 - [x] Fill in title, description, URL (must be valid http/https URL)
 - [x] Select category and state
@@ -155,13 +155,13 @@ CREATE TABLE IF NOT EXISTS farmers (
 
 1. **Restart Server:**
    ```powershell
-   cd c:\Users\mahal\OneDrive\Desktop\krushi_mithra\backend
+   cd c:\Users\mahal\OneDrive\Desktop\KRISHI_MITHRA\backend
    node server.js
    ```
 
 2. **Test Admin Subsidy Creation:**
    - Open: http://localhost:3000/frontend/html/admin-login.html
-   - Login: admin@krushimithra.com / Admin@12345
+   - Login: admin@krishimithra.com / Admin@12345
    - Add new subsidy with valid URL (e.g., https://pmkisan.gov.in)
    - Verify success message
 

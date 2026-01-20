@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const farmerController = require('../controllers/farmer.postgres.controller');
 const subsidyController = require('../controllers/subsidy.postgres.controller');
@@ -16,7 +16,7 @@ const jwt = require('jsonwebtoken');
  */
 router.get('/', (req, res) => {
     res.json({
-        message: 'KRUSHI MITHRA API',
+        message: 'KRISHI MITHRA API',
         version: '1.0.0',
         status: 'active',
         endpoints: {
@@ -87,7 +87,7 @@ router.post('/admin/login', (req, res) => {
   const { email, password } = req.body;
   
   // Simple hardcoded admin check (from .env)
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@krushimithra.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@krishimithra.com';
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@12345';
   
   console.log('[ADMIN LOGIN] Login attempt for:', email);

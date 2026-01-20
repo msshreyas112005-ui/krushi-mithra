@@ -1,4 +1,4 @@
-{
+﻿{
   "header": {
     "dashboard": "Dashboard",
     "profile": "Profile",
@@ -78,7 +78,7 @@
     "loginTitle": "Farmer Login",
     "loginSubtitle": "Access your farming dashboard",
     "registerTitle": "Farmer Registration",
-    "registerSubtitle": "Join KRUSHI MITHRA platform",
+    "registerSubtitle": "Join KRISHI MITHRA platform",
     "phoneOrEmail": "Phone or Email",
     "forgotPassword": "Forgot Password?",
     "noAccount": "Don't have an account?",
@@ -89,7 +89,7 @@
   "register": {
     "title": "📝 Register",
     "heading": "🌾 Farmer Registration 👨‍🌾",
-    "subtitle": "Join the KRUSHI MITHRA community today! 🚜",
+    "subtitle": "Join the KRISHI MITHRA community today! 🚜",
     "fullName": "👤 Full Name",
     "email": "📧 Email Address",
     "emailPlaceholder": "example@email.com",
@@ -113,7 +113,7 @@
   },
   "login": {
     "title": "🌾 Farmer Login",
-    "subtitle": "Welcome back to KRUSHI MITHRA",
+    "subtitle": "Welcome back to KRISHI MITHRA",
     "heroSubtitle": "Empowering Karnataka Farmers with Technology",
     "feature1": "Real-time Weather Updates",
     "feature2": "Market Price Information",
@@ -131,7 +131,7 @@
   },
   "admin": {
     "title": "Admin Dashboard",
-    "subtitle": "Manage KRUSHI MITHRA Platform",
+    "subtitle": "Manage KRISHI MITHRA Platform",
     "dashboardOverview": "Dashboard Overview",
     "totalFarmers": "Total Farmers",
     "pendingApprovals": "Pending Approvals",
@@ -181,13 +181,13 @@
     "registerError": "Registration failed. Please try again"
   },
   "home": {
-    "heroTitle": "Welcome to KRUSHI MITHRA",
+    "heroTitle": "Welcome to KRISHI MITHRA",
     "heroSubtitle": "Your Complete Agriculture Platform for Karnataka Farmers",
     "farmerLogin": "👨‍🌾 Login for Farmer",
     "adminLogin": "👨‍💼 Admin Login",
-    "newUser": "New to KRUSHI MITHRA?",
+    "newUser": "New to KRISHI MITHRA?",
     "registerNew": "Register New",
-    "logo": "🌾 KRUSHI MITHRA",
+    "logo": "🌾 KRISHI MITHRA",
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "servicesTitle": "Our Services",
@@ -226,16 +226,16 @@
     "stat1": "Active Farmers",
     "stat2": "Districts Covered",
     "stat3": "Languages Supported",
-    "aboutTitle": "About KRUSHI MITHRA",
-    "aboutText": "KRUSHI MITHRA is a comprehensive digital platform designed to empower farmers across Karnataka with real-time information, market insights, and government support in multiple languages."
+    "aboutTitle": "About KRISHI MITHRA",
+    "aboutText": "KRISHI MITHRA is a comprehensive digital platform designed to empower farmers across Karnataka with real-time information, market insights, and government support in multiple languages."
   },
   "register": {
     "title": "Register",
     "heading": "🌾 Farmer Registration 👨‍🌾",
-    "subtitle": "Join the KRUSHI MITHRA community today! 🚜",
+    "subtitle": "Join the KRISHI MITHRA community today! 🚜",
     "fullName": "👤 Full Name"
   },
   "footer": {
-    "copyright": "© 2025 KRUSHI MITHRA. All rights reserved."
+    "copyright": "© 2025 KRISHI MITHRA. All rights reserved."
   }
 }
